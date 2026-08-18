@@ -6,6 +6,7 @@ import DiagnosisUpload from './DiagnosisUpload';
 import { Leaf, Droplets, Thermometer, Wind, Sprout } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useVoice } from '@/hooks/useVoice';
+import { useFieldData } from '@/hooks/useFieldData';
 
 // Dynamically import map with SSR disabled to prevent Leaflet window errors
 const Map = dynamic(() => import('./Map'), { ssr: false });
@@ -18,6 +19,9 @@ export default function Dashboard() {
   const [fieldId] = useState('demo-field-123');
   const [center] = useState<[number, number]>([28.6139, 77.2090]); // New Delhi default
   const markers = [{ lat: 28.6139, lng: 77.2090, title: 'My Primary Wheat Field' }];
+  
+  // Fetch live real-time data
+  const { data: fieldData, loading } = useFieldData(center[0], center[1]);
 
   const dummyAdvisory = "Your wheat crop is currently healthy with an NDVI of 0.65. Given the upcoming rain tomorrow, avoid applying nitrogen fertilizer today to prevent runoff. The soil moisture is optimal at 24%.";
 
@@ -71,22 +75,30 @@ export default function Dashboard() {
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-white p-4 rounded-xl shadow border border-gray-100 flex flex-col items-center text-center">
               <Leaf className="w-6 h-6 text-green-500 mb-2" />
-              <span className="text-2xl font-bold text-gray-800">0.65</span>
+              <span className="text-2xl font-bold text-gray-800">
+                {loading ? '...' : fieldData?.ndvi.toFixed(2)}
+              </span>
               <span className="text-xs text-gray-500 uppercase tracking-wide">NDVI (Health)</span>
             </div>
             <div className="bg-white p-4 rounded-xl shadow border border-gray-100 flex flex-col items-center text-center">
               <Droplets className="w-6 h-6 text-blue-500 mb-2" />
-              <span className="text-2xl font-bold text-gray-800">24%</span>
+              <span className="text-2xl font-bold text-gray-800">
+                {loading ? '...' : `${fieldData?.soil.moisture}%`}
+              </span>
               <span className="text-xs text-gray-500 uppercase tracking-wide">Soil Moisture</span>
             </div>
             <div className="bg-white p-4 rounded-xl shadow border border-gray-100 flex flex-col items-center text-center">
               <Thermometer className="w-6 h-6 text-orange-500 mb-2" />
-              <span className="text-2xl font-bold text-gray-800">32°C</span>
+              <span className="text-2xl font-bold text-gray-800">
+                {loading ? '...' : `${fieldData?.weather.temperature}°C`}
+              </span>
               <span className="text-xs text-gray-500 uppercase tracking-wide">Temperature</span>
             </div>
             <div className="bg-white p-4 rounded-xl shadow border border-gray-100 flex flex-col items-center text-center">
               <Wind className="w-6 h-6 text-teal-500 mb-2" />
-              <span className="text-2xl font-bold text-gray-800">6.8</span>
+              <span className="text-2xl font-bold text-gray-800">
+                {loading ? '...' : fieldData?.soil.pH.toFixed(1)}
+              </span>
               <span className="text-xs text-gray-500 uppercase tracking-wide">Soil pH</span>
             </div>
           </div>
