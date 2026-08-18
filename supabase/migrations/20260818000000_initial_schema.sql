@@ -7,7 +7,7 @@ create table profiles (
 create table fields (
   id uuid primary key default gen_random_uuid(),
   owner_id uuid references profiles(id),
-  country text, lat float8, lng float8,
+  country text, region text, lat float8, lng float8,
   crop_history jsonb default '[]',
   created_at timestamptz default now()
 );
