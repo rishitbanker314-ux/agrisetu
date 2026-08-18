@@ -17,8 +17,8 @@ export default function Dashboard() {
   
   // Dummy data for scaffolding - this will eventually be hydrated from Supabase
   const [fieldId] = useState('demo-field-123');
-  const [center] = useState<[number, number]>([28.6139, 77.2090]); // New Delhi default
-  const markers = [{ lat: 28.6139, lng: 77.2090, title: 'My Primary Wheat Field' }];
+  const [center, setCenter] = useState<[number, number]>([28.6139, 77.2090]); // New Delhi default
+  const markers = [{ lat: center[0], lng: center[1], title: 'Selected Field' }];
   
   // Fetch live real-time data
   const { data: fieldData, loading } = useFieldData(center[0], center[1]);
@@ -46,7 +46,12 @@ export default function Dashboard() {
         {/* Left Column: Map */}
         <section className="lg:col-span-2 flex flex-col gap-6">
           <div className="h-[40vh] lg:h-[500px]">
-            <Map center={center} zoom={14} markers={markers} />
+            <Map 
+              center={center} 
+              zoom={14} 
+              markers={markers} 
+              onLocationSelect={(lat, lng) => setCenter([lat, lng])} 
+            />
           </div>
 
           {/* AI Advisory Card */}

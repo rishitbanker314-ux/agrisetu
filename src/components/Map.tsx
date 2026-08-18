@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -25,13 +25,26 @@ function RecenterAutomatically({ lat, lng }: { lat: number; lng: number }) {
   return null;
 }
 
+// A component to handle click events on the map
+function MapClickHandler({ onLocationSelect }: { onLocationSelect?: (lat: number, lng: number) => void }) {
+  useMapEvents({
+    click(e) {
+      if (onLocationSelect) {
+        onLocationSelect(e.latlng.lat, e.latlng.lng);
+      }
+    },
+  });
+  return null;
+}
+
 interface MapProps {
   center: [number, number];
   zoom?: number;
   markers?: Array<{ lat: number; lng: number; title: string }>;
+  onLocationSelect?: (lat: number, lng: number) => void;
 }
 
-export default function Map({ center, zoom = 13, markers = [] }: MapProps) {
+export default function Map({ center, zoom = 13, markers = [], onLocationSelect }: MapProps) {
   return (
     <div className="h-full w-full rounded-xl overflow-hidden shadow border border-gray-200">
       <MapContainer 
@@ -45,6 +58,7 @@ export default function Map({ center, zoom = 13, markers = [] }: MapProps) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <RecenterAutomatically lat={center[0]} lng={center[1]} />
+        <MapClickHandler onLocationSelect={onLocationSelect} />
         {markers.map((marker, idx) => (
           <Marker key={idx} position={[marker.lat, marker.lng]} icon={iconDefault}>
             <Popup>{marker.title}</Popup>
