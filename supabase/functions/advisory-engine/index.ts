@@ -24,7 +24,7 @@ Deno.serve(async (req) => {
     if (!geminiApiKey) throw new Error('GEMINI_API_KEY is missing from Edge Function secrets')
 
     const genAI = new GoogleGenerativeAI(geminiApiKey)
-    const model = genAI.getGenerativeModel({ model: "gemini-3.6-flash" })
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
 
     // 3. Generate Prompt
     const prompt = `
