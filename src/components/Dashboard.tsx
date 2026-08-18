@@ -3,11 +3,13 @@
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
 import DiagnosisUpload from './DiagnosisUpload';
-import { Leaf, Droplets, Thermometer, Wind, Sprout } from 'lucide-react';
+import { Leaf, Droplets, Thermometer, Wind, Sprout, Activity } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useVoice } from '@/hooks/useVoice';
 import { useFieldData } from '@/hooks/useFieldData';
 import { useAdvisory } from '@/hooks/useAdvisory';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 // Dynamically import map with SSR disabled to prevent Leaflet window errors
 const Map = dynamic(() => import('./Map'), { ssr: false });
@@ -28,99 +30,131 @@ export default function Dashboard() {
   const { advisory, loading: advisoryLoading } = useAdvisory(fieldData, 'wheat', 'en');
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Header */}
-      <header className="bg-green-700 text-white p-4 shadow-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Sprout className="w-6 h-6" />
-            <h1 className="text-xl font-bold">AgriSetu</h1>
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-green-200">
+      {/* Premium Header */}
+      <header className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto flex items-center justify-between p-4 lg:px-8">
+          <div className="flex items-center gap-3">
+            <div className="bg-gradient-to-br from-green-500 to-emerald-600 text-white p-2 rounded-xl shadow-lg shadow-green-500/20">
+              <Sprout className="w-6 h-6" />
+            </div>
+            <h1 className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-green-700 to-emerald-600 tracking-tight">
+              AgriSetu
+            </h1>
           </div>
-          <div className="text-sm bg-green-800 px-3 py-1 rounded-full">
-            {t('title') || 'Welcome'}
+          <div className="text-xs font-semibold uppercase tracking-widest bg-green-50 text-green-700 px-4 py-2 rounded-full border border-green-100">
+            {t('title') || 'AI Dashboard'}
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="flex-grow p-4 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <main className="flex-grow p-4 lg:p-8 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* Left Column: Map */}
-        <section className="lg:col-span-2 flex flex-col gap-6">
-          <div className="h-[40vh] lg:h-[500px]">
-            <Map 
-              center={center} 
-              zoom={14} 
-              markers={markers} 
-              onLocationSelect={(lat, lng) => setCenter([lat, lng])} 
-            />
+        {/* Left Column: Map & Advisory */}
+        <section className="lg:col-span-2 flex flex-col gap-8">
+          
+          {/* Interactive Map */}
+          <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden ring-1 ring-gray-900/5 relative">
+            <div className="absolute top-4 left-4 z-[400] bg-white/90 backdrop-blur px-4 py-2 rounded-full text-xs font-bold text-gray-700 shadow-sm border border-gray-100 flex items-center gap-2 pointer-events-none">
+              <Activity className="w-4 h-4 text-emerald-500" /> Live Field Data
+            </div>
+            <div className="h-[40vh] lg:h-[450px]">
+              <Map 
+                center={center} 
+                zoom={14} 
+                markers={markers} 
+                onLocationSelect={(lat, lng) => setCenter([lat, lng])} 
+              />
+            </div>
           </div>
 
           {/* AI Advisory Card */}
-          <div className="bg-white rounded-xl shadow p-6 border border-green-100">
-            <div className="flex justify-between items-start mb-4">
-              <h2 className="text-lg font-bold text-gray-800">Current AI Advisory</h2>
+          <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 lg:p-8 relative overflow-hidden group">
+            <div className="absolute top-0 left-0 w-1 bg-gradient-to-b from-green-400 to-emerald-600 h-full"></div>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                <span className="bg-emerald-100 text-emerald-700 p-1.5 rounded-lg"><Sprout className="w-5 h-5"/></span>
+                Real-Time AI Advisory
+              </h2>
               {isSupported && advisory && !advisoryLoading && (
                 <button 
                   onClick={() => speak(advisory, 'en-IN')}
-                  className="text-sm bg-green-50 text-green-700 px-3 py-1 rounded-full font-medium hover:bg-green-100 transition"
+                  className="text-sm bg-gray-50 hover:bg-emerald-50 text-gray-700 hover:text-emerald-700 border border-gray-200 hover:border-emerald-200 px-4 py-2 rounded-full font-medium transition-all shadow-sm"
                 >
-                  Listen 🔊
+                  Listen Audio 🔊
                 </button>
               )}
             </div>
-            <div className="text-gray-700 leading-relaxed bg-green-50/50 p-4 rounded-lg border border-green-50">
+            
+            <div className="text-gray-700 leading-relaxed bg-gradient-to-br from-emerald-50/50 to-teal-50/30 p-6 rounded-2xl border border-emerald-100/50 min-h-[150px]">
               {advisoryLoading ? (
-                <div className="flex items-center text-green-600">
+                <div className="flex items-center">
                   <div className="animate-pulse flex space-x-4 w-full">
-                    <div className="flex-1 space-y-4 py-1">
-                      <div className="h-4 bg-green-200 rounded w-3/4"></div>
-                      <div className="space-y-2">
-                        <div className="h-4 bg-green-200 rounded"></div>
-                        <div className="h-4 bg-green-200 rounded w-5/6"></div>
+                    <div className="flex-1 space-y-5 py-1">
+                      <div className="h-3 bg-emerald-200/50 rounded w-3/4"></div>
+                      <div className="space-y-3">
+                        <div className="h-3 bg-emerald-200/50 rounded"></div>
+                        <div className="h-3 bg-emerald-200/50 rounded w-5/6"></div>
+                        <div className="h-3 bg-emerald-200/50 rounded w-4/6"></div>
                       </div>
                     </div>
                   </div>
                 </div>
               ) : (
-                <p>{advisory || "Waiting for field data to generate advisory..."}</p>
+                <div className="prose prose-emerald prose-sm sm:prose-base max-w-none prose-headings:font-bold prose-headings:text-gray-800 prose-p:text-gray-600 prose-li:text-gray-600 prose-strong:text-emerald-800">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {advisory || "📍 **Drop a pin on the map** to generate a location-specific AI advisory based on real-time weather and soil data."}
+                  </ReactMarkdown>
+                </div>
               )}
             </div>
           </div>
         </section>
 
         {/* Right Column: Stats & Diagnostics */}
-        <section className="flex flex-col gap-6">
+        <section className="flex flex-col gap-8">
           
           {/* Quick Stats Grid */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white p-4 rounded-xl shadow border border-gray-100 flex flex-col items-center text-center">
-              <Leaf className="w-6 h-6 text-green-500 mb-2" />
-              <span className="text-2xl font-bold text-gray-800">
-                {loading ? '...' : fieldData?.ndvi.toFixed(2)}
+            <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 flex flex-col hover:shadow-md transition-shadow group">
+              <div className="bg-green-50 w-10 h-10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Leaf className="w-5 h-5 text-green-600" />
+              </div>
+              <span className="text-2xl font-black text-gray-800 mb-1">
+                {loading ? '—' : fieldData?.ndvi.toFixed(2)}
               </span>
-              <span className="text-xs text-gray-500 uppercase tracking-wide">NDVI (Health)</span>
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">NDVI Health</span>
             </div>
-            <div className="bg-white p-4 rounded-xl shadow border border-gray-100 flex flex-col items-center text-center">
-              <Droplets className="w-6 h-6 text-blue-500 mb-2" />
-              <span className="text-2xl font-bold text-gray-800">
-                {loading ? '...' : `${fieldData?.soil.moisture}%`}
+            
+            <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 flex flex-col hover:shadow-md transition-shadow group">
+              <div className="bg-blue-50 w-10 h-10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Droplets className="w-5 h-5 text-blue-600" />
+              </div>
+              <span className="text-2xl font-black text-gray-800 mb-1">
+                {loading ? '—' : `${fieldData?.soil.moisture}%`}
               </span>
-              <span className="text-xs text-gray-500 uppercase tracking-wide">Soil Moisture</span>
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Soil Moisture</span>
             </div>
-            <div className="bg-white p-4 rounded-xl shadow border border-gray-100 flex flex-col items-center text-center">
-              <Thermometer className="w-6 h-6 text-orange-500 mb-2" />
-              <span className="text-2xl font-bold text-gray-800">
-                {loading ? '...' : `${fieldData?.weather.temperature}°C`}
+
+            <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 flex flex-col hover:shadow-md transition-shadow group">
+              <div className="bg-orange-50 w-10 h-10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Thermometer className="w-5 h-5 text-orange-600" />
+              </div>
+              <span className="text-2xl font-black text-gray-800 mb-1">
+                {loading ? '—' : `${fieldData?.weather.temperature}°C`}
               </span>
-              <span className="text-xs text-gray-500 uppercase tracking-wide">Temperature</span>
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Temperature</span>
             </div>
-            <div className="bg-white p-4 rounded-xl shadow border border-gray-100 flex flex-col items-center text-center">
-              <Wind className="w-6 h-6 text-teal-500 mb-2" />
-              <span className="text-2xl font-bold text-gray-800">
-                {loading ? '...' : fieldData?.soil.pH.toFixed(1)}
+
+            <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 flex flex-col hover:shadow-md transition-shadow group">
+              <div className="bg-teal-50 w-10 h-10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Wind className="w-5 h-5 text-teal-600" />
+              </div>
+              <span className="text-2xl font-black text-gray-800 mb-1">
+                {loading ? '—' : fieldData?.soil.pH.toFixed(1)}
               </span>
-              <span className="text-xs text-gray-500 uppercase tracking-wide">Soil pH</span>
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Soil pH</span>
             </div>
           </div>
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -45,8 +45,39 @@ interface MapProps {
 }
 
 export default function Map({ center, zoom = 13, markers = [], onLocationSelect }: MapProps) {
+  
+  const DraggableMarker = ({ marker }: { marker: { lat: number; lng: number; title: string } }) => {
+    const markerRef = useRef<any>(null);
+    const eventHandlers = useMemo(
+      () => ({
+        dragend() {
+          const marker = markerRef.current;
+          if (marker != null) {
+            const position = marker.getLatLng();
+            if (onLocationSelect) {
+              onLocationSelect(position.lat, position.lng);
+            }
+          }
+        },
+      }),
+      [],
+    );
+
+    return (
+      <Marker 
+        position={[marker.lat, marker.lng]} 
+        icon={iconDefault}
+        draggable={true}
+        eventHandlers={eventHandlers}
+        ref={markerRef}
+      >
+        <Popup>{marker.title} (Drag me!)</Popup>
+      </Marker>
+    );
+  };
+
   return (
-    <div className="h-full w-full rounded-xl overflow-hidden shadow border border-gray-200">
+    <div className="h-full w-full bg-gray-50">
       <MapContainer 
         center={center} 
         zoom={zoom} 
@@ -60,9 +91,7 @@ export default function Map({ center, zoom = 13, markers = [], onLocationSelect 
         <RecenterAutomatically lat={center[0]} lng={center[1]} />
         <MapClickHandler onLocationSelect={onLocationSelect} />
         {markers.map((marker, idx) => (
-          <Marker key={idx} position={[marker.lat, marker.lng]} icon={iconDefault}>
-            <Popup>{marker.title}</Popup>
-          </Marker>
+          <DraggableMarker key={idx} marker={marker} />
         ))}
       </MapContainer>
     </div>
