@@ -7,6 +7,7 @@ import { Leaf, Droplets, Thermometer, Wind, Sprout } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useVoice } from '@/hooks/useVoice';
 import { useFieldData } from '@/hooks/useFieldData';
+import { useAdvisory } from '@/hooks/useAdvisory';
 
 // Dynamically import map with SSR disabled to prevent Leaflet window errors
 const Map = dynamic(() => import('./Map'), { ssr: false });
@@ -22,8 +23,9 @@ export default function Dashboard() {
   
   // Fetch live real-time data
   const { data: fieldData, loading } = useFieldData(center[0], center[1]);
-
-  const dummyAdvisory = "Your wheat crop is currently healthy with an NDVI of 0.65. Given the upcoming rain tomorrow, avoid applying nitrogen fertilizer today to prevent runoff. The soil moisture is optimal at 24%.";
+  
+  // Fetch AI Advisory
+  const { advisory, loading: advisoryLoading } = useAdvisory(fieldData, 'wheat', 'en');
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -58,18 +60,32 @@ export default function Dashboard() {
           <div className="bg-white rounded-xl shadow p-6 border border-green-100">
             <div className="flex justify-between items-start mb-4">
               <h2 className="text-lg font-bold text-gray-800">Current AI Advisory</h2>
-              {isSupported && (
+              {isSupported && advisory && !advisoryLoading && (
                 <button 
-                  onClick={() => speak(dummyAdvisory, 'en-IN')}
+                  onClick={() => speak(advisory, 'en-IN')}
                   className="text-sm bg-green-50 text-green-700 px-3 py-1 rounded-full font-medium hover:bg-green-100 transition"
                 >
                   Listen 🔊
                 </button>
               )}
             </div>
-            <p className="text-gray-700 leading-relaxed bg-green-50/50 p-4 rounded-lg border border-green-50">
-              {dummyAdvisory}
-            </p>
+            <div className="text-gray-700 leading-relaxed bg-green-50/50 p-4 rounded-lg border border-green-50">
+              {advisoryLoading ? (
+                <div className="flex items-center text-green-600">
+                  <div className="animate-pulse flex space-x-4 w-full">
+                    <div className="flex-1 space-y-4 py-1">
+                      <div className="h-4 bg-green-200 rounded w-3/4"></div>
+                      <div className="space-y-2">
+                        <div className="h-4 bg-green-200 rounded"></div>
+                        <div className="h-4 bg-green-200 rounded w-5/6"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <p>{advisory || "Waiting for field data to generate advisory..."}</p>
+              )}
+            </div>
           </div>
         </section>
 
