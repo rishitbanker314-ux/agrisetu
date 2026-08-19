@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from 'https://esm.sh/@google/generative-ai@0.14.1'
+import { GoogleGenerativeAI } from 'https://esm.sh/@google/generative-ai@0.21.0'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -24,7 +24,7 @@ Deno.serve(async (req) => {
     if (!geminiApiKey) throw new Error('GEMINI_API_KEY is missing from Edge Function secrets')
 
     const genAI = new GoogleGenerativeAI(geminiApiKey)
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
+    const model = genAI.getGenerativeModel({ model: "gemini-robotics-er-2-preview" })
 
     // 3. Generate Prompt
     const prompt = `
