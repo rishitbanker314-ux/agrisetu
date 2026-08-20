@@ -1,18 +1,21 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
+import type { User } from '@supabase/supabase-js';
 import DiagnosisUpload from './DiagnosisUpload';
 import VoiceCopilot from './VoiceCopilot';
 import MarketInsights from './MarketInsights';
 import ClimateAlerts from './ClimateAlerts';
 import SustainabilityScore from './SustainabilityScore';
-import { Leaf, Droplets, Thermometer, Wind, Sprout, Activity } from 'lucide-react';
+import { Leaf, Droplets, Thermometer, Wind, Sprout, Activity, LogOut, User as UserIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useFieldData } from '@/hooks/useFieldData';
 import { useAdvisory } from '@/hooks/useAdvisory';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import Link from 'next/link';
 
 // Dynamically import map with SSR disabled to prevent Leaflet window errors
 const Map = dynamic(() => import('./Map'), { ssr: false });
@@ -20,6 +23,21 @@ const Map = dynamic(() => import('./Map'), { ssr: false });
 export default function Dashboard() {
   const t = useTranslations('Index'); // Example of using next-intl
   
+  // Auth state
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   // Dummy data for scaffolding - this will eventually be hydrated from Supabase
   const [fieldId] = useState('demo-field-123');
   const [center, setCenter] = useState<[number, number]>([28.6139, 77.2090]); // New Delhi default
@@ -30,6 +48,10 @@ export default function Dashboard() {
   
   // Fetch AI Advisory
   const { advisory, loading: advisoryLoading } = useAdvisory(fieldData, 'wheat', 'en');
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+  };
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-green-200">
@@ -44,8 +66,40 @@ export default function Dashboard() {
               AgriSetu
             </h1>
           </div>
-          <div className="text-xs font-semibold uppercase tracking-widest bg-green-50 text-green-700 px-4 py-2 rounded-full border border-green-100">
-            {t('title') || 'AI Dashboard'}
+          <div className="flex items-center gap-4">
+            <div className="text-xs font-semibold uppercase tracking-widest bg-green-50 text-green-700 px-4 py-2 rounded-full border border-green-100 hidden md:block">
+              {t('title') || 'AI Dashboard'}
+            </div>
+            
+            {/* Auth UI */}
+            {user ? (
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 bg-gray-50 border border-gray-100 px-3 py-1.5 rounded-full">
+                  {user.user_metadata?.avatar_url ? (
+                    <img src={user.user_metadata.avatar_url} alt="Avatar" className="w-6 h-6 rounded-full" />
+                  ) : (
+                    <UserIcon className="w-4 h-4 text-gray-500" />
+                  )}
+                  <span className="text-sm font-semibold text-gray-700 hidden sm:block">
+                    {user.user_metadata?.full_name || user.email}
+                  </span>
+                </div>
+                <button 
+                  onClick={handleSignOut}
+                  className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                  title="Sign Out"
+                >
+                  <LogOut className="w-5 h-5" />
+                </button>
+              </div>
+            ) : (
+              <Link 
+                href="/en/login" 
+                className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold py-2 px-5 rounded-full transition-colors shadow-sm"
+              >
+                Sign In
+              </Link>
+            )}
           </div>
         </div>
       </header>
