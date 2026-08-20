@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polygon, useMap, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -64,15 +64,36 @@ export default function Map({ center, zoom = 13, markers = [], onLocationSelect 
     );
 
     return (
-      <Marker 
-        position={[marker.lat, marker.lng]} 
-        icon={iconDefault}
-        draggable={true}
-        eventHandlers={eventHandlers}
-        ref={markerRef}
-      >
-        <Popup>{marker.title} (Drag me!)</Popup>
-      </Marker>
+      <>
+        <Marker 
+          position={[marker.lat, marker.lng]} 
+          icon={iconDefault}
+          draggable={true}
+          eventHandlers={eventHandlers}
+          ref={markerRef}
+        >
+          <Popup>{marker.title} (Drag me!)</Popup>
+        </Marker>
+        {/* Simulated Field Boundary for NDVI */}
+        <Polygon 
+          positions={[
+            [marker.lat + 0.005, marker.lng - 0.005],
+            [marker.lat + 0.005, marker.lng + 0.005],
+            [marker.lat - 0.005, marker.lng + 0.005],
+            [marker.lat - 0.005, marker.lng - 0.005]
+          ]}
+          pathOptions={{ color: 'transparent', fillColor: '#10b981', fillOpacity: 0.4 }}
+        />
+        <Polygon 
+          positions={[
+            [marker.lat + 0.002, marker.lng - 0.002],
+            [marker.lat + 0.002, marker.lng + 0.002],
+            [marker.lat - 0.002, marker.lng + 0.002],
+            [marker.lat - 0.002, marker.lng - 0.002]
+          ]}
+          pathOptions={{ color: 'transparent', fillColor: '#ef4444', fillOpacity: 0.5 }}
+        />
+      </>
     );
   };
 
