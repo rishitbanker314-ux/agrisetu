@@ -119,69 +119,62 @@ export default function VoiceCopilot({ fieldData, crop }: VoiceCopilotProps) {
   }
 
   return (
-    <div className="bg-gradient-to-br from-indigo-900 to-purple-900 rounded-3xl p-6 shadow-lg text-white relative overflow-hidden group">
-      <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob"></div>
-      <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
+    <div className="bg-gray-800 rounded-md p-6 shadow-sm border-2 border-gray-900 text-white relative flex flex-col h-full">
       
-      <div className="relative z-10 flex flex-col h-full justify-between">
+      <div className="flex flex-col h-full justify-between">
         <div className="flex justify-between items-start mb-4">
           <div>
-            <h3 className="text-xl font-bold flex items-center gap-2">
-              Voice Copilot
+            <h3 className="text-xl font-black flex items-center gap-2">
+              VOICE COPILOT
             </h3>
-            <p className="text-indigo-200 text-sm mt-1">Ask any agronomy question</p>
+            <p className="text-gray-400 text-sm font-bold mt-1 uppercase tracking-widest">Ask any agronomy question</p>
           </div>
           
           <button 
             onClick={toggleListening}
-            className={`p-4 rounded-full shadow-lg transition-all \${
+            className={`p-4 rounded-sm border-2 border-gray-900 shadow-sm transition-all \${
               isListening 
-                ? 'bg-red-500 hover:bg-red-600 animate-pulse ring-4 ring-red-500/30' 
-                : 'bg-indigo-500 hover:bg-indigo-600 hover:scale-105'
+                ? 'bg-red-600 hover:bg-red-700 animate-pulse' 
+                : 'bg-green-600 hover:bg-green-700'
             }`}
           >
-            {isListening ? <MicOff className="w-6 h-6" /> : <Mic className="w-6 h-6" />}
+            {isListening ? <MicOff className="w-6 h-6 text-white" /> : <Mic className="w-6 h-6 text-white" />}
           </button>
         </div>
 
-        <div className="bg-black/20 rounded-2xl p-4 min-h-[100px] border border-white/10 backdrop-blur-sm flex flex-col justify-end">
-          {error && <p className="text-red-400 text-sm font-medium">{error}</p>}
+        <div className="bg-gray-900 rounded-sm p-4 min-h-[100px] border-2 border-gray-700 flex flex-col justify-end">
+          {error && <p className="text-red-400 text-sm font-bold">{error}</p>}
           
           {isListening && (
-            <div className="flex items-center gap-2 text-indigo-300 text-sm font-medium animate-pulse">
-              <div className="flex gap-1">
-                <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></span>
-                <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style={{animationDelay: '150ms'}}></span>
-                <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style={{animationDelay: '300ms'}}></span>
-              </div>
-              Listening...
+            <div className="flex items-center gap-2 text-green-400 text-sm font-black animate-pulse">
+              LISTENING...
             </div>
           )}
 
           {isProcessing && (
-            <div className="flex items-center gap-2 text-indigo-300 text-sm font-medium">
+            <div className="flex items-center gap-2 text-blue-400 text-sm font-black">
               <Loader2 className="w-4 h-4 animate-spin" />
-              AI is analyzing...
+              ANALYZING...
             </div>
           )}
 
           {!isListening && !isProcessing && transcript && (
-            <div className="mb-2">
-              <p className="text-xs text-indigo-300 uppercase tracking-wider font-bold mb-1">You asked:</p>
-              <p className="text-sm italic text-white/90">"{transcript}"</p>
+            <div className="mb-3">
+              <p className="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">YOU ASKED:</p>
+              <p className="text-sm font-medium text-gray-300">"{transcript}"</p>
             </div>
           )}
 
           {!isListening && !isProcessing && response && (
-            <div className="mt-2 border-t border-white/10 pt-2">
-               <p className="text-xs text-emerald-400 uppercase tracking-wider font-bold mb-1 flex items-center gap-1"><Volume2 className="w-3 h-3"/> AI replied:</p>
-               <p className="text-sm text-white font-medium leading-relaxed">{response}</p>
+            <div className="mt-2 border-t-2 border-gray-700 pt-3">
+               <p className="text-xs text-green-500 uppercase tracking-wider font-bold mb-1 flex items-center gap-1"><Volume2 className="w-3 h-3"/> AI REPLIED:</p>
+               <p className="text-sm text-white font-bold leading-relaxed">{response}</p>
             </div>
           )}
           
           {!isListening && !isProcessing && !transcript && !error && (
-            <p className="text-sm text-white/50 text-center my-auto">
-              Tap the microphone and ask: "Is it safe to add fertilizer today?"
+            <p className="text-sm text-gray-500 font-bold text-center my-auto">
+              TAP THE MICROPHONE TO SPEAK
             </p>
           )}
         </div>

@@ -17,7 +17,7 @@ Deno.serve(async (req) => {
     if (!geminiApiKey) throw new Error('GEMINI_API_KEY is missing')
 
     const genAI = new GoogleGenerativeAI(geminiApiKey)
-    const model = genAI.getGenerativeModel({ model: "gemini-robotics-er-2-preview" })
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
 
     const prompt = `
       You are an agricultural commodities expert providing a real-time market report.

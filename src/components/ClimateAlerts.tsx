@@ -65,28 +65,27 @@ export default function ClimateAlerts({ fieldData }: { fieldData?: LiveFieldData
 
   return (
     <>
-      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 relative overflow-hidden group h-full flex flex-col justify-between">
-        <div className="absolute top-0 right-0 w-1 bg-gradient-to-b from-orange-400 to-red-600 h-full"></div>
+      <div className="bg-white rounded-md shadow-sm border-2 border-gray-300 p-6 flex flex-col h-full">
         
-        <div className="flex justify-between items-start mb-4">
-          <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-            <span className="bg-orange-100 text-orange-700 p-1.5 rounded-lg"><BellRing className="w-5 h-5"/></span>
-            Climate Shock Alerts
+        <div className="flex justify-between items-center mb-4 border-b-2 border-gray-100 pb-4">
+          <h3 className="text-xl font-black text-gray-900 flex items-center gap-2">
+            <BellRing className="w-6 h-6 text-orange-700"/>
+            CLIMATE SHOCK ALERTS
           </h3>
-          <span className="text-xs font-semibold bg-gray-100 text-gray-600 px-2 py-1 rounded-full uppercase tracking-wider">SMS / WA</span>
+          <span className="text-xs font-bold bg-orange-100 text-orange-800 px-2 py-1 rounded-sm uppercase tracking-widest border border-orange-200">SMS / WA</span>
         </div>
 
         <div className="flex-grow flex flex-col justify-center">
-          <p className="text-sm text-gray-600 mb-4 leading-relaxed">
+          <p className="text-sm font-bold text-gray-600 mb-4 leading-relaxed">
             Get instant early warnings for extreme weather events (frost, drought, floods) directly on your mobile device.
           </p>
           
           {isSubscribed ? (
-            <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4 flex items-center gap-3">
-              <CheckCircle className="w-6 h-6 text-emerald-500 flex-shrink-0" />
+            <div className="bg-green-50 border-2 border-green-200 rounded-sm p-4 flex items-center gap-3">
+              <CheckCircle className="w-6 h-6 text-green-700 flex-shrink-0" />
               <div>
-                <p className="text-sm font-bold text-emerald-800">Successfully Subscribed</p>
-                <p className="text-xs text-emerald-600">
+                <p className="text-sm font-black text-green-900">SUCCESSFULLY SUBSCRIBED</p>
+                <p className="text-xs font-bold text-green-700">
                   {activeAlert ? "We detected an alert for your region! Sending now." : "No immediate threats detected for your region."}
                 </p>
               </div>
@@ -95,14 +94,14 @@ export default function ClimateAlerts({ fieldData }: { fieldData?: LiveFieldData
             <button 
               onClick={handleSubscribe}
               disabled={isLoading}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-700 text-white font-black py-3 px-4 rounded-sm border-2 border-orange-800 shadow-sm transition-all disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
               ) : (
                 <>
                   <Smartphone className="w-5 h-5" />
-                  Enable Mobile Alerts
+                  ENABLE MOBILE ALERTS
                 </>
               )}
             </button>
@@ -112,20 +111,20 @@ export default function ClimateAlerts({ fieldData }: { fieldData?: LiveFieldData
 
       {/* Dynamic Toast Notification (Only shows if a real alert exists) */}
       <div className={`fixed top-6 right-6 z-[9999] transition-all duration-500 transform \${showAlert && activeAlert ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'}`}>
-        <div className="bg-white border-l-4 border-red-500 shadow-2xl rounded-xl p-4 max-w-sm flex gap-3 relative">
-          <button onClick={() => setShowAlert(false)} className="absolute top-2 right-2 text-gray-400 hover:text-gray-600">
+        <div className="bg-white border-4 border-red-700 shadow-lg rounded-sm p-4 max-w-sm flex gap-3 relative">
+          <button onClick={() => setShowAlert(false)} className="absolute top-2 right-2 text-gray-500 hover:text-gray-900">
             <X className="w-4 h-4" />
           </button>
-          <div className="bg-red-100 p-2 rounded-full h-fit flex-shrink-0">
-            <AlertTriangle className="w-6 h-6 text-red-600" />
+          <div className="bg-red-100 border border-red-200 p-2 rounded-sm h-fit flex-shrink-0">
+            <AlertTriangle className="w-6 h-6 text-red-700" />
           </div>
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-bold bg-green-500 text-white px-1.5 py-0.5 rounded uppercase">WhatsApp</span>
-              <span className="text-xs text-gray-500">Just now</span>
+              <span className="text-xs font-black bg-green-600 text-white px-1.5 py-0.5 rounded-sm uppercase tracking-widest">WhatsApp</span>
+              <span className="text-xs font-bold text-gray-500 uppercase">Just now</span>
             </div>
-            <p className="text-sm font-bold text-gray-900 mb-1">{activeAlert?.title}</p>
-            <p className="text-sm text-gray-600 leading-snug">
+            <p className="text-sm font-black text-gray-900 mb-1">{activeAlert?.title}</p>
+            <p className="text-sm font-bold text-gray-700 leading-snug">
               {activeAlert?.message}
             </p>
           </div>

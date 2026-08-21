@@ -39,41 +39,40 @@ export default function SustainabilityScore({ fieldData }: { fieldData?: LiveFie
   }, [score]);
 
   return (
-    <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 relative overflow-hidden group h-full flex flex-col justify-between">
-      <div className="absolute top-0 right-0 w-1 bg-gradient-to-b from-emerald-400 to-teal-600 h-full"></div>
+    <div className="bg-white rounded-md shadow-sm border-2 border-gray-300 p-6 flex flex-col h-full">
       
-      <div className="flex justify-between items-start mb-4">
-        <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-          <span className="bg-emerald-100 text-emerald-700 p-1.5 rounded-lg"><Leaf className="w-5 h-5"/></span>
-          Sustainability
+      <div className="flex justify-between items-center mb-4 border-b-2 border-gray-100 pb-4">
+        <h3 className="text-xl font-black text-gray-900 flex items-center gap-2">
+          <Leaf className="w-6 h-6 text-green-700"/>
+          SUSTAINABILITY
         </h3>
-        <span className="text-xs font-semibold bg-gray-100 text-gray-600 px-2 py-1 rounded-full uppercase tracking-wider">ESG Score</span>
+        <span className="text-xs font-bold bg-green-100 text-green-800 px-2 py-1 rounded-sm uppercase tracking-widest border border-green-200">ESG Score</span>
       </div>
 
-      <div className="flex-grow flex flex-col justify-center gap-6">
+      <div className="flex-grow flex flex-col justify-center gap-6 bg-gray-50 border border-gray-200 rounded-sm p-5">
         
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-end gap-2">
-              <span className={`text-4xl font-black \${score >= 75 ? 'text-emerald-500' : score >= 50 ? 'text-yellow-500' : 'text-red-500'}`}>
+              <span className={`text-4xl font-black \${score >= 75 ? 'text-green-700' : score >= 50 ? 'text-yellow-600' : 'text-red-700'}`}>
                 {score}
               </span>
-              <span className="text-sm font-bold text-gray-400 mb-1">/ 100</span>
+              <span className="text-sm font-bold text-gray-500 mb-1">/ 100</span>
             </div>
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Farm ESG Score</p>
+            <p className="text-xs font-bold text-gray-600 uppercase tracking-widest mt-1">Farm ESG Score</p>
           </div>
           
-          <div className="bg-teal-50 border border-teal-100 rounded-2xl p-3 text-right min-w-[120px]">
-            <p className="text-xs font-bold text-teal-800 uppercase tracking-wider mb-1 flex justify-end items-center gap-1">
-              <Wind className="w-3 h-3" /> Carbon Value
+          <div className="bg-teal-50 border-2 border-teal-200 rounded-sm p-3 text-right min-w-[120px]">
+            <p className="text-xs font-bold text-teal-900 uppercase tracking-wider mb-1 flex justify-end items-center gap-1">
+              <Wind className="w-3 h-3" /> CARBON VALUE
             </p>
-            <p className="text-xl font-black text-teal-600">${carbonCreditsValue}</p>
+            <p className="text-xl font-black text-teal-700">${carbonCreditsValue}</p>
           </div>
         </div>
 
         <div className="space-y-4">
           <div>
-            <div className="flex justify-between text-xs font-bold text-gray-500 mb-1">
+            <div className="flex justify-between text-xs font-bold text-gray-700 mb-1 uppercase tracking-widest">
               <span>Nitrogen Fertilizer</span>
               <span>{fertilizer} kg/ha</span>
             </div>
@@ -83,12 +82,12 @@ export default function SustainabilityScore({ fieldData }: { fieldData?: LiveFie
               max="250" 
               value={fertilizer} 
               onChange={(e) => setFertilizer(Number(e.target.value))}
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+              className="w-full h-2 bg-gray-300 rounded-none appearance-none cursor-pointer accent-green-700"
             />
           </div>
 
           <div>
-            <div className="flex justify-between text-xs font-bold text-gray-500 mb-1">
+            <div className="flex justify-between text-xs font-bold text-gray-700 mb-1 uppercase tracking-widest">
               <span>Water Usage</span>
               <span>{water} mm</span>
             </div>
@@ -98,7 +97,7 @@ export default function SustainabilityScore({ fieldData }: { fieldData?: LiveFie
               max="800" 
               value={water} 
               onChange={(e) => setWater(Number(e.target.value))}
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
+              className="w-full h-2 bg-gray-300 rounded-none appearance-none cursor-pointer accent-blue-700"
             />
           </div>
         </div>
