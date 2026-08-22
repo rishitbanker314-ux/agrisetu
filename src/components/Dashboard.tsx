@@ -9,6 +9,8 @@ import VoiceCopilot from './VoiceCopilot';
 import MarketInsights from './MarketInsights';
 import ClimateAlerts from './ClimateAlerts';
 import SustainabilityScore from './SustainabilityScore';
+import ForecastChart from './ForecastChart';
+import LocationSearch from './LocationSearch';
 import { Leaf, Droplets, Thermometer, Wind, Sprout, Activity, LogOut, User as UserIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useFieldData } from '@/hooks/useFieldData';
@@ -46,8 +48,11 @@ export default function Dashboard() {
   // Fetch live real-time data
   const { data: fieldData, loading } = useFieldData(center[0], center[1]);
   
+  // Crop selection state
+  const [crop, setCrop] = useState('wheat');
+  
   // Fetch AI Advisory
-  const { advisory, loading: advisoryLoading } = useAdvisory(fieldData, 'wheat', 'en');
+  const { advisory, loading: advisoryLoading } = useAdvisory(fieldData, crop, 'en');
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -135,9 +140,27 @@ export default function Dashboard() {
             
             {/* Interactive Map */}
             <div className="bg-white rounded-md shadow-sm border-2 border-gray-300 overflow-hidden relative">
-              <div className="absolute top-4 left-4 z-[400] bg-white border-2 border-gray-900 px-4 py-2 rounded-sm text-xs font-black text-gray-900 shadow-sm flex items-center gap-2 pointer-events-none">
-                <Activity className="w-4 h-4 text-green-700" /> LIVE FIELD SELECTION
+              <div className="absolute top-4 left-4 z-[400] flex items-center gap-2">
+                <div className="bg-white border-2 border-gray-900 px-4 py-2 rounded-sm text-xs font-black text-gray-900 shadow-sm flex items-center gap-2 pointer-events-none">
+                  <Activity className="w-4 h-4 text-green-700" /> LIVE FIELD SELECTION
+                </div>
+                
+                <select 
+                  value={crop}
+                  onChange={(e) => setCrop(e.target.value)}
+                  className="bg-white border-2 border-gray-900 px-3 py-2 rounded-sm text-xs font-black text-gray-900 shadow-sm cursor-pointer outline-none focus:border-green-700 uppercase"
+                >
+                  <option value="wheat">Wheat</option>
+                  <option value="rice">Rice</option>
+                  <option value="corn">Corn</option>
+                  <option value="cotton">Cotton</option>
+                  <option value="sugarcane">Sugarcane</option>
+                  <option value="soybean">Soybean</option>
+                </select>
               </div>
+
+              <LocationSearch onLocationFound={(lat, lng) => setCenter([lat, lng])} />
+
               <div className="h-[40vh] lg:h-[400px]">
                 <Map 
                   center={center} 
@@ -177,13 +200,8 @@ export default function Dashboard() {
 
               {/* Voice Copilot */}
               <div className="h-full">
-                <VoiceCopilot fieldData={fieldData} crop="wheat" />
+                <VoiceCopilot fieldData={fieldData} crop={crop} />
               </div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-               <MarketInsights center={center} crop="wheat" />
-               <SustainabilityScore fieldData={fieldData} />
             </div>
 
           </section>
@@ -232,17 +250,31 @@ export default function Dashboard() {
               </span>
               <span className="text-xs font-bold text-gray-600 uppercase tracking-widest">Soil pH</span>
             </div>
-          </div>
+            </div>
           
-          <ClimateAlerts fieldData={fieldData} />
+            <ForecastChart fieldData={fieldData} />
+            <ClimateAlerts fieldData={fieldData} />
 
-          {/* Diagnostic Upload */}
-          <div className="flex-grow">
-            <DiagnosisUpload fieldId={fieldId} />
-          </div>
+          </section>
+        </div>
 
+        {/* Bottom Row: Market, Sustainability, Diagnostics */}
+        <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+           <MarketInsights center={center} crop={crop} />
+           <SustainabilityScore fieldData={fieldData} />
+           <DiagnosisUpload fieldId={fieldId} />
         </section>
-      </div>
+
+        {/* Footer */}
+        <footer className="mt-8 border-t-2 border-gray-200 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-bold text-gray-500 uppercase tracking-widest">
+          <p>© 2026 AgriSetu — BRICS Agricultural Innovation</p>
+          <div className="flex gap-4">
+            <span>Next.js</span>
+            <span>Supabase</span>
+            <span>Gemini AI</span>
+            <span>Leaflet</span>
+          </div>
+        </footer>
       </main>
     </div>
   );

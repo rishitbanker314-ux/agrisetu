@@ -24,35 +24,32 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4">
-      <div className="bg-white max-w-md w-full rounded-3xl shadow-xl overflow-hidden border border-gray-100">
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+      <div className="bg-white max-w-md w-full rounded-sm shadow-sm border-2 border-gray-300 overflow-hidden">
         
         {/* Header */}
-        <div className="bg-gradient-to-r from-emerald-600 to-teal-700 p-8 text-center relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
-          <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full blur-xl -ml-8 -mb-8"></div>
-          
-          <div className="bg-white/20 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 backdrop-blur-md border border-white/30 shadow-inner">
-            <Leaf className="w-8 h-8 text-white" />
+        <div className="bg-green-800 border-b-4 border-green-900 p-8 text-center relative">
+          <div className="bg-white border-2 border-green-900 w-16 h-16 rounded-sm flex items-center justify-center mx-auto mb-4 shadow-sm">
+            <Leaf className="w-8 h-8 text-green-800" />
           </div>
-          <h1 className="text-3xl font-black text-white tracking-tight">AgriSetu</h1>
-          <p className="text-emerald-100 text-sm font-medium mt-2">BRICS Agricultural Intelligence</p>
+          <h1 className="text-3xl font-black text-white tracking-tight uppercase">AgriSetu</h1>
+          <p className="text-green-100 text-sm font-bold mt-2 uppercase tracking-widest">BRICS Agricultural Intelligence</p>
         </div>
 
         {/* Body */}
-        <div className="p-8">
+        <div className="p-8 bg-gray-50">
           <div className="text-center mb-8">
-            <h2 className="text-xl font-bold text-gray-800">Welcome Back</h2>
-            <p className="text-gray-500 text-sm mt-1">Sign in to access your farm dashboard</p>
+            <h2 className="text-xl font-black text-gray-900 uppercase">Welcome Back</h2>
+            <p className="text-gray-500 text-sm mt-1 font-bold">Sign in to access your farm dashboard</p>
           </div>
 
           <button
             onClick={handleGoogleLogin}
             disabled={isLoading}
-            className="w-full flex items-center justify-center gap-3 bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-700 font-bold py-3 px-4 rounded-xl shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-100 text-gray-900 font-black uppercase tracking-widest py-3 px-4 rounded-sm shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? (
-              <div className="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-5 h-5 border-2 border-green-700 border-t-transparent rounded-full animate-spin"></div>
             ) : (
               <>
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -67,9 +64,9 @@ export default function LoginPage() {
             )}
           </button>
 
-          <div className="mt-8 pt-6 border-t border-gray-100 flex items-center justify-center gap-2 text-xs text-gray-400 font-medium">
-            <ShieldCheck className="w-4 h-4 text-emerald-500" />
-            Secure authentication via Supabase
+          <div className="mt-8 pt-6 border-t-2 border-gray-200 flex items-center justify-center gap-2 text-xs text-gray-500 font-bold uppercase tracking-widest">
+            <ShieldCheck className="w-4 h-4 text-green-700" />
+            Secure Auth via Supabase
           </div>
         </div>
       </div>

@@ -142,7 +142,7 @@ export default function VoiceCopilot({ fieldData, crop }: VoiceCopilotProps) {
           </button>
         </div>
 
-        <div className="bg-gray-900 rounded-sm p-4 min-h-[100px] border-2 border-gray-700 flex flex-col justify-end">
+        <div className="bg-gray-900 rounded-sm p-4 min-h-[80px] border-2 border-gray-700 flex flex-col justify-end">
           {error && <p className="text-red-400 text-sm font-bold">{error}</p>}
           
           {isListening && (

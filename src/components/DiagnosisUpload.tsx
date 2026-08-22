@@ -59,57 +59,55 @@ export default function DiagnosisUpload({ fieldId }: DiagnosisUploadProps) {
   }, [fieldId]);
 
   return (
-    <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 lg:p-8 h-full flex flex-col relative overflow-hidden group">
-      <div className="absolute top-0 right-0 w-1 bg-gradient-to-b from-blue-400 to-indigo-600 h-full"></div>
-      <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2 mb-6">
-        <span className="bg-blue-100 text-blue-700 p-1.5 rounded-lg"><ImagePlus className="w-5 h-5"/></span>
-        Crop Disease Diagnostic
-      </h3>
+    <div className="bg-white rounded-md shadow-sm border-2 border-gray-300 p-6 flex flex-col h-full relative overflow-hidden">
+      <div className="flex justify-between items-center mb-4 border-b-2 border-gray-100 pb-4">
+        <h3 className="text-xl font-black text-gray-900 flex items-center gap-2">
+          <ImagePlus className="w-6 h-6 text-purple-700"/>
+          CROP DISEASE DIAGNOSTIC
+        </h3>
+        <span className="text-xs font-bold bg-purple-100 text-purple-800 px-2 py-1 rounded-sm uppercase tracking-widest border border-purple-200">Vision AI</span>
+      </div>
       
       {!diagnosis && !isUploading && (
-        <label className="flex-grow flex flex-col items-center justify-center w-full min-h-[16rem] border-2 border-dashed border-blue-200 bg-blue-50/30 rounded-2xl cursor-pointer hover:bg-blue-50/80 hover:border-blue-400 transition-all duration-300">
+        <label className="flex-grow flex flex-col items-center justify-center w-full min-h-[16rem] border-4 border-dashed border-gray-300 bg-gray-50 rounded-sm cursor-pointer hover:bg-gray-100 hover:border-gray-400 transition-all duration-300">
           <div className="flex flex-col items-center justify-center pt-5 pb-6">
-            <div className="bg-white p-4 rounded-full shadow-sm mb-4">
-              <UploadCloud className="w-8 h-8 text-blue-500" />
+            <div className="bg-white p-3 rounded-sm border-2 border-gray-200 mb-4">
+              <UploadCloud className="w-8 h-8 text-gray-700" />
             </div>
-            <p className="mb-2 text-sm text-gray-600 font-medium">Click to upload or drag & drop</p>
-            <p className="text-xs text-gray-400">JPG, PNG up to 10MB</p>
+            <p className="mb-2 text-sm text-gray-900 font-bold uppercase tracking-widest">Click to upload image</p>
+            <p className="text-xs font-bold text-gray-500">JPG, PNG up to 10MB</p>
           </div>
           <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
         </label>
       )}
 
       {isUploading && (
-        <div className="flex-grow flex flex-col items-center justify-center w-full min-h-[16rem] bg-indigo-50/30 rounded-2xl border border-indigo-100">
-          <div className="relative mb-6">
-            <div className="absolute inset-0 bg-indigo-400 blur-xl opacity-20 rounded-full"></div>
-            <Loader2 className="w-10 h-10 text-indigo-600 animate-spin relative" />
-          </div>
-          <p className="text-sm font-semibold text-indigo-800 animate-pulse">Gemini Vision AI is analyzing...</p>
+        <div className="flex-grow flex flex-col items-center justify-center w-full min-h-[16rem] bg-gray-50 border-2 border-gray-200 rounded-sm">
+          <Loader2 className="w-10 h-10 text-purple-700 animate-spin mb-4" />
+          <p className="text-sm font-bold text-gray-500 uppercase tracking-widest">Vision AI is analyzing...</p>
         </div>
       )}
 
       {error && (
-        <div className="mt-4 p-5 bg-red-50 border border-red-100 text-red-700 rounded-2xl flex items-start shadow-sm">
-          <AlertTriangle className="w-5 h-5 mr-3 flex-shrink-0 mt-0.5" />
-          <span className="text-sm font-medium">{error}</span>
+        <div className="mt-4 p-4 bg-red-50 border-2 border-red-200 text-red-700 rounded-sm flex items-start shadow-sm">
+          <AlertTriangle className="w-5 h-5 mr-3 flex-shrink-0" />
+          <span className="text-sm font-bold">{error}</span>
         </div>
       )}
 
       {diagnosis && (
-        <div className="flex-grow flex flex-col justify-center bg-gradient-to-br from-indigo-50/50 to-blue-50/30 border border-indigo-100 rounded-2xl p-6">
-          <div className="flex items-center mb-3">
-            <CheckCircle className="w-6 h-6 text-indigo-600 mr-2" />
-            <h4 className="font-bold text-lg text-gray-900">{diagnosis.disease_label}</h4>
-          </div>
-          
-          <div className="mb-4">
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800">
+        <div className="flex-grow flex flex-col bg-gray-50 border-2 border-gray-200 rounded-sm p-5">
+          <div className="flex items-center justify-between mb-4 border-b-2 border-gray-200 pb-3">
+            <div className="flex items-center gap-2">
+              <CheckCircle className="w-5 h-5 text-green-700" />
+              <h4 className="font-black text-lg text-gray-900 uppercase">{diagnosis.disease_label}</h4>
+            </div>
+            <span className="inline-flex items-center px-2 py-1 rounded-sm text-xs font-bold bg-green-100 text-green-800 border border-green-200 uppercase tracking-widest">
               Confidence: {(diagnosis.confidence * 100).toFixed(1)}%
             </span>
           </div>
 
-          <div className="text-sm text-gray-700 bg-white/60 backdrop-blur-sm p-4 rounded-xl border border-white shadow-sm prose prose-sm prose-indigo">
+          <div className="text-sm text-gray-700 bg-white p-4 rounded-sm border-2 border-gray-200 prose prose-sm max-w-none">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {diagnosis.treatment_advice}
             </ReactMarkdown>
@@ -117,9 +115,9 @@ export default function DiagnosisUpload({ fieldId }: DiagnosisUploadProps) {
           
           <button 
             onClick={() => setDiagnosis(null)}
-            className="mt-6 w-full text-center text-sm font-semibold text-indigo-600 bg-white border border-indigo-200 py-3 rounded-xl hover:bg-indigo-50 transition-colors shadow-sm"
+            className="mt-4 w-full text-center text-sm font-black text-gray-900 bg-white border-2 border-gray-300 py-3 rounded-sm hover:bg-gray-100 transition-colors uppercase tracking-widest"
           >
-            Analyze another image
+            Analyze Another Image
           </button>
         </div>
       )}

@@ -98,12 +98,13 @@ export default function Map({ center, zoom = 13, markers = [], onLocationSelect 
   };
 
   return (
-    <div className="h-full w-full bg-gray-50">
+    <div className="h-full w-full bg-gray-50 relative">
       <MapContainer 
         center={center} 
         zoom={zoom} 
         style={{ height: '100%', width: '100%', zIndex: 0 }}
-        scrollWheelZoom={false}
+        scrollWheelZoom={true}
+        zoomControl={true}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/">OSM</a>'
@@ -115,6 +116,18 @@ export default function Map({ center, zoom = 13, markers = [], onLocationSelect 
           <DraggableMarker key={idx} marker={marker} />
         ))}
       </MapContainer>
+      {/* NDVI Legend */}
+      <div className="absolute bottom-3 left-3 z-[1000] bg-white border-2 border-gray-300 rounded-sm p-2 text-xs font-bold shadow-sm">
+        <p className="text-gray-900 uppercase tracking-wider mb-1.5 text-[10px]">Field Health</p>
+        <div className="flex items-center gap-1.5 mb-1">
+          <span className="w-3 h-3 bg-green-500 rounded-sm inline-block border border-green-700"></span>
+          <span className="text-gray-700">Healthy (High NDVI)</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-3 h-3 bg-red-500 rounded-sm inline-block border border-red-700"></span>
+          <span className="text-gray-700">Stressed (Low NDVI)</span>
+        </div>
+      </div>
     </div>
   );
 }

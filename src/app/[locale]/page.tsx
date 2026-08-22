@@ -1,7 +1,7 @@
-import Dashboard from "@/components/Dashboard";
+import HeroLanding from "@/components/HeroLanding";
 
 export default function Home() {
   return (
-    <Dashboard />
+    <HeroLanding />
   );
 }

@@ -109,27 +109,29 @@ export default function ClimateAlerts({ fieldData }: { fieldData?: LiveFieldData
         </div>
       </div>
 
-      {/* Dynamic Toast Notification (Only shows if a real alert exists) */}
-      <div className={`fixed top-6 right-6 z-[9999] transition-all duration-500 transform \${showAlert && activeAlert ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'}`}>
-        <div className="bg-white border-4 border-red-700 shadow-lg rounded-sm p-4 max-w-sm flex gap-3 relative">
-          <button onClick={() => setShowAlert(false)} className="absolute top-2 right-2 text-gray-500 hover:text-gray-900">
-            <X className="w-4 h-4" />
-          </button>
-          <div className="bg-red-100 border border-red-200 p-2 rounded-sm h-fit flex-shrink-0">
-            <AlertTriangle className="w-6 h-6 text-red-700" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-black bg-green-600 text-white px-1.5 py-0.5 rounded-sm uppercase tracking-widest">WhatsApp</span>
-              <span className="text-xs font-bold text-gray-500 uppercase">Just now</span>
+      {/* Dynamic Toast Notification — only renders when triggered */}
+      {showAlert && activeAlert && (
+        <div className="fixed top-6 right-6 z-[9999] animate-slide-in">
+          <div className="bg-white border-4 border-green-700 shadow-lg rounded-sm p-4 max-w-sm flex gap-3 relative">
+            <button onClick={() => setShowAlert(false)} className="absolute top-2 right-2 text-gray-500 hover:text-gray-900">
+              <X className="w-4 h-4" />
+            </button>
+            <div className="bg-green-100 border border-green-200 p-2 rounded-sm h-fit flex-shrink-0">
+              <AlertTriangle className="w-6 h-6 text-green-700" />
             </div>
-            <p className="text-sm font-black text-gray-900 mb-1">{activeAlert?.title}</p>
-            <p className="text-sm font-bold text-gray-700 leading-snug">
-              {activeAlert?.message}
-            </p>
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-xs font-black bg-green-600 text-white px-1.5 py-0.5 rounded-sm uppercase tracking-widest">WhatsApp</span>
+                <span className="text-xs font-bold text-gray-500 uppercase">Just now</span>
+              </div>
+              <p className="text-sm font-black text-gray-900 mb-1">{activeAlert.title}</p>
+              <p className="text-sm font-bold text-gray-700 leading-snug">
+                {activeAlert.message}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </>
   );
 }
