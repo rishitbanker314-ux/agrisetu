@@ -40,6 +40,12 @@ export default function Dashboard() {
         return;
       }
       
+      // Ensure profile exists to avoid FK constraint errors when inserting fields
+      await supabase.from('profiles').upsert({ 
+        id: user.id,
+        role: 'farmer' // Provide a default valid role 
+      }, { onConflict: 'id' });
+
       const { data, error } = await supabase
         .from('fields')
         .select('*')
