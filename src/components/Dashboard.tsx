@@ -25,10 +25,40 @@ export default function Dashboard() {
   }, []);
 
   // Shared State
-  const [fieldId] = useState('demo-field-123');
+  const [fieldId, setFieldId] = useState('demo-field-123');
   const [center, setCenter] = useState<[number, number]>([28.6139, 77.2090]); // New Delhi default
   const [crop, setCrop] = useState('wheat');
   const [dateOffset, setDateOffset] = useState(0);
+  
+  // Fields state
+  const [savedFields, setSavedFields] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function loadFields() {
+      if (!user) {
+        setSavedFields([]);
+        return;
+      }
+      
+      const { data, error } = await supabase
+        .from('fields')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+        
+      if (error) {
+        console.error('Error fetching fields:', error);
+      } else if (data && data.length > 0) {
+        setSavedFields(data);
+        // If we just loaded and this is the first time, center on the first field
+        setCenter([data[0].lat, data[0].lng]);
+        setFieldId(data[0].id);
+        if (data[0].crop) setCrop(data[0].crop);
+      }
+    }
+    
+    loadFields();
+  }, [user]);
 
   // Fetch real-time data
   const { data: fieldData, loading } = useFieldData(center[0], center[1]);
@@ -53,6 +83,36 @@ export default function Dashboard() {
           advisory={advisory || ""}
           advisoryLoading={advisoryLoading}
           fieldId={fieldId}
+          savedFields={savedFields}
+          onSaveField={async () => {
+            if (!user) {
+              alert("Please log in to save fields.");
+              return;
+            }
+            const newName = `New Field - ${new Date().toLocaleDateString()}`;
+            const { data, error } = await supabase.from('fields').insert({
+              user_id: user.id,
+              name: newName,
+              lat: center[0],
+              lng: center[1],
+              crop: crop,
+              area: 0,
+              status: 'active'
+            }).select().single();
+            
+            if (error) {
+              console.error(error);
+              alert("Failed to save field");
+            } else if (data) {
+              setSavedFields(prev => [data, ...prev]);
+              setFieldId(data.id);
+            }
+          }}
+          onSelectField={(field) => {
+            setCenter([field.lat, field.lng]);
+            setFieldId(field.id);
+            if (field.crop) setCrop(field.crop);
+          }}
         />
       </main>
     </div>

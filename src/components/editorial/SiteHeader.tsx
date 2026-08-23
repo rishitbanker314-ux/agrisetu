@@ -1,13 +1,28 @@
 'use client';
 
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
+import type { User } from '@supabase/supabase-js';
 
 export default function SiteHeader() {
   const { scrollY } = useScroll();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   useMotionValueEvent(scrollY, 'change', (latest) => {
     setIsScrolled(latest > 50);
@@ -62,15 +77,30 @@ export default function SiteHeader() {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-6">
-            <motion.a
-              href="/en/login"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1 }}
-              className="text-sm font-sans text-ink hover:text-moss transition-colors"
-            >
-              Log in
-            </motion.a>
+            {!user ? (
+              <motion.a
+                href="/en/login"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1 }}
+                className="text-sm font-sans text-ink hover:text-moss transition-colors"
+              >
+                Log in
+              </motion.a>
+            ) : (
+              <motion.a
+                href="/en/dashboard"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1 }}
+                className="text-sm font-sans text-ink hover:text-moss transition-colors flex items-center gap-2"
+              >
+                <div className="w-6 h-6 rounded-full bg-moss/20 flex items-center justify-center text-moss text-xs border border-moss/30">
+                  {user.email?.charAt(0).toUpperCase() || 'U'}
+                </div>
+                Dashboard
+              </motion.a>
+            )}
             <motion.a
               href="/en/dashboard"
               initial={{ opacity: 0, scale: 0.95 }}
@@ -124,7 +154,16 @@ export default function SiteHeader() {
             </a>
           ))}
           <div className="h-[1px] w-full bg-soft-line my-4"></div>
-          <a href="/en/login" className="text-lg font-sans text-ink">Log in</a>
+          {!user ? (
+            <a href="/en/login" className="text-lg font-sans text-ink">Log in</a>
+          ) : (
+            <a href="/en/dashboard" className="text-lg font-sans text-ink flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-moss/20 flex items-center justify-center text-moss text-sm border border-moss/30">
+                {user.email?.charAt(0).toUpperCase() || 'U'}
+              </div>
+              Dashboard
+            </a>
+          )}
           <a href="/en/dashboard" className="bg-deep-forest text-paper-ivory text-center py-4 rounded-full text-lg font-sans w-full">
             Open the field view &rarr;
           </a>

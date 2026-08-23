@@ -22,6 +22,9 @@ interface MapWorkspaceProps {
   advisory: string;
   advisoryLoading: boolean;
   fieldId: string;
+  savedFields?: any[];
+  onSaveField?: () => void;
+  onSelectField?: (field: any) => void;
 }
 
 export default function MapWorkspace({
@@ -34,7 +37,10 @@ export default function MapWorkspace({
   crop,
   advisory,
   advisoryLoading,
-  fieldId
+  fieldId,
+  savedFields = [],
+  onSaveField,
+  onSelectField
 }: MapWorkspaceProps) {
   
   const [mapStyle, setMapStyle] = useState<'street' | 'satellite'>('street');
@@ -67,12 +73,37 @@ export default function MapWorkspace({
         <Map 
           center={center} 
           zoom={14} 
-          markers={[{ lat: center[0], lng: center[1], title: 'Selected Field' }]} 
-          onLocationSelect={(lat, lng) => setCenter([lat, lng])} 
+          markers={savedFields.map(f => ({ id: f.id, lat: f.lat, lng: f.lng, title: f.name }))}
+          activeMarker={{ lat: center[0], lng: center[1] }}
+          onLocationSelect={(lat, lng) => {
+            const existingField = savedFields.find(f => Math.abs(f.lat - lat) < 0.0001 && Math.abs(f.lng - lng) < 0.0001);
+            if (existingField && onSelectField) {
+              onSelectField(existingField);
+            } else {
+              setCenter([lat, lng]);
+            }
+          }} 
           temporalNdvi={temporalNdvi}
           mapStyle={mapStyle}
         />
       </div>
+
+      {/* Floating Save Button if location is new */}
+      {!savedFields.find(f => Math.abs(f.lat - center[0]) < 0.0001 && Math.abs(f.lng - center[1]) < 0.0001) && onSaveField && (
+        <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-[500] pointer-events-auto">
+          <button
+            onClick={onSaveField}
+            className="bg-deep-forest text-white px-6 py-2.5 rounded-full shadow-lg font-medium text-sm hover:bg-moss hover:scale-105 transition-all flex items-center gap-2"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            Save Field Location
+          </button>
+        </div>
+      )}
 
       {/* Floating Bottom Controls (Above Drawer) */}
       <TemporalSlider dateOffset={dateOffset} setDateOffset={setDateOffset} maxDays={89} />

@@ -41,7 +41,8 @@ function MapClickHandler({ onLocationSelect }: { onLocationSelect?: (lat: number
 interface MapProps {
   center: [number, number];
   zoom?: number;
-  markers?: Array<{ lat: number; lng: number; title: string }>;
+  markers?: Array<{ id?: string; lat: number; lng: number; title: string }>;
+  activeMarker?: { lat: number; lng: number };
   onLocationSelect?: (lat: number, lng: number) => void;
   temporalNdvi?: number;
   mapStyle?: 'street' | 'satellite';
@@ -55,7 +56,7 @@ function getNdviColor(ndvi: number) {
   return '#ef4444'; // Red
 }
 
-export default function Map({ center, zoom = 13, markers = [], onLocationSelect, temporalNdvi = 0.5, mapStyle = 'street' }: MapProps) {
+export default function Map({ center, zoom = 13, markers = [], activeMarker, onLocationSelect, temporalNdvi = 0.5, mapStyle = 'street' }: MapProps) {
   const [isLegendOpen, setIsLegendOpen] = useState(false);
   
   const DraggableMarker = ({ marker }: { marker: { lat: number; lng: number; title: string } }) => {
@@ -134,8 +135,20 @@ export default function Map({ center, zoom = 13, markers = [], onLocationSelect,
         <RecenterAutomatically lat={center[0]} lng={center[1]} />
         <MapClickHandler onLocationSelect={onLocationSelect} />
         {markers.map((marker, idx) => (
-          <DraggableMarker key={idx} marker={marker} />
+          <Marker 
+            key={marker.id || idx} 
+            position={[marker.lat, marker.lng]} 
+            icon={iconDefault}
+            eventHandlers={{
+              click: () => onLocationSelect && onLocationSelect(marker.lat, marker.lng)
+            }}
+          >
+            <Popup>{marker.title}</Popup>
+          </Marker>
         ))}
+        {activeMarker && (
+          <DraggableMarker marker={{ lat: activeMarker.lat, lng: activeMarker.lng, title: 'Selected Location' }} />
+        )}
       </MapContainer>
       {/* Field Health Forecast Legend Toggle */}
       <div className="absolute bottom-8 left-4 z-[50] pointer-events-auto flex flex-col-reverse gap-2">
