@@ -38,7 +38,7 @@ export default function AppHeader({ user, crop, setCrop }: AppHeaderProps) {
   }, []);
 
   return (
-    <header className="bg-paper-ivory border-b border-soft-line z-50 flex items-center justify-between px-4 h-16 shrink-0 relative shadow-sm">
+    <header className="bg-paper-ivory border-b border-soft-line z-[9999] flex items-center justify-between px-4 h-16 shrink-0 relative shadow-sm">
       {/* Left side */}
       <div className="flex items-center gap-3">
         <button 

@@ -135,9 +135,9 @@ export default function Map({ center, zoom = 13, markers = [], onLocationSelect,
           <DraggableMarker key={idx} marker={marker} />
         ))}
       </MapContainer>
-      {/* NDVI Legend */}
-      <div className="absolute bottom-3 left-3 z-[1000] bg-white border-2 border-gray-300 rounded-sm p-2 text-xs font-bold shadow-sm">
-        <p className="text-gray-900 uppercase tracking-wider mb-1.5 text-[10px]">Field Health Forecast</p>
+      {/* Field Health Forecast Legend */}
+      <div className="absolute top-24 left-4 z-[50] pointer-events-auto bg-white/90 backdrop-blur-sm border border-soft-line rounded-lg p-3 text-xs shadow-lg">
+        <p className="text-deep-forest font-serif font-medium uppercase tracking-wider mb-2 text-[10px]">Field Health Forecast</p>
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center gap-1.5">
             <span className="w-3 h-3 bg-green-500 rounded-sm inline-block border border-green-700"></span>

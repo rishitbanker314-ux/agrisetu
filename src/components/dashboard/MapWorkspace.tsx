@@ -43,7 +43,7 @@ export default function MapWorkspace({
     <div className="relative flex-grow w-full h-full bg-paper-ivory overflow-hidden">
       
       {/* Floating Top Controls */}
-      <div className="absolute top-4 left-4 right-4 z-[400] flex justify-between items-start pointer-events-none gap-4">
+      <div className="absolute top-4 left-4 right-4 z-[500] flex justify-between items-start pointer-events-none gap-4">
         
         {/* Left Side: Search */}
         <div className="pointer-events-auto w-full max-w-sm">

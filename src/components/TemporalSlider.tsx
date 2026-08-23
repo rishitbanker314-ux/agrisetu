@@ -23,7 +23,7 @@ export default function TemporalSlider({ dateOffset, setDateOffset, maxDays = 90
   };
 
   return (
-    <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-[400] flex flex-col items-center w-full max-w-2xl px-4 pointer-events-none">
+    <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-[50] flex flex-col items-center w-full max-w-2xl px-4 pointer-events-none">
       
       <AnimatePresence>
         {isOpen && (
