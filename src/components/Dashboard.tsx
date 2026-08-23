@@ -43,7 +43,7 @@ export default function Dashboard() {
       const { data, error } = await supabase
         .from('fields')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('owner_id', user.id)
         .order('created_at', { ascending: false });
         
       if (error) {
@@ -91,7 +91,7 @@ export default function Dashboard() {
             }
             const newName = `New Field - ${new Date().toLocaleDateString()}`;
             const { data, error } = await supabase.from('fields').insert({
-              user_id: user.id,
+              owner_id: user.id,
               name: newName,
               lat: center[0],
               lng: center[1],
