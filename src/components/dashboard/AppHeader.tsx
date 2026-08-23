@@ -199,6 +199,7 @@ export default function AppHeader({ user, crop, setCrop }: AppHeaderProps) {
               <div className="p-4 flex-grow flex flex-col gap-2">
                 <Link href="/en/dashboard" className="px-4 py-2 bg-moss/10 text-moss font-medium rounded-md">Dashboard</Link>
                 <Link href="/en/fields" className="px-4 py-2 text-ink/70 hover:bg-moss/5 font-medium rounded-md">My Fields</Link>
+                <Link href="/en/field-notes" className="px-4 py-2 text-ink/70 hover:bg-moss/5 font-medium rounded-md">Field Notes</Link>
                 <Link href="/en/reports" className="px-4 py-2 text-ink/70 hover:bg-moss/5 font-medium rounded-md">Reports</Link>
                 <Link href="/en/settings" className="px-4 py-2 text-ink/70 hover:bg-moss/5 font-medium rounded-md">Settings</Link>
               </div>
