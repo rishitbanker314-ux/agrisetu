@@ -1,15 +1,35 @@
 'use client';
 
 import Link from 'next/link';
-import { Sprout, Map as MapIcon, Plus, ChevronRight, Settings } from 'lucide-react';
-
-const fields = [
-  { id: 1, name: 'North Field', crop: 'Wheat', area: '12.4 ha', status: 'Healthy', lastUpdate: '5m ago' },
-  { id: 2, name: 'West Field', crop: 'Corn', area: '8.2 ha', status: 'Water Stress', lastUpdate: '1h ago' },
-  { id: 3, name: 'Lowland Plot', crop: 'Rice', area: '15.1 ha', status: 'Harvest Ready', lastUpdate: '2h ago' },
-];
+import { Sprout, Map as MapIcon, Plus, ChevronRight, Settings, X } from 'lucide-react';
+import { useAppStore, Field } from '@/store/appStore';
+import { useState, useEffect } from 'react';
 
 export default function FieldsPage() {
+  const { fields, addField } = useAppStore();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // Hydration safety for Zustand persist
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => setIsMounted(true), []);
+
+  const handleAddField = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const newField: Field = {
+      id: Date.now().toString(),
+      name: formData.get('name') as string,
+      crop: formData.get('crop') as string,
+      area: (formData.get('area') as string) + ' ha',
+      status: 'Healthy',
+      lastUpdate: 'Just now'
+    };
+    addField(newField);
+    setIsModalOpen(false);
+  };
+
+  if (!isMounted) return null;
+
   return (
     <div className="min-h-screen bg-paper-ivory flex flex-col font-sans selection:bg-moss/30 selection:text-deep-forest">
       {/* Simple Header */}
@@ -21,19 +41,22 @@ export default function FieldsPage() {
         <div className="text-xs font-medium uppercase tracking-widest text-ink/50">My Fields</div>
       </header>
 
-      <main className="flex-grow p-6 md:p-12 max-w-6xl mx-auto w-full">
+      <main className="flex-grow p-6 md:p-12 max-w-6xl mx-auto w-full relative">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
             <h1 className="text-3xl md:text-4xl font-serif text-deep-forest font-medium tracking-tight mb-2">Registered Fields</h1>
             <p className="text-ink/60 max-w-xl leading-relaxed">Manage your agricultural plots, monitor crop cycles, and review historical performance data across all registered territories.</p>
           </div>
-          <button className="bg-deep-forest text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-moss transition-colors flex items-center gap-2 shadow-lg">
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="bg-deep-forest text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-moss transition-colors flex items-center gap-2 shadow-lg"
+          >
             <Plus className="w-4 h-4" /> Add New Field
           </button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {fields.map(field => (
+          {fields.map((field) => (
             <div key={field.id} className="bg-white border border-soft-line rounded-xl p-5 shadow-sm hover:shadow-lg transition-all group cursor-pointer relative overflow-hidden">
               <div className="absolute top-0 right-0 w-24 h-24 bg-moss/5 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
               
@@ -64,6 +87,37 @@ export default function FieldsPage() {
           ))}
         </div>
       </main>
+
+      {/* Add Field Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-ink/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+            <div className="flex justify-between items-center p-6 border-b border-soft-line">
+              <h2 className="text-2xl font-serif text-deep-forest">Register New Field</h2>
+              <button onClick={() => setIsModalOpen(false)} className="text-ink/40 hover:text-ink">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <form onSubmit={handleAddField} className="p-6 space-y-4">
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2">Field Name</label>
+                <input name="name" required placeholder="e.g., East Plot" className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2">Crop Type</label>
+                <input name="crop" required placeholder="e.g., Soybeans" className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" />
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2">Area (in Hectares)</label>
+                <input name="area" type="number" step="0.1" required placeholder="e.g., 10.5" className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" />
+              </div>
+              <button type="submit" className="w-full bg-deep-forest text-white py-3 rounded-md text-sm font-medium hover:bg-moss transition-colors mt-6">
+                Save Field
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

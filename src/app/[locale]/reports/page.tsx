@@ -1,16 +1,36 @@
 'use client';
 
 import Link from 'next/link';
-import { Sprout, FileText, Download, Calendar, Filter } from 'lucide-react';
-
-const reports = [
-  { id: 1, title: 'Rabi 2025 Yield Projection', type: 'Predictive Analysis', date: 'Oct 12, 2025', size: '2.4 MB' },
-  { id: 2, title: 'Weekly Climate Impact Report', type: 'Weather & Environment', date: 'Oct 10, 2025', size: '1.1 MB' },
-  { id: 3, title: 'Soil Nutrient Deficit Assessment', type: 'Soil Health', date: 'Sep 28, 2025', size: '3.8 MB' },
-  { id: 4, title: 'Pest Risk & Vulnerability Index', type: 'Risk Management', date: 'Sep 15, 2025', size: '1.5 MB' },
-];
+import { Sprout, FileText, Download, Calendar, Filter, Loader2 } from 'lucide-react';
+import { useAppStore, Report } from '@/store/appStore';
+import { useState, useEffect } from 'react';
 
 export default function ReportsPage() {
+  const { reports, addReport } = useAppStore();
+  const [isGenerating, setIsGenerating] = useState(false);
+  
+  // Hydration safety for Zustand persist
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => setIsMounted(true), []);
+
+  const handleGenerateReport = () => {
+    setIsGenerating(true);
+    // Simulate generation time
+    setTimeout(() => {
+      const newReport: Report = {
+        id: Date.now().toString(),
+        title: `Ad-hoc Drone Analysis #${Math.floor(Math.random() * 1000)}`,
+        type: 'On-Demand',
+        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        size: '1.2 MB'
+      };
+      addReport(newReport);
+      setIsGenerating(false);
+    }, 1500);
+  };
+
+  if (!isMounted) return null;
+
   return (
     <div className="min-h-screen bg-paper-ivory flex flex-col font-sans selection:bg-moss/30 selection:text-deep-forest">
       <header className="bg-white border-b border-soft-line z-[9999] flex items-center justify-between px-6 h-16 shrink-0 relative shadow-sm">
@@ -27,9 +47,19 @@ export default function ReportsPage() {
             <h1 className="text-3xl md:text-4xl font-serif text-deep-forest font-medium tracking-tight mb-2">Intelligence Reports</h1>
             <p className="text-ink/60 max-w-xl leading-relaxed">Download and review highly detailed satellite-derived analytics, soil assessments, and yield predictions.</p>
           </div>
-          <button className="bg-white border border-soft-line text-ink px-4 py-2 rounded-full text-sm font-medium hover:bg-moss/5 transition-colors flex items-center gap-2 shadow-sm">
-            <Filter className="w-4 h-4" /> Filter Reports
-          </button>
+          <div className="flex gap-3">
+            <button className="bg-white border border-soft-line text-ink px-4 py-2 rounded-full text-sm font-medium hover:bg-moss/5 transition-colors flex items-center gap-2 shadow-sm">
+              <Filter className="w-4 h-4" /> Filter
+            </button>
+            <button 
+              onClick={handleGenerateReport}
+              disabled={isGenerating}
+              className="bg-deep-forest text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-moss transition-colors flex items-center gap-2 shadow-sm disabled:opacity-50"
+            >
+              {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />} 
+              {isGenerating ? 'Generating...' : 'Generate New Report'}
+            </button>
+          </div>
         </div>
 
         <div className="bg-white border border-soft-line rounded-xl shadow-sm overflow-hidden">

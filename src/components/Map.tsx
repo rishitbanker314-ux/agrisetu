@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polygon, useMap, useMapEvents } from 'react-leaflet';
+import { Layers, ChevronDown, ChevronUp } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -55,6 +56,7 @@ function getNdviColor(ndvi: number) {
 }
 
 export default function Map({ center, zoom = 13, markers = [], onLocationSelect, temporalNdvi = 0.5, mapStyle = 'street' }: MapProps) {
+  const [isLegendOpen, setIsLegendOpen] = useState(false);
   
   const DraggableMarker = ({ marker }: { marker: { lat: number; lng: number; title: string } }) => {
     const markerRef = useRef<any>(null);
@@ -135,27 +137,40 @@ export default function Map({ center, zoom = 13, markers = [], onLocationSelect,
           <DraggableMarker key={idx} marker={marker} />
         ))}
       </MapContainer>
-      {/* Field Health Forecast Legend */}
-      <div className="absolute top-24 left-4 z-[50] pointer-events-auto bg-white/90 backdrop-blur-sm border border-soft-line rounded-lg p-3 text-xs shadow-lg">
-        <p className="text-deep-forest font-serif font-medium uppercase tracking-wider mb-2 text-[10px]">Field Health Forecast</p>
-        <div className="flex flex-col gap-1.5">
-          <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 bg-green-500 rounded-sm inline-block border border-green-700"></span>
-            <span className="text-gray-700 text-[10px]">Healthy (NDVI &gt; 0.6)</span>
+      {/* Field Health Forecast Legend Toggle */}
+      <div className="absolute top-24 left-4 z-[50] pointer-events-auto flex flex-col gap-2">
+        <button 
+          onClick={() => setIsLegendOpen(!isLegendOpen)}
+          className="bg-white/90 backdrop-blur-sm border border-soft-line rounded-lg p-2 shadow-lg hover:bg-white transition-colors flex items-center gap-2 group"
+          title="Toggle Health Legend"
+        >
+          <Layers className="w-5 h-5 text-deep-forest" />
+          {isLegendOpen ? <ChevronUp className="w-4 h-4 text-ink/50" /> : <ChevronDown className="w-4 h-4 text-ink/50" />}
+        </button>
+
+        {isLegendOpen && (
+          <div className="bg-white/90 backdrop-blur-sm border border-soft-line rounded-lg p-3 text-xs shadow-lg w-48 animate-in fade-in slide-in-from-top-2">
+            <p className="text-deep-forest font-serif font-medium uppercase tracking-wider mb-2 text-[10px]">Field Health Forecast</p>
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 bg-green-500 rounded-sm inline-block border border-green-700"></span>
+                <span className="text-gray-700 text-[10px]">Healthy (NDVI &gt; 0.6)</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 bg-yellow-500 rounded-sm inline-block border border-yellow-700"></span>
+                <span className="text-gray-700 text-[10px]">Mild Stress</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 bg-orange-500 rounded-sm inline-block border border-orange-700"></span>
+                <span className="text-gray-700 text-[10px]">Moderate Drought</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 bg-red-500 rounded-sm inline-block border border-red-700"></span>
+                <span className="text-gray-700 text-[10px]">Severe Drought</span>
+              </div>
+            </div>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 bg-yellow-500 rounded-sm inline-block border border-yellow-700"></span>
-            <span className="text-gray-700 text-[10px]">Mild Stress</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 bg-orange-500 rounded-sm inline-block border border-orange-700"></span>
-            <span className="text-gray-700 text-[10px]">Moderate Drought</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 bg-red-500 rounded-sm inline-block border border-red-700"></span>
-            <span className="text-gray-700 text-[10px]">Severe Drought</span>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

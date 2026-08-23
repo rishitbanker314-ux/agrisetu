@@ -2,8 +2,16 @@
 
 import Link from 'next/link';
 import { Sprout, User, Bell, CreditCard, Shield, Smartphone } from 'lucide-react';
+import { useAppStore } from '@/store/appStore';
+import { useState, useEffect } from 'react';
 
 export default function SettingsPage() {
+  const { settings, updateSettings } = useAppStore();
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => setIsMounted(true), []);
+
+  if (!isMounted) return null;
+
   return (
     <div className="min-h-screen bg-paper-ivory flex flex-col font-sans selection:bg-moss/30 selection:text-deep-forest">
       <header className="bg-white border-b border-soft-line z-[9999] flex items-center justify-between px-6 h-16 shrink-0 relative shadow-sm">
@@ -27,11 +35,21 @@ export default function SettingsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2">Full Name</label>
-                <input type="text" defaultValue="John Doe" className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" />
+                <input 
+                  type="text" 
+                  value={settings.name} 
+                  onChange={(e) => updateSettings({ name: e.target.value })}
+                  className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" 
+                />
               </div>
               <div>
                 <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2">Email Address</label>
-                <input type="email" defaultValue="john.doe@example.com" className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" />
+                <input 
+                  type="email" 
+                  value={settings.email}
+                  onChange={(e) => updateSettings({ email: e.target.value })} 
+                  className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" 
+                />
               </div>
             </div>
           </section>
@@ -53,7 +71,12 @@ export default function SettingsPage() {
                   </div>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" defaultChecked className="sr-only peer" />
+                  <input 
+                    type="checkbox" 
+                    checked={settings.whatsappAlerts}
+                    onChange={(e) => updateSettings({ whatsappAlerts: e.target.checked })} 
+                    className="sr-only peer" 
+                  />
                   <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-moss"></div>
                 </label>
               </div>
@@ -67,7 +90,12 @@ export default function SettingsPage() {
                   </div>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" defaultChecked className="sr-only peer" />
+                  <input 
+                    type="checkbox" 
+                    checked={settings.emailSummary}
+                    onChange={(e) => updateSettings({ emailSummary: e.target.checked })} 
+                    className="sr-only peer" 
+                  />
                   <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-moss"></div>
                 </label>
               </div>
