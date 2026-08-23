@@ -96,13 +96,13 @@ export default function Dashboard() {
               lat: center[0],
               lng: center[1],
               crop: crop,
-              area: 0,
+              area: '0',
               status: 'active'
             }).select().single();
             
             if (error) {
               console.error(error);
-              alert("Failed to save field");
+              alert(`Failed to save field: ${error.message || JSON.stringify(error)}`);
             } else if (data) {
               setSavedFields(prev => [data, ...prev]);
               setFieldId(data.id);
