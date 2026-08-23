@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polygon, useMap, useMapEvents } from 'react-leaflet';
-import { Layers, ChevronDown, ChevronUp } from 'lucide-react';
+import { Activity, ChevronDown, ChevronUp } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -138,14 +138,14 @@ export default function Map({ center, zoom = 13, markers = [], onLocationSelect,
         ))}
       </MapContainer>
       {/* Field Health Forecast Legend Toggle */}
-      <div className="absolute top-24 left-4 z-[50] pointer-events-auto flex flex-col gap-2">
+      <div className="absolute bottom-8 left-4 z-[50] pointer-events-auto flex flex-col-reverse gap-2">
         <button 
           onClick={() => setIsLegendOpen(!isLegendOpen)}
-          className="bg-white/90 backdrop-blur-sm border border-soft-line rounded-lg p-2 shadow-lg hover:bg-white transition-colors flex items-center gap-2 group"
+          className="bg-white/90 backdrop-blur-sm border border-soft-line rounded-lg p-2 shadow-lg hover:bg-white transition-colors flex items-center gap-2 group w-fit"
           title="Toggle Health Legend"
         >
-          <Layers className="w-5 h-5 text-deep-forest" />
-          {isLegendOpen ? <ChevronUp className="w-4 h-4 text-ink/50" /> : <ChevronDown className="w-4 h-4 text-ink/50" />}
+          <Activity className="w-5 h-5 text-deep-forest" />
+          {isLegendOpen ? <ChevronDown className="w-4 h-4 text-ink/50" /> : <ChevronUp className="w-4 h-4 text-ink/50" />}
         </button>
 
         {isLegendOpen && (

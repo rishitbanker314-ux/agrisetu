@@ -43,7 +43,7 @@ export default function AppHeader({ user, crop, setCrop }: AppHeaderProps) {
       <div className="flex items-center gap-3">
         <button 
           onClick={() => setIsMobileMenuOpen(true)}
-          className="md:hidden p-2 text-ink/70 hover:bg-moss/10 rounded-md"
+          className="p-2 text-ink/70 hover:bg-moss/10 rounded-md"
         >
           <Menu className="w-5 h-5" />
         </button>
@@ -183,14 +183,14 @@ export default function AppHeader({ user, crop, setCrop }: AppHeaderProps) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMobileMenuOpen(false)}
-              className="fixed inset-0 bg-ink/20 backdrop-blur-sm z-[9998] md:hidden"
+              className="fixed inset-0 bg-ink/20 backdrop-blur-sm z-[9998]"
             />
             <motion.div 
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-0 left-0 bottom-0 w-64 bg-paper-ivory border-r border-soft-line z-[9999] shadow-2xl flex flex-col md:hidden"
+              className="fixed top-0 left-0 bottom-0 w-64 bg-paper-ivory border-r border-soft-line z-[9999] shadow-2xl flex flex-col"
             >
               <div className="p-4 border-b border-soft-line flex items-center gap-2">
                 <Sprout className="w-6 h-6 text-moss" />
