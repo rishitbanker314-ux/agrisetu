@@ -8,7 +8,8 @@ import MarketScenarios from '../MarketScenarios';
 import DiagnosisUpload from '../DiagnosisUpload';
 import AcousticBiosphere from '../AcousticBiosphere';
 import SustainabilityScore from '../SustainabilityScore';
-import { Sprout, CloudRain, Bell, LineChart, Stethoscope, AudioWaveform, Globe } from 'lucide-react';
+import NDVIChart from '../NDVIChart';
+import { Sprout, CloudRain, Bell, LineChart, Stethoscope, AudioWaveform, Globe, Activity } from 'lucide-react';
 
 interface DrawerTabsProps {
   fieldData: any;
@@ -26,6 +27,7 @@ export default function DrawerTabs({ fieldData, crop, advisory, advisoryLoading,
     { id: 'forecast', label: 'Forecast', icon: CloudRain },
     { id: 'alerts', label: 'Alerts', icon: Bell },
     { id: 'market', label: 'Market futures', icon: LineChart },
+    { id: 'ndvi', label: 'NDVI Trends', icon: Activity },
     { id: 'diagnostics', label: 'Diagnostics', icon: Stethoscope },
     { id: 'biosphere', label: 'Acoustic biosphere', icon: AudioWaveform },
     { id: 'sustainability', label: 'Sustainability', icon: Globe },
@@ -82,6 +84,11 @@ export default function DrawerTabs({ fieldData, crop, advisory, advisoryLoading,
               <div className="bg-white rounded-lg border border-soft-line p-4">
                 <MarketScenarios crop={crop} />
               </div>
+            </div>
+          )}
+          {activeTab === 'ndvi' && (
+            <div className="h-full">
+              <NDVIChart fieldData={fieldData} />
             </div>
           )}
           {activeTab === 'diagnostics' && (

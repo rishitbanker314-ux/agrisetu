@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import dynamic from 'next/dynamic';
 import LocationSearch from '../LocationSearch';
+import WeatherWidget from '../WeatherWidget';
 import TemporalSlider from '../TemporalSlider';
 import BottomDrawer from './BottomDrawer';
 import { Layers } from 'lucide-react';
@@ -54,6 +55,7 @@ export default function MapWorkspace({
         {/* Left Side: Search */}
         <div className="pointer-events-auto w-full max-w-sm">
           <LocationSearch onLocationFound={(lat, lng) => setCenter([lat, lng])} />
+          <WeatherWidget fieldData={fieldData} />
         </div>
 
         {/* Right Side: Map Controls */}
