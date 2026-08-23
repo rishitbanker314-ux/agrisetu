@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import type { User } from '@supabase/supabase-js';
 import AppHeader from './dashboard/AppHeader';
@@ -9,6 +10,9 @@ import { useFieldData } from '@/hooks/useFieldData';
 import { useAdvisory } from '@/hooks/useAdvisory';
 
 export default function Dashboard() {
+  const searchParams = useSearchParams();
+  const initialFieldId = searchParams.get('fieldId');
+  
   // Auth state
   const [user, setUser] = useState<User | null>(null);
 
@@ -56,10 +60,15 @@ export default function Dashboard() {
         console.error('Error fetching fields:', error);
       } else if (data && data.length > 0) {
         setSavedFields(data);
-        // If we just loaded and this is the first time, center on the first field
-        setCenter([data[0].lat, data[0].lng]);
-        setFieldId(data[0].id);
-        if (data[0].crop) setCrop(data[0].crop);
+        
+        // Find if the requested field exists, otherwise default to first
+        const requestedField = initialFieldId ? data.find((f: any) => f.id === initialFieldId) : null;
+        const targetField = requestedField || data[0];
+        
+        // If we just loaded and this is the first time, center on the target field
+        setCenter([targetField.lat, targetField.lng]);
+        setFieldId(targetField.id);
+        if (targetField.crop) setCrop(targetField.crop);
       }
     }
     

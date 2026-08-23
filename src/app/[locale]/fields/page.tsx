@@ -120,7 +120,7 @@ export default function FieldsPage() {
                       {field.status}
                     </div>
                   </div>
-                  <Link href="/en/dashboard" className="w-8 h-8 rounded-full bg-paper-ivory flex items-center justify-center text-ink hover:bg-moss hover:text-white transition-colors">
+                  <Link href={`/en/dashboard?fieldId=${field.id}`} className="w-8 h-8 rounded-full bg-paper-ivory flex items-center justify-center text-ink hover:bg-moss hover:text-white transition-colors">
                     <ChevronRight className="w-4 h-4" />
                   </Link>
                 </div>

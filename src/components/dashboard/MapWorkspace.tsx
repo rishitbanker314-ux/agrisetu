@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import dynamic from 'next/dynamic';
 import LocationSearch from '../LocationSearch';
@@ -46,6 +46,21 @@ export default function MapWorkspace({
   
   const [mapStyle, setMapStyle] = useState<'street' | 'satellite'>('street');
 
+  useEffect(() => {
+    const saved = localStorage.getItem('mapStyle');
+    if (saved === 'satellite' || saved === 'street') {
+      setMapStyle(saved);
+    }
+  }, []);
+
+  const handleMapStyleToggle = () => {
+    setMapStyle(s => {
+      const next = s === 'street' ? 'satellite' : 'street';
+      localStorage.setItem('mapStyle', next);
+      return next;
+    });
+  };
+
   return (
     <div className="relative flex-grow w-full h-full bg-paper-ivory overflow-hidden">
       
@@ -61,7 +76,7 @@ export default function MapWorkspace({
         {/* Right Side: Map Controls */}
         <div className="pointer-events-auto flex flex-col gap-2 shrink-0">
           <button 
-            onClick={() => setMapStyle(s => s === 'street' ? 'satellite' : 'street')}
+            onClick={handleMapStyleToggle}
             className={`bg-white border border-soft-line p-2 rounded-md shadow-sm transition-colors text-ink \${mapStyle === 'satellite' ? 'bg-moss/10 border-moss text-moss' : 'hover:bg-moss/5'}`}
             title="Toggle Map Style"
           >
