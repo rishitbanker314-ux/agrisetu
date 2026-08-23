@@ -33,14 +33,16 @@ export default function SettingsPage() {
           .eq('id', user.id)
           .single();
 
-        if (profile) {
-          setSettings(prev => ({
-            ...prev,
-            name: profile.name || '',
-            phone: profile.phone || '',
-          }));
+          if (profile) {
+            setSettings(prev => ({
+              ...prev,
+              name: profile.name || '',
+              phone: profile.phone || '',
+              whatsappAlerts: profile.whatsapp_alerts || false,
+              emailSummary: profile.email_summary || false,
+            }));
+          }
         }
-      }
       setIsLoading(false);
     }
     loadProfile();
@@ -57,13 +59,29 @@ export default function SettingsPage() {
       .upsert({
         id: userId,
         name: settings.name,
-        phone: settings.phone
+        phone: settings.phone,
+        whatsapp_alerts: settings.whatsappAlerts,
+        email_summary: settings.emailSummary
       });
 
     setIsSaving(false);
     if (!error) {
       alert('Settings saved successfully!');
     }
+  };
+
+  const handleResetPassword = async () => {
+    if (!settings.email) return;
+    const { error } = await supabase.auth.resetPasswordForEmail(settings.email);
+    if (error) {
+      alert(`Error sending reset email: ${error.message}`);
+    } else {
+      alert('Password reset link sent to your email!');
+    }
+  };
+
+  const handleBilling = () => {
+    alert('Billing and subscriptions are currently managed directly through your account executive. Please contact support to upgrade or modify your plan.');
   };
 
   if (!isMounted) return null;
@@ -181,7 +199,12 @@ export default function SettingsPage() {
                   <h2 className="text-lg font-serif text-deep-forest font-medium">Security</h2>
                 </div>
                 <p className="text-sm text-ink/60 mb-4">Manage your password and secure your account with Supabase authentication.</p>
-                <button className="text-xs font-bold uppercase tracking-widest text-moss hover:text-deep-forest">Update Password &rarr;</button>
+                <button 
+                  onClick={handleResetPassword}
+                  className="text-xs font-bold uppercase tracking-widest text-moss hover:text-deep-forest transition-colors"
+                >
+                  Update Password &rarr;
+                </button>
               </div>
               
               <div className="bg-white border border-soft-line rounded-xl p-6 shadow-sm">
@@ -190,7 +213,12 @@ export default function SettingsPage() {
                   <h2 className="text-lg font-serif text-deep-forest font-medium">Subscription</h2>
                 </div>
                 <p className="text-sm text-ink/60 mb-4">You are currently on the <strong className="text-deep-forest">Enterprise Plan</strong>. Your next billing date is Nov 1, 2025.</p>
-                <button className="text-xs font-bold uppercase tracking-widest text-terracotta hover:text-deep-forest">Manage Billing &rarr;</button>
+                <button 
+                  onClick={handleBilling}
+                  className="text-xs font-bold uppercase tracking-widest text-terracotta hover:text-deep-forest transition-colors"
+                >
+                  Manage Billing &rarr;
+                </button>
               </div>
             </section>
             
