@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { BellRing, Smartphone, CheckCircle, AlertTriangle, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { LiveFieldData } from '@/hooks/useFieldData';
 
 export default function ClimateAlerts({ fieldData }: { fieldData?: LiveFieldData | null }) {
@@ -65,18 +66,18 @@ export default function ClimateAlerts({ fieldData }: { fieldData?: LiveFieldData
 
   return (
     <>
-      <div className="bg-white rounded-md shadow-sm border-2 border-gray-300 p-6 flex flex-col h-full">
+      <div className="flex flex-col h-full">
         
-        <div className="flex justify-between items-center mb-4 border-b-2 border-gray-100 pb-4">
-          <h3 className="text-xl font-black text-gray-900 flex items-center gap-2">
-            <BellRing className="w-6 h-6 text-orange-700"/>
-            CLIMATE SHOCK ALERTS
+        <div className="flex justify-between items-center mb-4 border-b border-soft-line pb-4">
+          <h3 className="text-lg font-sans font-medium text-deep-forest flex items-center gap-2">
+            <BellRing className="w-5 h-5 text-terracotta"/>
+            Live Alerts
           </h3>
-          <span className="text-xs font-bold bg-orange-100 text-orange-800 px-2 py-1 rounded-sm uppercase tracking-widest border border-orange-200">SMS / WA</span>
+          <span className="text-xs font-medium bg-terracotta/10 text-terracotta px-2 py-1 rounded-sm uppercase tracking-widest">SMS / WA</span>
         </div>
 
         <div className="flex-grow flex flex-col justify-center">
-          <p className="text-sm font-bold text-gray-600 mb-4 leading-relaxed">
+          <p className="text-sm text-ink/70 mb-4 leading-relaxed">
             Get instant early warnings for extreme weather events (frost, drought, floods) directly on your mobile device.
           </p>
           
@@ -110,28 +111,35 @@ export default function ClimateAlerts({ fieldData }: { fieldData?: LiveFieldData
       </div>
 
       {/* Dynamic Toast Notification — only renders when triggered */}
-      {showAlert && activeAlert && (
-        <div className="fixed top-6 right-6 z-[9999] animate-slide-in">
-          <div className="bg-white border-4 border-green-700 shadow-lg rounded-sm p-4 max-w-sm flex gap-3 relative">
-            <button onClick={() => setShowAlert(false)} className="absolute top-2 right-2 text-gray-500 hover:text-gray-900">
-              <X className="w-4 h-4" />
-            </button>
-            <div className="bg-green-100 border border-green-200 p-2 rounded-sm h-fit flex-shrink-0">
-              <AlertTriangle className="w-6 h-6 text-green-700" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs font-black bg-green-600 text-white px-1.5 py-0.5 rounded-sm uppercase tracking-widest">WhatsApp</span>
-                <span className="text-xs font-bold text-gray-500 uppercase">Just now</span>
+      <AnimatePresence>
+        {showAlert && activeAlert && (
+          <motion.div 
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0, transition: { duration: 0.5 } }}
+            exit={{ opacity: 0, x: 200, transition: { duration: 1.5, ease: "easeInOut" } }}
+            className="fixed top-6 right-4 left-4 md:left-auto md:right-6 z-[9999] max-w-sm mx-auto"
+          >
+            <div className="bg-white border-4 border-green-700 shadow-2xl rounded-sm p-4 w-full flex gap-3 relative">
+              <button onClick={() => setShowAlert(false)} className="absolute top-2 right-2 text-gray-500 hover:text-gray-900 transition-colors">
+                <X className="w-4 h-4" />
+              </button>
+              <div className="bg-green-100 border border-green-200 p-2 rounded-sm h-fit flex-shrink-0">
+                <AlertTriangle className="w-6 h-6 text-green-700" />
               </div>
-              <p className="text-sm font-black text-gray-900 mb-1">{activeAlert.title}</p>
-              <p className="text-sm font-bold text-gray-700 leading-snug">
-                {activeAlert.message}
-              </p>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-xs font-black bg-green-600 text-white px-1.5 py-0.5 rounded-sm uppercase tracking-widest">WhatsApp</span>
+                  <span className="text-xs font-bold text-gray-500 uppercase">Just now</span>
+                </div>
+                <p className="text-sm font-black text-gray-900 mb-1">{activeAlert.title}</p>
+                <p className="text-sm font-bold text-gray-700 leading-snug">
+                  {activeAlert.message}
+                </p>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

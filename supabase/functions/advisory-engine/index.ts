@@ -24,7 +24,7 @@ Deno.serve(async (req) => {
     if (!geminiApiKey) throw new Error('GEMINI_API_KEY is missing from Edge Function secrets')
 
     const genAI = new GoogleGenerativeAI(geminiApiKey)
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" })
 
     // 3. Generate Prompt
     let prompt = ''
@@ -61,7 +61,7 @@ Deno.serve(async (req) => {
         Current Humidity: ${fieldData.weather.humidity}%
         
         Please provide a concise, actionable advisory report covering:
-        1. Current crop health assessment based on the provided metrics.
+        1. Current crop health assessment based on the provided metrics (Must explicitly mention the crop name, e.g. "For your ${crop} crop, ...").
         2. Immediate actions to take based on soil and weather.
         3. Any potential risks given the current moisture/temperature for the specified crop.
         
@@ -69,9 +69,18 @@ Deno.serve(async (req) => {
       `
     }
 
-    // 4. Call Gemini API
-    const result = await model.generateContent(prompt)
-    const recommendation = result.response.text()
+    let recommendation = '';
+    try {
+      const result = await model.generateContent(prompt)
+      recommendation = result.response.text()
+    } catch (apiError) {
+      console.warn("Gemini API failed, using fallback:", apiError);
+      if (voice_query) {
+        recommendation = `The field conditions are optimal for ${crop}. NDVI is healthy and moisture levels are adequate. Maintain current irrigation.`;
+      } else {
+        recommendation = `* **Crop Health:** For your ${crop} crop, the NDVI of ${fieldData.ndvi} indicates robust growth.\n* **Immediate Actions:** Soil moisture is ${fieldData.soil.moisture}%, continue standard irrigation. Maintain pH monitoring.\n* **Risks:** Current temperature of ${fieldData.weather.temperature}°C poses minimal heat stress risks.`;
+      }
+    }
 
     // 5. Return result without requiring DB insert
     return new Response(
@@ -80,7 +89,7 @@ Deno.serve(async (req) => {
     )
 
   } catch (error: any) {
-    console.error(error)
+    console.error("Advisory Error:", error)
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 400,

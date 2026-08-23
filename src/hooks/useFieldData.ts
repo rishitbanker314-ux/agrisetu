@@ -52,7 +52,40 @@ export function useFieldData(lat: number, lng: number) {
         if (currentMoisture > 50) baseNdvi += 0.15;
         if (currentTemp > 15 && currentTemp < 30) baseNdvi += 0.1;
         if (totalPrecipitation > 20) baseNdvi += 0.1;
-        const finalNdvi = Math.min(0.95, Math.max(0.1, baseNdvi));
+        const finalCalculatedNdvi = Math.min(0.95, Math.max(0.1, baseNdvi));
+
+        // --- TEMPORAL SIMULATION EXPANSION (90 DAYS) ---
+        // We extrapolate the 7-day forecast into a 90-day simulation
+        // by applying a seasonal trend and randomized noise.
+        const simulatedMaxTemps = [...maxTemps];
+        const simulatedPrecipitation = [...precipitation];
+        const simulatedNdvi = [];
+        
+        let currentSimTemp = maxTemps[maxTemps.length - 1] || currentTemp;
+        let currentSimNdvi = finalCalculatedNdvi;
+
+        for (let i = 7; i < 90; i++) {
+          // Trend temperature up slightly over 90 days (summer approaching simulation)
+          currentSimTemp += (Math.random() * 0.8) - 0.2; 
+          simulatedMaxTemps.push(Number(currentSimTemp.toFixed(1)));
+          
+          // Random rain events
+          const willRain = Math.random() > 0.85;
+          const rainAmount = willRain ? Math.random() * 15 : 0;
+          simulatedPrecipitation.push(Number(rainAmount.toFixed(1)));
+
+          // Simulate NDVI degrading if hot and dry, improving if rain
+          if (rainAmount > 5) {
+            currentSimNdvi += 0.05;
+          } else if (currentSimTemp > 30) {
+            currentSimNdvi -= 0.02; // Drought stress
+          }
+          currentSimNdvi = Math.min(0.95, Math.max(0.1, currentSimNdvi));
+          simulatedNdvi.push(Number(currentSimNdvi.toFixed(2)));
+        }
+        // Prepend the current 7 days NDVI (static for now)
+        const fullSimulatedNdvi = [...Array(7).fill(finalCalculatedNdvi), ...simulatedNdvi];
+        // -----------------------------------------------
 
         // Algorithm to simulate soil pH based on climate
         // High precipitation often leads to acidic soils (leaching), dry climates to alkaline
@@ -71,11 +104,15 @@ export function useFieldData(lat: number, lng: number) {
             moisture: currentMoisture,
             pH: Number(basePh.toFixed(1)),
           },
-          ndvi: Number(finalNdvi.toFixed(2)),
+          ndvi: Number(finalCalculatedNdvi.toFixed(2)),
           forecast: {
-            maxTemps,
+            maxTemps: simulatedMaxTemps,
             minTemps,
-            precipitation
+            precipitation: simulatedPrecipitation,
+          },
+          // @ts-ignore - appending temporal data
+          temporal: {
+            ndviProgression: fullSimulatedNdvi
           }
         });
       } catch (err: any) {
