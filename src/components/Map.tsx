@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Polygon, useMap, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polygon, useMap, useMapEvents, ZoomControl } from 'react-leaflet';
 import { Activity, ChevronDown, ChevronUp } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -119,8 +119,9 @@ export default function Map({ center, zoom = 13, markers = [], activeMarker, onL
         zoom={zoom} 
         style={{ height: '100%', width: '100%', zIndex: 0 }}
         scrollWheelZoom={true}
-        zoomControl={true}
+        zoomControl={false}
       >
+        <ZoomControl position="bottomright" />
         {mapStyle === 'satellite' ? (
           <TileLayer
             attribution='&copy; <a href="https://www.esri.com/">Esri</a> &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
