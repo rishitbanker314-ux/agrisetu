@@ -189,9 +189,20 @@ export default function ReportsPage() {
                     )}
                   </div>
                 </div>
-                <button className="self-end md:self-auto flex items-center gap-2 text-sm font-medium text-moss hover:text-deep-forest transition-colors bg-white border border-soft-line px-4 py-2 rounded-full shadow-sm">
-                  <Download className="w-4 h-4" /> Download PDF <span className="text-[10px] text-ink/40 font-normal ml-1">({report.size})</span>
-                </button>
+                <div className="self-end md:self-auto flex items-center gap-2 mt-4 md:mt-0">
+                  <Link 
+                    href={`/en/reports/${report.id}`}
+                    className="flex items-center gap-2 text-sm font-medium text-deep-forest hover:bg-moss/10 transition-colors bg-white border border-soft-line px-4 py-2 rounded-full shadow-sm"
+                  >
+                    View Report
+                  </Link>
+                  <Link 
+                    href={`/en/reports/${report.id}?print=true`}
+                    className="flex items-center gap-2 text-sm font-medium text-moss hover:bg-moss hover:text-white transition-colors bg-white border border-soft-line px-4 py-2 rounded-full shadow-sm"
+                  >
+                    <Download className="w-4 h-4" /> Download <span className="text-[10px] opacity-70 font-normal ml-1">PDF</span>
+                  </Link>
+                </div>
               </div>
             ))}
           </div>
