@@ -1,14 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { BellRing, Smartphone, CheckCircle, AlertTriangle, X } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { BellRing, Smartphone, CheckCircle, AlertTriangle } from 'lucide-react';
 import { LiveFieldData } from '@/hooks/useFieldData';
 
 export default function ClimateAlerts({ fieldData }: { fieldData?: LiveFieldData | null }) {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [showAlert, setShowAlert] = useState(false);
   const [activeAlert, setActiveAlert] = useState<{ title: string, message: string } | null>(null);
 
   // Analyze real-time forecast data to generate genuine alerts
@@ -53,12 +51,11 @@ export default function ClimateAlerts({ fieldData }: { fieldData?: LiveFieldData
       setIsLoading(false);
       setIsSubscribed(true);
       
-      // If there is a real alert for this location, trigger the toast after a short delay
+      // If there is a real alert for this location, trigger the global notification
       if (activeAlert) {
         setTimeout(() => {
-          setShowAlert(true);
-          setTimeout(() => setShowAlert(false), 8000);
-        }, 3000);
+          window.dispatchEvent(new CustomEvent('add-notification', { detail: activeAlert }));
+        }, 1500);
       }
       
     }, 1200);
@@ -110,36 +107,6 @@ export default function ClimateAlerts({ fieldData }: { fieldData?: LiveFieldData
         </div>
       </div>
 
-      {/* Dynamic Toast Notification — only renders when triggered */}
-      <AnimatePresence>
-        {showAlert && activeAlert && (
-          <motion.div 
-            initial={{ opacity: 0, x: 100 }}
-            animate={{ opacity: 1, x: 0, transition: { duration: 0.5 } }}
-            exit={{ opacity: 0, x: 200, transition: { duration: 1.5, ease: "easeInOut" } }}
-            className="fixed top-6 right-4 left-4 md:left-auto md:right-6 z-[9999] max-w-sm mx-auto"
-          >
-            <div className="bg-white border-4 border-green-700 shadow-2xl rounded-sm p-4 w-full flex gap-3 relative">
-              <button onClick={() => setShowAlert(false)} className="absolute top-2 right-2 text-gray-500 hover:text-gray-900 transition-colors">
-                <X className="w-4 h-4" />
-              </button>
-              <div className="bg-green-100 border border-green-200 p-2 rounded-sm h-fit flex-shrink-0">
-                <AlertTriangle className="w-6 h-6 text-green-700" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs font-black bg-green-600 text-white px-1.5 py-0.5 rounded-sm uppercase tracking-widest">WhatsApp</span>
-                  <span className="text-xs font-bold text-gray-500 uppercase">Just now</span>
-                </div>
-                <p className="text-sm font-black text-gray-900 mb-1">{activeAlert.title}</p>
-                <p className="text-sm font-bold text-gray-700 leading-snug">
-                  {activeAlert.message}
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   );
 }
