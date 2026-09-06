@@ -267,8 +267,8 @@ export default function FieldsPage() {
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2 mt-4">Location Name</label>
                   <input name="region" required placeholder="e.g., California, Fresno, or your city" className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" />
                 </div>
-                <button disabled={isSaving} type="submit" className="w-full flex items-center justify-center gap-2 bg-deep-forest text-white py-3 rounded-md text-sm font-medium hover:bg-moss transition-colors mt-6 disabled:opacity-50">
-                  {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : null} Save Field
+                <button disabled={isSaving || (!selectedLocation && drawnBoundary.flat().length <= 2)} type="submit" className={`w-full flex items-center justify-center gap-2 py-3 rounded-md text-sm font-medium transition-colors mt-6 ${(!selectedLocation && drawnBoundary.flat().length <= 2) ? 'bg-ink/10 text-ink/40 cursor-not-allowed' : 'bg-deep-forest text-white hover:bg-moss disabled:opacity-50'}`}>
+                  {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : null} {(!selectedLocation && drawnBoundary.flat().length <= 2) ? "Select location on map to save" : "Save Field"}
                 </button>
               </form>
             </div>
@@ -379,10 +379,10 @@ export default function FieldsPage() {
                   
                   <button 
                     type="submit" 
-                    disabled={isSaving || isDeleting}
-                    className="flex-[2] flex items-center justify-center gap-2 bg-deep-forest text-white py-2.5 rounded-md text-sm font-medium hover:bg-moss transition-colors disabled:opacity-50"
+                    disabled={isSaving || isDeleting || (!selectedLocation && drawnBoundary.flat().length <= 2)}
+                    className={`flex-[2] flex items-center justify-center gap-2 py-2.5 rounded-md text-sm font-medium transition-colors ${(!selectedLocation && drawnBoundary.flat().length <= 2) ? 'bg-ink/10 text-ink/40 cursor-not-allowed' : 'bg-deep-forest text-white hover:bg-moss disabled:opacity-50'}`}
                   >
-                    {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : null} Save Changes
+                    {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : null} {(!selectedLocation && drawnBoundary.flat().length <= 2) ? "Select location to save" : "Save Changes"}
                   </button>
                 </div>
               </form>
