@@ -168,10 +168,11 @@ export default function AppHeader({ user, crop, setCrop, savedFields = [], field
             </div>
             <button 
               onClick={handleSignOut}
-              className="p-2 text-ink hover:text-terracotta rounded-full transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-ink hover:text-terracotta hover:bg-terracotta/10 rounded-full transition-colors"
               title="Sign Out"
             >
               <LogOut className="w-4 h-4" />
+              <span className="hidden sm:inline">Log out</span>
             </button>
           </div>
         ) : (

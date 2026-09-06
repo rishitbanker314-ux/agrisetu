@@ -3,6 +3,7 @@
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import type { User } from '@supabase/supabase-js';
 
@@ -11,6 +12,12 @@ export default function SiteHeader() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.push('/en/login');
+  };
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -88,18 +95,29 @@ export default function SiteHeader() {
                 Log in
               </motion.a>
             ) : (
-              <motion.a
-                href="/en/dashboard"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1 }}
-                className="text-sm font-sans text-ink hover:text-moss transition-colors flex items-center gap-2"
-              >
-                <div className="w-6 h-6 rounded-full bg-moss/20 flex items-center justify-center text-moss text-xs border border-moss/30">
-                  {user.email?.charAt(0).toUpperCase() || 'U'}
-                </div>
-                Dashboard
-              </motion.a>
+              <div className="flex items-center gap-4">
+                <motion.button
+                  onClick={handleSignOut}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1 }}
+                  className="text-sm font-sans text-ink hover:text-terracotta transition-colors"
+                >
+                  Log out
+                </motion.button>
+                <motion.a
+                  href="/en/dashboard"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1 }}
+                  className="text-sm font-sans text-ink hover:text-moss transition-colors flex items-center gap-2"
+                >
+                  <div className="w-6 h-6 rounded-full bg-moss/20 flex items-center justify-center text-moss text-xs border border-moss/30">
+                    {user.email?.charAt(0).toUpperCase() || 'U'}
+                  </div>
+                  Dashboard
+                </motion.a>
+              </div>
             )}
             <motion.a
               href="/en/dashboard"
@@ -157,12 +175,23 @@ export default function SiteHeader() {
           {!user ? (
             <Link href="/en/login" className="text-lg font-sans text-ink">Log in</Link>
           ) : (
-            <Link href="/en/dashboard" className="text-lg font-sans text-ink flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-moss/20 flex items-center justify-center text-moss text-sm border border-moss/30">
-                {user.email?.charAt(0).toUpperCase() || 'U'}
-              </div>
-              Dashboard
-            </Link>
+            <>
+              <Link href="/en/dashboard" className="text-lg font-sans text-ink flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-moss/20 flex items-center justify-center text-moss text-sm border border-moss/30">
+                  {user.email?.charAt(0).toUpperCase() || 'U'}
+                </div>
+                Dashboard
+              </Link>
+              <button 
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  handleSignOut();
+                }} 
+                className="text-lg font-sans text-left text-ink hover:text-terracotta"
+              >
+                Log out
+              </button>
+            </>
           )}
           <Link href="/en/dashboard" className="bg-deep-forest text-paper-ivory text-center py-4 rounded-full text-lg font-sans w-full">
             Open the field view &rarr;
