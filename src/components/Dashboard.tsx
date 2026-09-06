@@ -9,6 +9,7 @@ import MapWorkspace from './dashboard/MapWorkspace';
 import { useFieldData } from '@/hooks/useFieldData';
 import { useAdvisory } from '@/hooks/useAdvisory';
 import { toast } from 'sonner';
+import { X, Loader2, Plus } from 'lucide-react';
 
 export default function Dashboard() {
   const searchParams = useSearchParams();
@@ -39,6 +40,8 @@ export default function Dashboard() {
   
   // Fields state
   const [savedFields, setSavedFields] = useState<any[]>([]);
+  const [pendingFieldSave, setPendingFieldSave] = useState<{ boundary?: [number, number][], center: [number, number] } | null>(null);
+  const [isSavingNewField, setIsSavingNewField] = useState(false);
 
   useEffect(() => {
     async function loadFields() {
@@ -229,32 +232,10 @@ export default function Dashboard() {
                 setSavedFields(prev => prev.map(f => f.id === data.id ? data : f));
               }
             } else {
-              // Insert new field
-              const newName = `New Field - ${new Date().toLocaleDateString()}`;
+              // Prompt user to enter details for a new field
               const targetLat = newCenter ? newCenter[0] : center[0];
               const targetLng = newCenter ? newCenter[1] : center[1];
-              const { data, error } = await supabase.from('fields').insert({
-                owner_id: user.id,
-                name: newName,
-                lat: targetLat,
-                lng: targetLng,
-                boundary: boundary || null,
-                crop: crop,
-                area: '0',
-                status: 'active'
-              }).select().single();
-              
-              if (error) {
-                console.error(error);
-                toast.error(`Failed to save field: ${error.message || JSON.stringify(error)}`);
-              } else if (data) {
-                toast.success("Field saved successfully");
-                setSavedFields(prev => [data, ...prev]);
-                setFieldId(data.id);
-                const params = new URLSearchParams(searchParams.toString());
-                params.set('fieldId', data.id.toString());
-                router.replace(`${pathname}?${params.toString()}`);
-              }
+              setPendingFieldSave({ boundary, center: [targetLat, targetLng] });
             }
           }}
           onSelectField={(field) => {
@@ -268,6 +249,85 @@ export default function Dashboard() {
           }}
         />
       </main>
+
+      {/* Save New Field Modal */}
+      {pendingFieldSave && (
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-ink/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col">
+            <div className="flex justify-between items-center p-6 border-b border-soft-line bg-paper-ivory">
+              <h2 className="text-xl font-serif text-deep-forest font-medium">Save New Field</h2>
+              <button onClick={() => setPendingFieldSave(null)} className="p-2 text-ink/40 hover:text-ink hover:bg-white rounded-full transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              if (!user) return;
+              setIsSavingNewField(true);
+              
+              const formData = new FormData(e.currentTarget);
+              const { data, error } = await supabase.from('fields').insert({
+                owner_id: user.id,
+                name: formData.get('name') as string,
+                crop: formData.get('crop') as string,
+                area: (formData.get('area') as string) + ' ha',
+                lat: pendingFieldSave.center[0],
+                lng: pendingFieldSave.center[1],
+                boundary: pendingFieldSave.boundary || null,
+                status: 'active'
+              }).select().single();
+              
+              setIsSavingNewField(false);
+              
+              if (error) {
+                toast.error(`Failed to save field: ${error.message}`);
+              } else if (data) {
+                toast.success("Field saved successfully");
+                setSavedFields(prev => [data, ...prev]);
+                setFieldId(data.id);
+                setCrop(data.crop);
+                const params = new URLSearchParams(searchParams.toString());
+                params.set('fieldId', data.id.toString());
+                router.replace(`${pathname}?${params.toString()}`);
+                setPendingFieldSave(null);
+              }
+            }} className="p-6 space-y-4">
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2">Field Name</label>
+                <input name="name" required placeholder="e.g., East Plot" className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2">Crop Type</label>
+                  <select name="crop" required defaultValue={crop} className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss">
+                    <option value="wheat">Wheat</option>
+                    <option value="rice">Rice</option>
+                    <option value="corn">Corn</option>
+                    <option value="soybeans">Soybeans</option>
+                    <option value="cotton">Cotton</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2">Area (Hectares)</label>
+                  <input name="area" type="number" step="0.1" min="0.1" required placeholder="e.g., 2.5" className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" />
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-soft-line flex justify-end gap-3">
+                <button type="button" onClick={() => setPendingFieldSave(null)} className="px-4 py-2 text-sm font-medium text-ink/70 hover:text-ink transition-colors">
+                  Cancel
+                </button>
+                <button type="submit" disabled={isSavingNewField} className="bg-deep-forest text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-moss transition-colors disabled:opacity-50 flex items-center gap-2 shadow-sm">
+                  {isSavingNewField ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                  Save Field
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
