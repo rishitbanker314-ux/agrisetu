@@ -16,6 +16,7 @@ export default function SettingsPage() {
     name: '',
     email: '',
     phone: '',
+    country: '',
     whatsappAlerts: false,
     emailSummary: false,
   });
@@ -39,6 +40,7 @@ export default function SettingsPage() {
               ...prev,
               name: profile.name || '',
               phone: profile.phone || '',
+              country: profile.country || '',
               whatsappAlerts: profile.whatsapp_alerts || false,
               emailSummary: profile.email_summary || false,
             }));
@@ -61,6 +63,7 @@ export default function SettingsPage() {
         id: userId,
         name: settings.name,
         phone: settings.phone,
+        country: settings.country,
         whatsapp_alerts: settings.whatsappAlerts,
         email_summary: settings.emailSummary
       });
@@ -140,6 +143,31 @@ export default function SettingsPage() {
                     onChange={(e) => setSettings({ ...settings, email: e.target.value })} 
                     className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" 
                   />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2">Phone Number</label>
+                  <input 
+                    type="text" 
+                    value={settings.phone}
+                    onChange={(e) => setSettings({ ...settings, phone: e.target.value })} 
+                    className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2">Country</label>
+                  <select 
+                    value={settings.country}
+                    onChange={(e) => setSettings({ ...settings, country: e.target.value })} 
+                    className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss"
+                  >
+                    <option value="">Select a country...</option>
+                    <option value="Brazil">Brazil</option>
+                    <option value="Russia">Russia</option>
+                    <option value="India">India</option>
+                    <option value="China">China</option>
+                    <option value="South Africa">South Africa</option>
+                    <option value="Other">Other</option>
+                  </select>
                 </div>
               </div>
             </section>

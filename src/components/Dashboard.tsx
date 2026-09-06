@@ -42,6 +42,10 @@ export default function Dashboard() {
   const [savedFields, setSavedFields] = useState<any[]>([]);
   const [pendingFieldSave, setPendingFieldSave] = useState<{ boundary?: [number, number][], center: [number, number] } | null>(null);
   const [isSavingNewField, setIsSavingNewField] = useState(false);
+  
+  // Profile Onboarding State
+  const [needsOnboarding, setNeedsOnboarding] = useState(false);
+  const [isOnboarding, setIsOnboarding] = useState(false);
 
   useEffect(() => {
     async function loadFields() {
@@ -50,11 +54,14 @@ export default function Dashboard() {
         return;
       }
       
-      // Ensure profile exists to avoid FK constraint errors when inserting fields
-      await supabase.from('profiles').upsert({ 
-        id: user.id,
-        role: 'farmer' // Provide a default valid role 
-      }, { onConflict: 'id' });
+      // Ensure profile exists and check if onboarding is needed
+      const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+      
+      if (!profile || !profile.name) {
+        setNeedsOnboarding(true);
+      } else {
+        setNeedsOnboarding(false);
+      }
 
       const { data, error } = await supabase
         .from('fields')
@@ -322,6 +329,71 @@ export default function Dashboard() {
                 <button type="submit" disabled={isSavingNewField} className="bg-deep-forest text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-moss transition-colors disabled:opacity-50 flex items-center gap-2 shadow-sm">
                   {isSavingNewField ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
                   Save Field
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Profile Onboarding Modal */}
+      {needsOnboarding && (
+        <div className="fixed inset-0 z-[20000] flex items-center justify-center p-4 bg-ink/70 backdrop-blur-md">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col">
+            <div className="p-8 border-b border-soft-line bg-paper-ivory text-center">
+              <h2 className="text-2xl font-serif text-deep-forest font-medium">Welcome to AgriSetu</h2>
+              <p className="text-ink/60 text-sm mt-2">Let's set up your profile before we get started.</p>
+            </div>
+            
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              if (!user) return;
+              setIsOnboarding(true);
+              
+              const formData = new FormData(e.currentTarget);
+              const { error } = await supabase.from('profiles').upsert({
+                id: user.id,
+                name: formData.get('name') as string,
+                phone: formData.get('phone') as string,
+                country: formData.get('country') as string,
+                role: 'farmer'
+              }, { onConflict: 'id' });
+              
+              setIsOnboarding(false);
+              
+              if (error) {
+                toast.error(`Failed to save profile: ${error.message}`);
+              } else {
+                toast.success("Profile saved successfully");
+                setNeedsOnboarding(false);
+              }
+            }} className="p-8 space-y-5">
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2">Full Name *</label>
+                <input name="name" required placeholder="John Doe" className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-moss transition-colors" />
+              </div>
+              
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2">Phone Number</label>
+                <input name="phone" placeholder="+1 234 567 890" className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-moss transition-colors" />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2">Country</label>
+                <select name="country" className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-moss transition-colors">
+                  <option value="">Select a country...</option>
+                  <option value="Brazil">Brazil</option>
+                  <option value="Russia">Russia</option>
+                  <option value="India">India</option>
+                  <option value="China">China</option>
+                  <option value="South Africa">South Africa</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div className="pt-4">
+                <button type="submit" disabled={isOnboarding} className="w-full bg-deep-forest text-white px-5 py-3 rounded-full text-sm font-medium hover:bg-moss transition-colors disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm">
+                  {isOnboarding ? <Loader2 className="w-4 h-4 animate-spin" /> : "Complete Setup"}
                 </button>
               </div>
             </form>
