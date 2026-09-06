@@ -1,8 +1,78 @@
 'use client';
 
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, MotionValue } from 'framer-motion';
 import { useRef } from 'react';
-import { Sprout, CloudRain, Leaf, Wheat, ShoppingBasket, LineChart } from 'lucide-react';
+import { Sprout, CloudRain, Leaf, Wheat, ShoppingBasket, LineChart, LucideIcon } from 'lucide-react';
+
+interface Stage {
+  name: string;
+  icon: LucideIcon;
+  offset: number;
+}
+
+const DesktopStageNode = ({ stage, i, scrollYProgress }: { stage: Stage; i: number; scrollYProgress: MotionValue<number> }) => {
+  const xPos = 5 + (i * 18);
+  const yPos = i < 2 ? 80 : (i === 2 ? 50 : 15);
+  
+  const scale = useTransform(scrollYProgress, 
+    [stage.offset - 0.1, stage.offset, stage.offset + 0.1], 
+    [0.8, 1.2, 1]
+  );
+  const backgroundColor = useTransform(scrollYProgress, 
+    [stage.offset - 0.1, stage.offset], 
+    ['var(--color-paper-ivory)', 'var(--color-paper-ivory)']
+  );
+  const borderColor = useTransform(scrollYProgress, 
+    [stage.offset - 0.1, stage.offset], 
+    ['var(--color-soft-line)', 'var(--color-moss)']
+  );
+  const color = useTransform(scrollYProgress, 
+    [stage.offset - 0.1, stage.offset], 
+    ['var(--color-ink)', 'var(--color-moss)']
+  );
+
+  return (
+    <div 
+      className="absolute flex flex-col items-center transform -translate-x-1/2 -translate-y-1/2"
+      style={{ left: xPos + '%', top: yPos + '%' }}
+    >
+      <motion.div 
+        style={{ scale, backgroundColor, borderColor, color }}
+        className="w-12 h-12 rounded-full border-2 flex items-center justify-center bg-paper-ivory z-10 transition-colors"
+      >
+        <stage.icon size={18} strokeWidth={1.5} />
+      </motion.div>
+      <p className="mt-4 text-xs font-sans uppercase tracking-wider text-ink font-medium whitespace-nowrap">
+        {stage.name}
+      </p>
+    </div>
+  );
+};
+
+const MobileStageNode = ({ stage, scrollYProgress }: { stage: Stage; scrollYProgress: MotionValue<number> }) => {
+  const borderColor = useTransform(scrollYProgress, 
+    [stage.offset - 0.1, stage.offset], 
+    ['var(--color-soft-line)', 'var(--color-moss)']
+  );
+  const color = useTransform(scrollYProgress, 
+    [stage.offset - 0.1, stage.offset], 
+    ['var(--color-ink)', 'var(--color-moss)']
+  );
+
+  return (
+    <div className="flex items-center gap-6 relative z-10">
+      <motion.div 
+        style={{ borderColor, color }}
+        className="w-12 h-12 rounded-full border-2 bg-paper-ivory flex flex-shrink-0 items-center justify-center"
+      >
+        <stage.icon size={18} strokeWidth={1.5} />
+      </motion.div>
+      <p className="text-sm font-sans uppercase tracking-wider text-ink font-medium">
+        {stage.name}
+      </p>
+    </div>
+  );
+};
 
 export default function CropCycleTimeline() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -65,47 +135,9 @@ export default function CropCycleTimeline() {
           </svg>
 
           {/* Timeline Nodes */}
-          {stages.map((stage, i) => {
-            // Calculate approximate x, y along the curve. 
-            // Simplified positioning for demo.
-            const xPos = 5 + (i * 18);
-            const yPos = i < 2 ? 80 : (i === 2 ? 50 : 15);
-            
-            return (
-              <div 
-                key={stage.name} 
-                className="absolute flex flex-col items-center transform -translate-x-1/2 -translate-y-1/2"
-                style={{ left: xPos + '%', top: yPos + '%' }}
-              >
-                <motion.div 
-                  style={{
-                    scale: useTransform(scrollYProgress, 
-                      [stage.offset - 0.1, stage.offset, stage.offset + 0.1], 
-                      [0.8, 1.2, 1]
-                    ),
-                    backgroundColor: useTransform(scrollYProgress, 
-                      [stage.offset - 0.1, stage.offset], 
-                      ['var(--color-paper-ivory)', 'var(--color-paper-ivory)']
-                    ),
-                    borderColor: useTransform(scrollYProgress, 
-                      [stage.offset - 0.1, stage.offset], 
-                      ['var(--color-soft-line)', 'var(--color-moss)']
-                    ),
-                    color: useTransform(scrollYProgress, 
-                      [stage.offset - 0.1, stage.offset], 
-                      ['var(--color-ink)', 'var(--color-moss)']
-                    )
-                  }}
-                  className="w-12 h-12 rounded-full border-2 flex items-center justify-center bg-paper-ivory z-10 transition-colors"
-                >
-                  <stage.icon size={18} strokeWidth={1.5} />
-                </motion.div>
-                <p className="mt-4 text-xs font-sans uppercase tracking-wider text-ink font-medium whitespace-nowrap">
-                  {stage.name}
-                </p>
-              </div>
-            );
-          })}
+          {stages.map((stage, i) => (
+            <DesktopStageNode key={stage.name} stage={stage} i={i} scrollYProgress={scrollYProgress} />
+          ))}
         </div>
 
         {/* Mobile Vertical Timeline */}
@@ -117,27 +149,8 @@ export default function CropCycleTimeline() {
           <div className="absolute left-[39px] top-0 bottom-0 w-[2px] bg-soft-line border-dashed z-[-1]"></div>
 
           <div className="flex flex-col gap-12">
-            {stages.map((stage, i) => (
-              <div key={stage.name} className="flex items-center gap-6 relative z-10">
-                <motion.div 
-                  style={{
-                    borderColor: useTransform(scrollYProgress, 
-                      [stage.offset - 0.1, stage.offset], 
-                      ['var(--color-soft-line)', 'var(--color-moss)']
-                    ),
-                    color: useTransform(scrollYProgress, 
-                      [stage.offset - 0.1, stage.offset], 
-                      ['var(--color-ink)', 'var(--color-moss)']
-                    )
-                  }}
-                  className="w-12 h-12 rounded-full border-2 bg-paper-ivory flex flex-shrink-0 items-center justify-center"
-                >
-                  <stage.icon size={18} strokeWidth={1.5} />
-                </motion.div>
-                <p className="text-sm font-sans uppercase tracking-wider text-ink font-medium">
-                  {stage.name}
-                </p>
-              </div>
+            {stages.map((stage) => (
+              <MobileStageNode key={stage.name} stage={stage} scrollYProgress={scrollYProgress} />
             ))}
           </div>
         </div>

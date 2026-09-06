@@ -1,20 +1,34 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Polygon, useMap, useMapEvents, ZoomControl } from 'react-leaflet';
+import { useEffect, useMemo, useRef, useState, Fragment } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, Polygon, Polyline, useMap, useMapEvents, ZoomControl } from 'react-leaflet';
 import { Activity, ChevronDown, ChevronUp } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
 // Fix leaflet default marker icons missing issue in Webpack/Next
-const iconDefault = L.icon({
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
+// Instead of default blue marker, we'll use a nice custom SVG marker
+const iconDefault = L.divIcon({
+  className: 'custom-map-marker',
+  html: `
+    <div style="transform: translate(-50%, -100%);">
+      <svg width="32" height="42" viewBox="0 0 32 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16 0C7.163 0 0 7.163 0 16C0 26.667 16 42 16 42C16 42 32 26.667 32 16C32 7.163 24.837 0 16 0Z" fill="#10b981" />
+        <circle cx="16" cy="16" r="6" fill="white" />
+      </svg>
+    </div>
+  `,
+  iconSize: [0, 0],
+  iconAnchor: [0, 0],
+  popupAnchor: [0, -42],
+});
+
+// A sleek dot for the points of drawn boundaries
+const drawPointIcon = L.divIcon({
+  className: 'draw-point-icon',
+  html: `<div style="width: 14px; height: 14px; background-color: #10b981; border: 2px solid white; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.3); transform: translate(-50%, -50%);"></div>`,
+  iconSize: [0, 0],
+  iconAnchor: [0, 0],
 });
 
 // A component to automatically center the map on the selected coordinates
@@ -41,11 +55,13 @@ function MapClickHandler({ onLocationSelect }: { onLocationSelect?: (lat: number
 interface MapProps {
   center: [number, number];
   zoom?: number;
-  markers?: Array<{ id?: string; lat: number; lng: number; title: string }>;
-  activeMarker?: { lat: number; lng: number };
+  markers?: Array<{ id?: string; lat: number; lng: number; title: string; boundary?: [number, number][] }>;
+  activeMarker?: { lat: number; lng: number; boundary?: [number, number][] };
   onLocationSelect?: (lat: number, lng: number) => void;
   temporalNdvi?: number;
   mapStyle?: 'street' | 'satellite';
+  isDrawingMode?: boolean;
+  drawnBoundary?: [number, number][];
 }
 
 // Helper to get color based on NDVI value
@@ -56,64 +72,84 @@ function getNdviColor(ndvi: number) {
   return '#ef4444'; // Red
 }
 
-export default function Map({ center, zoom = 13, markers = [], activeMarker, onLocationSelect, temporalNdvi = 0.5, mapStyle = 'street' }: MapProps) {
-  const [isLegendOpen, setIsLegendOpen] = useState(false);
-  
-  const DraggableMarker = ({ marker }: { marker: { lat: number; lng: number; title: string } }) => {
-    const markerRef = useRef<any>(null);
-    const eventHandlers = useMemo(
-      () => ({
-        dragend() {
-          const marker = markerRef.current;
-          if (marker != null) {
-            const position = marker.getLatLng();
-            if (onLocationSelect) {
-              onLocationSelect(position.lat, position.lng);
-            }
+const DraggableMarker = ({ marker, temporalNdvi, onLocationSelect }: { marker: { lat: number; lng: number; title: string; boundary?: [number, number][] }, temporalNdvi: number, onLocationSelect?: (lat: number, lng: number) => void }) => {
+  const markerRef = useRef<any>(null);
+  const eventHandlers = useMemo(
+    () => ({
+      dragend() {
+        const marker = markerRef.current;
+        if (marker != null) {
+          const position = marker.getLatLng();
+          if (onLocationSelect) {
+            onLocationSelect(position.lat, position.lng);
           }
-        },
-      }),
-      [],
-    );
+        }
+      },
+    }),
+    [onLocationSelect]
+  );
 
-    const fillColor = getNdviColor(temporalNdvi);
+  const fillColor = getNdviColor(temporalNdvi);
 
-    return (
-      <>
-        <Marker 
-          position={[marker.lat, marker.lng]} 
-          icon={iconDefault}
-          draggable={true}
-          eventHandlers={eventHandlers}
-          ref={markerRef}
-        >
-          <Popup>{marker.title} (Drag me!)</Popup>
-        </Marker>
-        {/* Dynamic Field Boundary for Temporal Simulation */}
-        <Polygon 
-          positions={[
-            [marker.lat + 0.005, marker.lng - 0.005],
-            [marker.lat + 0.005, marker.lng + 0.005],
-            [marker.lat - 0.005, marker.lng + 0.005],
-            [marker.lat - 0.005, marker.lng - 0.005]
-          ]}
-          pathOptions={{ color: 'transparent', fillColor: fillColor, fillOpacity: 0.4 }}
-        />
-        <Polygon 
-          positions={[
-            [marker.lat + 0.002, marker.lng - 0.002],
-            [marker.lat + 0.002, marker.lng + 0.002],
-            [marker.lat - 0.002, marker.lng + 0.002],
-            [marker.lat - 0.002, marker.lng - 0.002]
-          ]}
-          pathOptions={{ color: 'transparent', fillColor: getNdviColor(temporalNdvi - 0.1), fillOpacity: 0.5 }}
-        />
-      </>
-    );
-  };
+  return (
+    <>
+      <Marker 
+        position={[marker.lat, marker.lng]} 
+        icon={iconDefault}
+        draggable={true}
+        eventHandlers={eventHandlers}
+        ref={markerRef}
+      >
+        <Popup>{marker.title} (Drag me!)</Popup>
+      </Marker>
+      {/* Dynamic Field Boundary for Temporal Simulation */}
+      {marker.boundary && marker.boundary.flat().length > 2 ? (
+        Array.isArray(marker.boundary[0]) && Array.isArray(marker.boundary[0][0]) ? (
+          (marker.boundary as any[]).map((poly, idx) => (
+            poly.length > 2 ? <Polygon key={idx} positions={poly} pathOptions={{ color: '#10b981', weight: 3, dashArray: '5, 5', fillColor: fillColor, fillOpacity: 0.45, lineCap: 'round', lineJoin: 'round' }} /> : null
+          ))
+        ) : (
+          <Polygon 
+            positions={marker.boundary as [number, number][]}
+            pathOptions={{ color: '#10b981', weight: 3, dashArray: '5, 5', fillColor: fillColor, fillOpacity: 0.45, lineCap: 'round', lineJoin: 'round' }}
+          />
+        )
+      ) : (
+        <>
+          <Polygon 
+            positions={[
+              [marker.lat + 0.005, marker.lng - 0.005],
+              [marker.lat + 0.005, marker.lng + 0.005],
+              [marker.lat - 0.005, marker.lng + 0.005],
+              [marker.lat - 0.005, marker.lng - 0.005]
+            ]}
+            pathOptions={{ color: 'transparent', fillColor: fillColor, fillOpacity: 0.4 }}
+          />
+          <Polygon 
+            positions={[
+              [marker.lat + 0.002, marker.lng - 0.002],
+              [marker.lat + 0.002, marker.lng + 0.002],
+              [marker.lat - 0.002, marker.lng + 0.002],
+              [marker.lat - 0.002, marker.lng - 0.002]
+            ]}
+            pathOptions={{ color: 'transparent', fillColor: getNdviColor(temporalNdvi - 0.1), fillOpacity: 0.5 }}
+          />
+        </>
+      )}
+    </>
+  );
+};
+
+export default function Map({ center, zoom = 13, markers = [], activeMarker, onLocationSelect, temporalNdvi = 0.5, mapStyle = 'street', isDrawingMode = false, drawnBoundary = [] }: MapProps) {
+  const [isLegendOpen, setIsLegendOpen] = useState(false);
 
   return (
     <div className="h-full w-full bg-gray-50 relative">
+      <style dangerouslySetInnerHTML={{__html: `
+        .leaflet-bottom.leaflet-right {
+          bottom: 90px !important;
+        }
+      `}} />
       <MapContainer 
         center={center} 
         zoom={zoom} 
@@ -136,19 +172,57 @@ export default function Map({ center, zoom = 13, markers = [], activeMarker, onL
         <RecenterAutomatically lat={center[0]} lng={center[1]} />
         <MapClickHandler onLocationSelect={onLocationSelect} />
         {markers.map((marker, idx) => (
-          <Marker 
-            key={marker.id || idx} 
-            position={[marker.lat, marker.lng]} 
-            icon={iconDefault}
-            eventHandlers={{
-              click: () => onLocationSelect && onLocationSelect(marker.lat, marker.lng)
-            }}
-          >
-            <Popup>{marker.title}</Popup>
-          </Marker>
+          <Fragment key={marker.id || idx}>
+            <Marker 
+              position={[marker.lat, marker.lng]} 
+              icon={iconDefault}
+              eventHandlers={{
+                click: () => onLocationSelect && onLocationSelect(marker.lat, marker.lng)
+              }}
+            >
+              <Popup>{marker.title}</Popup>
+            </Marker>
+            {marker.boundary && marker.boundary.flat().length > 2 && (
+              Array.isArray(marker.boundary[0]) && Array.isArray(marker.boundary[0][0]) ? (
+                (marker.boundary as any[]).map((poly, idx) => (
+                  poly.length > 2 ? <Polygon key={idx} positions={poly} pathOptions={{ color: '#10b981', weight: 2, dashArray: '4, 4', fillColor: '#10b981', fillOpacity: 0.2 }} eventHandlers={{ click: () => onLocationSelect && onLocationSelect(marker.lat, marker.lng) }} /> : null
+                ))
+              ) : (
+                <Polygon 
+                  positions={marker.boundary as [number, number][]}
+                  pathOptions={{ color: '#10b981', weight: 2, dashArray: '4, 4', fillColor: '#10b981', fillOpacity: 0.2 }}
+                  eventHandlers={{
+                    click: () => onLocationSelect && onLocationSelect(marker.lat, marker.lng)
+                  }}
+                />
+              )
+            )}
+          </Fragment>
         ))}
-        {activeMarker && (
-          <DraggableMarker marker={{ lat: activeMarker.lat, lng: activeMarker.lng, title: 'Selected Location' }} />
+        {activeMarker && !isDrawingMode && (
+          <DraggableMarker marker={{ lat: activeMarker.lat, lng: activeMarker.lng, title: 'Selected Location', boundary: activeMarker.boundary }} temporalNdvi={temporalNdvi} onLocationSelect={onLocationSelect} />
+        )}
+        
+        {/* Drawing Mode Rendering */}
+        {isDrawingMode && drawnBoundary.length > 0 && (
+          <>
+            {drawnBoundary.map((poly: any, idx: number) => {
+              if (!Array.isArray(poly) || poly.length === 0 || !Array.isArray(poly[0])) return null;
+              return (
+                <Fragment key={idx}>
+                  {poly.length === 2 && (
+                    <Polyline positions={poly} pathOptions={{ color: '#10b981', weight: 3, dashArray: '6, 6', lineCap: 'round', lineJoin: 'round' }} />
+                  )}
+                  {poly.length > 2 && (
+                    <Polygon positions={poly} pathOptions={{ color: '#10b981', weight: 3, dashArray: '6, 6', fillColor: '#10b981', fillOpacity: 0.3, lineCap: 'round', lineJoin: 'round' }} />
+                  )}
+                  {poly.map((pt: any, ptIdx: number) => (
+                    <Marker key={`draw-pt-${idx}-${ptIdx}`} position={pt} icon={drawPointIcon} />
+                  ))}
+                </Fragment>
+              );
+            })}
+          </>
         )}
       </MapContainer>
       {/* Field Health Forecast Legend Toggle */}

@@ -3,6 +3,7 @@
 import { supabase } from '@/lib/supabase';
 import { useState } from 'react';
 import { ShieldCheck, Leaf } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -18,7 +19,7 @@ export default function LoginPage() {
       });
       if (error) throw error;
     } catch (error: any) {
-      alert(error.message);
+      toast.error(error.message);
       setIsLoading(false);
     }
   };

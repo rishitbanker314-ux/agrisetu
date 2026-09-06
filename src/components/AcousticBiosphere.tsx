@@ -10,12 +10,34 @@ interface AcousticBiosphereProps {
 export default function AcousticBiosphere({ moisture }: AcousticBiosphereProps) {
   
   const [pulse, setPulse] = useState(false);
+  const [blips, setBlips] = useState<{ id: number; x: number; y: number; opacity: number; size: number }[]>([]);
+
+  useEffect(() => {
+    // Generate new blips based on the moisture level
+    // Lower moisture = more blips (more stress signals)
+    const numBlips = Math.floor(Math.max(1, 15 * (1 - moisture / 100)));
+    const newBlips = Array.from({ length: numBlips }).map((_, i) => ({
+      id: i,
+      x: 10 + Math.random() * 80, // percentage 10-90
+      y: 10 + Math.random() * 80, // percentage 10-90
+      opacity: 0.3 + Math.random() * 0.7,
+      size: 4 + Math.random() * 6, // 4px to 10px
+    }));
+    setBlips(newBlips);
+  }, [moisture]);
 
   useEffect(() => {
     // Random pulse interval to make the UI feel alive
     const interval = setInterval(() => {
       setPulse(true);
       setTimeout(() => setPulse(false), 800);
+      
+      // Randomly update blips opacity to make them blink
+      setBlips(current => current.map(blip => ({
+        ...blip,
+        opacity: Math.random() > 0.5 ? 0.3 + Math.random() * 0.7 : 0,
+      })));
+      
     }, 3000 + Math.random() * 2000);
     return () => clearInterval(interval);
   }, []);
@@ -59,6 +81,23 @@ export default function AcousticBiosphere({ moisture }: AcousticBiosphereProps) 
               animationTimingFunction: 'linear' 
             }}
           ></div>
+          
+          {/* Dynamic Radar Blips */}
+          {blips.map((blip) => (
+            <div
+              key={blip.id}
+              className={`absolute rounded-full transition-opacity duration-1000 ${stressLevel > 70 ? 'bg-red-400' : 'bg-purple-400'}`}
+              style={{
+                left: `${blip.x}%`,
+                top: `${blip.y}%`,
+                width: `${blip.size}px`,
+                height: `${blip.size}px`,
+                opacity: blip.opacity,
+                boxShadow: `0 0 10px 2px ${stressLevel > 70 ? 'rgba(248, 113, 113, 0.8)' : 'rgba(192, 132, 252, 0.8)'}`,
+                transform: 'translate(-50%, -50%)',
+              }}
+            ></div>
+          ))}
 
           {/* Root/Mycelial Network SVG Overlay */}
           <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100">

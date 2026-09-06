@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 export function useVoice() {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
-  const [recognition, setRecognition] = useState<any>(null);
+  const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
     // Initialize Web Speech API for Speech-to-Text
@@ -33,7 +33,7 @@ export function useVoice() {
           setIsListening(false);
         };
 
-        setRecognition(rec);
+        recognitionRef.current = rec;
       } else {
         console.warn("Speech Recognition API not supported in this browser.");
       }
@@ -42,20 +42,20 @@ export function useVoice() {
 
   // --- Speech to Text ---
   const startListening = useCallback((lang: string = 'en-US') => {
-    if (recognition) {
-      recognition.lang = lang;
-      recognition.start();
+    if (recognitionRef.current) {
+      recognitionRef.current.lang = lang;
+      recognitionRef.current.start();
       setIsListening(true);
       setTranscript('');
     }
-  }, [recognition]);
+  }, []);
 
   const stopListening = useCallback(() => {
-    if (recognition) {
-      recognition.stop();
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
       setIsListening(false);
     }
-  }, [recognition]);
+  }, []);
 
   // --- Text to Speech ---
   const speak = useCallback((text: string, lang: string = 'en-US') => {
@@ -87,6 +87,6 @@ export function useVoice() {
     stopListening,
     speak,
     stopSpeaking,
-    isSupported: !!recognition
+    isSupported: typeof window !== 'undefined' && (!!(window as any).SpeechRecognition || !!(window as any).webkitSpeechRecognition)
   };
 }

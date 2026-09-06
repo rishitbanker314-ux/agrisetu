@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { Leaf, Award, ArrowUpRight, ArrowDownRight, Wind } from 'lucide-react';
+import { motion, useSpring, useTransform, useMotionValueEvent } from 'framer-motion';
 import { LiveFieldData } from '@/hooks/useFieldData';
 
 export default function SustainabilityScore({ fieldData }: { fieldData?: LiveFieldData | null }) {
@@ -14,13 +15,13 @@ export default function SustainabilityScore({ fieldData }: { fieldData?: LiveFie
       const precipitation = fieldData.forecast.precipitation.reduce((a, b) => a + b, 0);
       
       // If it rains a lot, less water is needed
-      if (precipitation > 30) setWater(200);
-      else if (precipitation > 10) setWater(350);
-      else setWater(500);
+      if (precipitation > 30) queueMicrotask(() => setWater(200));
+      else if (precipitation > 10) queueMicrotask(() => setWater(350));
+      else queueMicrotask(() => setWater(500));
 
       // Fertilizer is slightly adjusted based on soil moisture (highly dry soil risks fertilizer burn)
-      if (fieldData.soil.moisture < 15) setFertilizer(80);
-      else setFertilizer(120);
+      if (fieldData.soil.moisture < 15) queueMicrotask(() => setFertilizer(80));
+      else queueMicrotask(() => setFertilizer(120));
     }
   }, [fieldData]);
 
@@ -38,6 +39,24 @@ export default function SustainabilityScore({ fieldData }: { fieldData?: LiveFie
     return Math.round((score - 60) * 12.5); // USD value
   }, [score]);
 
+  // Framer Motion Springs for animation
+  const animatedScore = useSpring(0, { bounce: 0, duration: 1000 });
+  const animatedCarbon = useSpring(0, { bounce: 0, duration: 1000 });
+
+  const [displayScore, setDisplayScore] = useState(0);
+  const [displayCarbon, setDisplayCarbon] = useState(0);
+
+  useEffect(() => {
+    animatedScore.set(score);
+    animatedCarbon.set(carbonCreditsValue);
+  }, [score, carbonCreditsValue, animatedScore, animatedCarbon]);
+
+  const roundedScore = useTransform(animatedScore, (latest) => Math.round(latest));
+  const roundedCarbon = useTransform(animatedCarbon, (latest) => Math.round(latest));
+
+  useMotionValueEvent(roundedScore, "change", (latest) => setDisplayScore(latest));
+  useMotionValueEvent(roundedCarbon, "change", (latest) => setDisplayCarbon(latest));
+
   return (
     <div className="flex flex-col h-full">
       <div className="flex justify-between items-center mb-4 border-b border-soft-line pb-4">
@@ -53,9 +72,9 @@ export default function SustainabilityScore({ fieldData }: { fieldData?: LiveFie
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-end gap-2">
-              <span className={`text-4xl font-serif \${score >= 75 ? 'text-moss' : score >= 50 ? 'text-marigold' : 'text-terracotta'}`}>
-                {score}
-              </span>
+              <motion.span className={`text-4xl font-serif ${score >= 75 ? 'text-moss' : score >= 50 ? 'text-marigold' : 'text-terracotta'}`}>
+                {displayScore}
+              </motion.span>
               <span className="text-sm font-sans font-medium text-ink/50 mb-1">/ 100</span>
             </div>
             <p className="text-xs font-sans font-medium text-ink/70 uppercase tracking-widest mt-1">Farm ESG Score</p>
@@ -65,7 +84,7 @@ export default function SustainabilityScore({ fieldData }: { fieldData?: LiveFie
             <p className="text-[10px] font-sans font-medium text-moss uppercase tracking-wider mb-1 flex justify-end items-center gap-1">
               <Wind className="w-3 h-3" /> CARBON VALUE
             </p>
-            <p className="text-xl font-serif text-deep-forest">${carbonCreditsValue}</p>
+            <motion.p className="text-xl font-serif text-deep-forest">${displayCarbon}</motion.p>
           </div>
         </div>
 

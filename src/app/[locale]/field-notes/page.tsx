@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { Sprout, FileText, Loader2, Plus, X, Calendar, MapPin } from 'lucide-react';
+import { Sprout, FileText, Loader2, Plus, X, Calendar, MapPin, ArrowLeft } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
+import { toast } from 'sonner';
 
 interface FieldNote {
   id: string;
@@ -30,6 +31,7 @@ export default function FieldNotesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   const [newNote, setNewNote] = useState({
     title: '',
@@ -102,31 +104,35 @@ export default function FieldNotesPage() {
     setIsSubmitting(false);
 
     if (error) {
-      alert(`Error creating note: ${error.message}`);
+      toast.error(`Error creating note: ${error.message}`);
     } else if (data) {
       setNotes([data as FieldNote, ...notes]);
+      toast.success('Note created successfully');
       setIsModalOpen(false);
       setNewNote({ ...newNote, title: '', content: '' });
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this note?')) return;
-    
     const { error } = await supabase.from('field_notes').delete().eq('id', id);
     if (!error) {
       setNotes(notes.filter(n => n.id !== id));
+      toast.success('Note deleted successfully');
     } else {
-      alert(`Error deleting note: ${error.message}`);
+      toast.error(`Error deleting note: ${error.message}`);
     }
+    setDeleteConfirmId(null);
   };
 
   return (
     <div className="min-h-screen bg-paper-ivory flex flex-col font-sans selection:bg-moss/30 selection:text-deep-forest relative">
-      <header className="bg-white border-b border-soft-line z-[40] flex items-center justify-between px-6 h-16 shrink-0 shadow-sm relative">
-        <Link href="/en/dashboard" className="flex items-center gap-2">
+      <header className="bg-white border-b border-soft-line z-[40] flex items-center justify-between px-4 md:px-6 h-16 shrink-0 shadow-sm relative">
+        <Link href="/en/dashboard" className="text-ink/60 hover:text-moss transition-colors flex items-center gap-1.5 text-sm font-medium">
+          <ArrowLeft className="w-4 h-4" /> <span className="hidden sm:inline">Back to Dashboard</span>
+        </Link>
+        <Link href="/en" className="flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
           <Sprout className="w-6 h-6 text-deep-forest" />
-          <span className="font-serif text-xl tracking-tight text-ink font-medium">AgriSetu</span>
+          <span className="font-serif text-xl tracking-tight text-ink font-medium hidden sm:block">AgriSetu</span>
         </Link>
         <div className="text-xs font-medium uppercase tracking-widest text-ink/50">Field Notes</div>
       </header>
@@ -169,7 +175,7 @@ export default function FieldNotesPage() {
             {notes.map((note) => (
               <div key={note.id} className="bg-white border border-soft-line rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow relative group">
                 <button 
-                  onClick={() => handleDelete(note.id)}
+                  onClick={() => setDeleteConfirmId(note.id)}
                   className="absolute top-4 right-4 text-ink/30 hover:text-terracotta opacity-0 group-hover:opacity-100 transition-opacity"
                   title="Delete Note"
                 >
@@ -270,6 +276,31 @@ export default function FieldNotesPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {/* Delete Confirmation Modal */}
+      {deleteConfirmId && (
+        <div className="fixed inset-0 bg-ink/40 backdrop-blur-sm z-[9999] flex justify-center items-center p-4">
+          <div className="bg-white rounded-2xl max-w-sm w-full shadow-2xl overflow-hidden flex flex-col">
+            <div className="p-6">
+              <h2 className="text-xl font-serif text-deep-forest font-medium mb-2">Delete Note</h2>
+              <p className="text-sm text-ink/70">Are you sure you want to delete this note? This action cannot be undone.</p>
+            </div>
+            <div className="p-4 border-t border-soft-line flex justify-end gap-3 bg-paper-ivory">
+              <button 
+                onClick={() => setDeleteConfirmId(null)}
+                className="px-4 py-2 text-sm font-medium text-ink/70 hover:text-ink transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => handleDelete(deleteConfirmId)}
+                className="bg-terracotta text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-terracotta/90 transition-colors shadow-sm"
+              >
+                Delete
+              </button>
+            </div>
           </div>
         </div>
       )}

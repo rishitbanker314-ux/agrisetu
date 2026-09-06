@@ -11,6 +11,7 @@ interface BottomDrawerProps {
   advisory: string;
   advisoryLoading: boolean;
   fieldId: string;
+  center: [number, number];
 }
 
 export default function BottomDrawer(props: BottomDrawerProps) {

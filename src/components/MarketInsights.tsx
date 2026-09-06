@@ -61,19 +61,19 @@ export default function MarketInsights({ center, crop }: MarketInsightsProps) {
         <div className="flex-grow flex flex-col justify-center bg-gray-50 border border-gray-200 rounded-sm p-5 relative overflow-hidden">
           {error && (
              <div className="absolute top-0 right-0 bg-orange-100 text-orange-800 text-[10px] font-bold px-2 py-1 rounded-bl-sm border-b border-l border-orange-200 uppercase tracking-widest z-10">
-               Simulated Data (API Error)
+               Error - Showing stale data
              </div>
           )}
           <p className="text-xs font-bold text-gray-500 mb-1 uppercase tracking-widest">Estimated Current Price</p>
           <div className="flex items-end gap-3 mb-4">
             <span className="text-4xl font-black text-gray-900 leading-none">
-              {(data || getFallbackData(crop)).currency}{(data || getFallbackData(crop)).currentPrice}
+              {data?.current_market?.currency || '$'}{data?.current_market?.currentPrice || '---'}
             </span>
             <div className="flex flex-col pb-1">
-              <span className="text-sm font-bold text-gray-600">{(data || getFallbackData(crop)).unit}</span>
-              <span className={`text-sm font-black flex items-center \${(data || getFallbackData(crop)).trend === 'up' ? 'text-green-700' : 'text-red-700'}`}>
-                {(data || getFallbackData(crop)).trend === 'up' ? <TrendingUp className="w-4 h-4 mr-1" /> : <TrendingDown className="w-4 h-4 mr-1" />}
-                {(data || getFallbackData(crop)).percentageChange}
+              <span className="text-sm font-bold text-gray-600">{data?.current_market?.unit || ''}</span>
+              <span className={`text-sm font-black flex items-center ${data?.current_market?.trend === 'up' ? 'text-green-700' : data?.current_market?.trend === 'down' ? 'text-red-700' : 'text-gray-600'}`}>
+                {data?.current_market?.trend === 'up' ? <TrendingUp className="w-4 h-4 mr-1" /> : data?.current_market?.trend === 'down' ? <TrendingDown className="w-4 h-4 mr-1" /> : null}
+                {data?.current_market?.percentageChange || ''}
               </span>
             </div>
           </div>
@@ -81,7 +81,7 @@ export default function MarketInsights({ center, crop }: MarketInsightsProps) {
           <div className="bg-blue-50 rounded-sm p-4 border border-blue-200 mt-2">
             <p className="text-sm text-blue-900 font-bold leading-relaxed">
               <DollarSign className="w-4 h-4 inline mr-1 text-blue-700" />
-              {(data || getFallbackData(crop)).insight}
+              {data?.current_market?.insight || 'No market insight available at the moment.'}
             </p>
           </div>
         </div>
@@ -92,27 +92,4 @@ export default function MarketInsights({ center, crop }: MarketInsightsProps) {
       )}
     </div>
   );
-}
-
-// Fallback data helper
-function getFallbackData(crop: string) {
-  const basePrices: Record<string, number> = {
-    wheat: 245,
-    rice: 320,
-    corn: 180,
-    cotton: 850,
-    sugarcane: 45,
-    soybean: 410,
-  };
-  
-  const currentPrice = basePrices[crop.toLowerCase()] || 200;
-  
-  return {
-    currentPrice,
-    unit: '/ quintal',
-    currency: '$',
-    trend: Math.random() > 0.5 ? 'up' : 'down',
-    percentageChange: (Math.random() * 5).toFixed(1) + '%',
-    insight: `Market demand for ${crop} is steady. Consider selling 30% of inventory now and holding the rest.`
-  };
 }

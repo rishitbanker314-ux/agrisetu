@@ -31,12 +31,7 @@ export function useAdvisory(fieldData: LiveFieldData | null, crop: string = 'whe
       }
     }
 
-    // Add a slight debounce to prevent spamming the AI on rapid map clicks
-    const timeoutId = setTimeout(() => {
-      fetchAdvisory();
-    }, 1000);
-
-    return () => clearTimeout(timeoutId);
+    fetchAdvisory();
   }, [fieldData, crop, language]);
 
   return { advisory, loading, error };

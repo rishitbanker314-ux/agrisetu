@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Mic, MicOff, Loader2, Volume2, X, MessageSquare } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -28,6 +28,40 @@ export default function VoiceCopilot({ fieldData, crop }: VoiceCopilotProps) {
   
   const recognitionRef = useRef<any>(null);
 
+  const speakResponse = useCallback((text: string) => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      window.speechSynthesis.speak(utterance);
+    }
+  }, []);
+
+  const processVoiceQuery = useCallback(async (query: string) => {
+    setIsProcessing(true);
+    try {
+      const { data, error: funcError } = await supabase.functions.invoke('advisory-engine', {
+        body: {
+          crop,
+          language: 'English',
+          fieldData,
+          voice_query: query
+        }
+      });
+
+      if (funcError) throw funcError;
+      
+      const responseText = data.recommendation_text;
+      setResponse(responseText);
+      speakResponse(responseText);
+      
+    } catch (err: any) {
+      console.error(err);
+      setError("Failed to get advice. Please try again.");
+    } finally {
+      setIsProcessing(false);
+    }
+  }, [crop, fieldData, speakResponse]);
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -54,7 +88,7 @@ export default function VoiceCopilot({ fieldData, crop }: VoiceCopilotProps) {
           setIsListening(false);
         };
       } else {
-        setHasSpeechSupport(false);
+        queueMicrotask(() => setHasSpeechSupport(false));
       }
     }
     
@@ -63,7 +97,7 @@ export default function VoiceCopilot({ fieldData, crop }: VoiceCopilotProps) {
         recognitionRef.current.abort();
       }
     };
-  }, [fieldData, crop]);
+  }, [fieldData, crop, processVoiceQuery]);
 
   const toggleListening = () => {
     if (isListening) {
@@ -82,44 +116,12 @@ export default function VoiceCopilot({ fieldData, crop }: VoiceCopilotProps) {
     }
   };
 
-  const processVoiceQuery = async (query: string) => {
-    setIsProcessing(true);
-    try {
-      const { data, error: funcError } = await supabase.functions.invoke('advisory-engine', {
-        body: {
-          crop,
-          language: 'English',
-          fieldData,
-          voice_query: query
-        }
-      });
 
-      if (funcError) throw funcError;
-      
-      const responseText = data.recommendation_text;
-      setResponse(responseText);
-      speakResponse(responseText);
-      
-    } catch (err: any) {
-      console.error(err);
-      setError("Failed to get advice. Please try again.");
-    } finally {
-      setIsProcessing(false);
-    }
-  };
 
-  const speakResponse = (text: string) => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      window.speechSynthesis.speak(utterance);
-    }
-  };
-
-  if (!hasSpeechSupport) return null;
+  // if (!hasSpeechSupport) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 z-[500] flex flex-col items-end">
+    <div className="relative flex flex-col items-end z-[500] pointer-events-auto">
       
       <AnimatePresence>
         {isOpen && (
@@ -128,7 +130,7 @@ export default function VoiceCopilot({ fieldData, crop }: VoiceCopilotProps) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
-            className="mb-4 w-[320px] bg-gray-900 border border-gray-700 shadow-2xl rounded-2xl overflow-hidden flex flex-col"
+            className="absolute right-full mr-4 top-0 w-[320px] bg-gray-900 border border-gray-700 shadow-2xl rounded-2xl overflow-hidden flex flex-col"
           >
             {/* Header */}
             <div className="bg-gray-800 p-4 border-b border-gray-700 flex justify-between items-center">
@@ -172,10 +174,18 @@ export default function VoiceCopilot({ fieldData, crop }: VoiceCopilotProps) {
                 </div>
               )}
               
-              {!isListening && !isProcessing && !transcript && !error && (
+              {!isListening && !isProcessing && !transcript && !error && hasSpeechSupport && (
                 <div className="text-center py-6">
                   <p className="text-sm text-gray-500 font-medium">
                     Tap the mic and ask anything.
+                  </p>
+                </div>
+              )}
+
+              {!hasSpeechSupport && (
+                <div className="text-center py-6">
+                  <p className="text-sm text-amber-500 font-medium px-4">
+                    Voice Copilot requires a supported browser (like Chrome or Edge) for speech recognition.
                   </p>
                 </div>
               )}
@@ -185,13 +195,16 @@ export default function VoiceCopilot({ fieldData, crop }: VoiceCopilotProps) {
             <div className="p-4 border-t border-gray-800 flex justify-center bg-gray-900">
               <button 
                 onClick={toggleListening}
+                disabled={!hasSpeechSupport}
                 className={`relative p-4 rounded-full shadow-lg transition-all transform active:scale-95 \${
-                  isListening 
-                    ? 'bg-red-500 hover:bg-red-600 shadow-red-500/25' 
-                    : 'bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/25'
+                  !hasSpeechSupport 
+                    ? 'bg-gray-700 cursor-not-allowed opacity-50' 
+                    : isListening 
+                      ? 'bg-red-500 hover:bg-red-600 shadow-red-500/25' 
+                      : 'bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/25'
                 }`}
               >
-                {isListening && (
+                {isListening && hasSpeechSupport && (
                   <span className="absolute inset-0 rounded-full bg-red-500 animate-ping opacity-75"></span>
                 )}
                 {isListening ? <MicOff className="w-6 h-6 text-white relative z-10" /> : <Mic className="w-6 h-6 text-white relative z-10" />}
@@ -209,10 +222,10 @@ export default function VoiceCopilot({ fieldData, crop }: VoiceCopilotProps) {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setIsOpen(true)}
-          className="bg-gray-900 border border-gray-700 hover:border-emerald-500 p-4 rounded-full shadow-2xl text-white flex items-center justify-center relative group"
+          className="bg-gray-900 border border-gray-700 hover:border-emerald-500 p-3 rounded-full shadow-2xl text-white flex items-center justify-center relative group"
         >
           <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500 to-green-400 rounded-full opacity-0 group-hover:opacity-20 transition-opacity"></div>
-          <MessageSquare className="w-7 h-7 text-emerald-400" />
+          <MessageSquare className="w-5 h-5 text-emerald-400" />
         </motion.button>
       )}
     </div>

@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { Sprout, User, Bell, CreditCard, Shield, Smartphone, Save, Loader2 } from 'lucide-react';
+import { Sprout, User, Bell, Shield, Smartphone, Save, Loader2, ArrowLeft } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
+import { toast } from 'sonner';
 
 export default function SettingsPage() {
   const [isMounted, setIsMounted] = useState(false);
@@ -20,7 +21,7 @@ export default function SettingsPage() {
   });
 
   useEffect(() => {
-    setIsMounted(true);
+    queueMicrotask(() => setIsMounted(true));
     async function loadProfile() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
@@ -66,7 +67,7 @@ export default function SettingsPage() {
 
     setIsSaving(false);
     if (!error) {
-      alert('Settings saved successfully!');
+      toast.success('Settings saved successfully!');
     }
   };
 
@@ -74,24 +75,24 @@ export default function SettingsPage() {
     if (!settings.email) return;
     const { error } = await supabase.auth.resetPasswordForEmail(settings.email);
     if (error) {
-      alert(`Error sending reset email: ${error.message}`);
+      toast.error(`Error sending reset email: ${error.message}`);
     } else {
-      alert('Password reset link sent to your email!');
+      toast.success('Password reset link sent to your email!');
     }
   };
 
-  const handleBilling = () => {
-    alert('Billing and subscriptions are currently managed directly through your account executive. Please contact support to upgrade or modify your plan.');
-  };
 
   if (!isMounted) return null;
 
   return (
     <div className="min-h-screen bg-paper-ivory flex flex-col font-sans selection:bg-moss/30 selection:text-deep-forest">
-      <header className="bg-white border-b border-soft-line z-[9999] flex items-center justify-between px-6 h-16 shrink-0 relative shadow-sm">
-        <Link href="/en/dashboard" className="flex items-center gap-2">
+      <header className="bg-white border-b border-soft-line z-[9999] flex items-center justify-between px-4 md:px-6 h-16 shrink-0 relative shadow-sm">
+        <Link href="/en/dashboard" className="text-ink/60 hover:text-moss transition-colors flex items-center gap-1.5 text-sm font-medium">
+          <ArrowLeft className="w-4 h-4" /> <span className="hidden sm:inline">Back to Dashboard</span>
+        </Link>
+        <Link href="/en" className="flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
           <Sprout className="w-6 h-6 text-deep-forest" />
-          <span className="font-serif text-xl tracking-tight text-ink font-medium">AgriSetu</span>
+          <span className="font-serif text-xl tracking-tight text-ink font-medium hidden sm:block">AgriSetu</span>
         </Link>
         <div className="text-xs font-medium uppercase tracking-widest text-ink/50">Settings</div>
       </header>
@@ -191,35 +192,19 @@ export default function SettingsPage() {
               </div>
             </section>
 
-            {/* Security & Plan */}
-            <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white border border-soft-line rounded-xl p-6 shadow-sm">
-                <div className="flex items-center gap-3 mb-4">
-                  <Shield className="w-5 h-5 text-moss" />
-                  <h2 className="text-lg font-serif text-deep-forest font-medium">Security</h2>
-                </div>
-                <p className="text-sm text-ink/60 mb-4">Manage your password and secure your account with Supabase authentication.</p>
-                <button 
-                  onClick={handleResetPassword}
-                  className="text-xs font-bold uppercase tracking-widest text-moss hover:text-deep-forest transition-colors"
-                >
-                  Update Password &rarr;
-                </button>
+            {/* Security */}
+            <section className="bg-white border border-soft-line rounded-xl p-6 shadow-sm">
+              <div className="flex items-center gap-3 mb-4">
+                <Shield className="w-5 h-5 text-moss" />
+                <h2 className="text-lg font-serif text-deep-forest font-medium">Security</h2>
               </div>
-              
-              <div className="bg-white border border-soft-line rounded-xl p-6 shadow-sm">
-                <div className="flex items-center gap-3 mb-4">
-                  <CreditCard className="w-5 h-5 text-terracotta" />
-                  <h2 className="text-lg font-serif text-deep-forest font-medium">Subscription</h2>
-                </div>
-                <p className="text-sm text-ink/60 mb-4">You are currently on the <strong className="text-deep-forest">Enterprise Plan</strong>. Your next billing date is Nov 1, 2025.</p>
-                <button 
-                  onClick={handleBilling}
-                  className="text-xs font-bold uppercase tracking-widest text-terracotta hover:text-deep-forest transition-colors"
-                >
-                  Manage Billing &rarr;
-                </button>
-              </div>
+              <p className="text-sm text-ink/60 mb-4">Manage your password and secure your account with Supabase authentication.</p>
+              <button 
+                onClick={handleResetPassword}
+                className="text-xs font-bold uppercase tracking-widest text-moss hover:text-deep-forest transition-colors"
+              >
+                Update Password &rarr;
+              </button>
             </section>
             
           </div>

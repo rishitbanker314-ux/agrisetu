@@ -34,8 +34,8 @@ export default function MarketScenarios({ crop, lat = 28.6139, lng = 77.2090 }: 
         });
         
         if (error) throw error;
-        // Edge function should return an array of 3 scenarios
-        setScenarios(Array.isArray(data) ? data : []);
+        // Edge function returns an object with scenarios array
+        setScenarios(data.scenarios && Array.isArray(data.scenarios) ? data.scenarios : []);
       } catch (err) {
         console.error("Failed to load market scenarios:", err);
       } finally {
@@ -43,8 +43,7 @@ export default function MarketScenarios({ crop, lat = 28.6139, lng = 77.2090 }: 
       }
     }
 
-    const timeout = setTimeout(fetchScenarios, 1000);
-    return () => clearTimeout(timeout);
+    fetchScenarios();
   }, [crop, lat, lng]);
 
   // Mini SVG Line Chart Component
@@ -128,7 +127,17 @@ export default function MarketScenarios({ crop, lat = 28.6139, lng = 77.2090 }: 
                 {scenario.impact || 'Analyzing market conditions...'}
               </div>
 
-              <button className="w-full py-2 rounded-md font-sans font-medium text-sm transition-colors border border-soft-line hover:bg-moss/5 text-deep-forest">
+              <button 
+                onClick={() => {
+                  window.dispatchEvent(new CustomEvent('add-notification', {
+                    detail: {
+                      title: 'Trade Action Logged',
+                      message: `Your intent to ${scenario.recommendation || 'HOLD'} based on the "${scenario.title}" scenario has been recorded.`
+                    }
+                  }));
+                }}
+                className="w-full py-2 rounded-md font-sans font-medium text-sm transition-colors border border-soft-line hover:bg-moss/5 text-deep-forest active:bg-moss/20"
+              >
                 {scenario.recommendation || 'HOLD'}
               </button>
             </div>

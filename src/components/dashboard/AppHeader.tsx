@@ -10,9 +10,12 @@ interface AppHeaderProps {
   user: User | null;
   crop: string;
   setCrop: (crop: string) => void;
+  savedFields?: any[];
+  fieldId?: number | string | null;
+  onFieldChange?: (id: string) => void;
 }
 
-export default function AppHeader({ user, crop, setCrop }: AppHeaderProps) {
+export default function AppHeader({ user, crop, setCrop, savedFields = [], fieldId, onFieldChange }: AppHeaderProps) {
   const t = useTranslations('Index');
 
   const handleSignOut = async () => {
@@ -21,7 +24,9 @@ export default function AppHeader({ user, crop, setCrop }: AppHeaderProps) {
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
-  const [notifications, setNotifications] = useState<{title: string, message: string, time: Date}[]>([]);
+  const [notifications, setNotifications] = useState<{title: string, message: string, time: Date}[]>([
+    { title: 'System Online', message: 'AgriSetu dashboard initialized. Monitoring real-time field data.', time: new Date() }
+  ]);
   const [unread, setUnread] = useState(false);
 
   useEffect(() => {
@@ -64,11 +69,16 @@ export default function AppHeader({ user, crop, setCrop }: AppHeaderProps) {
       <div className="flex items-center gap-1 md:gap-2 absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0">
         <select 
           className="hidden md:block bg-transparent border border-soft-line hover:border-moss px-3 py-1.5 rounded-sm text-sm font-sans font-medium text-ink outline-none cursor-pointer focus:border-moss"
-          defaultValue="north-field"
+          value={fieldId?.toString() || ''}
+          onChange={(e) => onFieldChange && onFieldChange(e.target.value)}
         >
-          <option value="north-field">North Field</option>
-          <option value="west-field">West Field</option>
-          <option value="lowland">Lowland Plot</option>
+          {savedFields.length === 0 ? (
+            <option value="" disabled>No fields available</option>
+          ) : (
+            savedFields.map((f: any) => (
+              <option key={f.id} value={f.id.toString()}>{f.name || 'Unnamed Field'}</option>
+            ))
+          )}
         </select>
 
         <span className="hidden md:inline text-soft-line">&mdash;</span>
@@ -197,6 +207,7 @@ export default function AppHeader({ user, crop, setCrop }: AppHeaderProps) {
                 <span className="font-serif text-xl tracking-tight text-deep-forest font-medium">AgriSetu</span>
               </div>
               <div className="p-4 flex-grow flex flex-col gap-2">
+                <Link href="/en" className="px-4 py-2 text-ink/70 hover:bg-moss/5 font-medium rounded-md">Home</Link>
                 <Link href="/en/dashboard" className="px-4 py-2 bg-moss/10 text-moss font-medium rounded-md">Dashboard</Link>
                 <Link href="/en/fields" className="px-4 py-2 text-ink/70 hover:bg-moss/5 font-medium rounded-md">My Fields</Link>
                 <Link href="/en/field-notes" className="px-4 py-2 text-ink/70 hover:bg-moss/5 font-medium rounded-md">Field Notes</Link>

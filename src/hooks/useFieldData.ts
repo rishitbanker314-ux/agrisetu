@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
 
 export interface LiveFieldData {
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
   weather: {
     temperature: number;
     humidity: number;
@@ -44,12 +48,17 @@ export function useFieldData(lat: number, lng: number) {
         const precipitation = result.daily.precipitation_sum || [];
         
         const totalPrecipitation = precipitation.reduce((a: number, b: number) => a + b, 0);
+        
+        // Pseudo-random seed based on coordinates to ensure distinct data per field
+        const coordSeed = ((lat * 12.345) + (lng * 67.890)) % 1; 
 
+        // Apply seed to moisture
+        const seededMoisture = Math.min(100, Math.max(0, currentMoisture + (coordSeed * 15 - 7)));
         // Algorithm to simulate a realistic NDVI based on real weather data
         // High moisture + moderate temps = Good NDVI. Dry/Hot = Bad NDVI.
-        let baseNdvi = 0.4;
-        if (currentMoisture > 30) baseNdvi += 0.2;
-        if (currentMoisture > 50) baseNdvi += 0.15;
+        let baseNdvi = 0.4 + (coordSeed * 0.15 - 0.075);
+        if (seededMoisture > 30) baseNdvi += 0.2;
+        if (seededMoisture > 50) baseNdvi += 0.15;
         if (currentTemp > 15 && currentTemp < 30) baseNdvi += 0.1;
         if (totalPrecipitation > 20) baseNdvi += 0.1;
         const finalCalculatedNdvi = Math.min(0.95, Math.max(0.1, baseNdvi));
@@ -88,20 +97,22 @@ export function useFieldData(lat: number, lng: number) {
         // -----------------------------------------------
 
         // Algorithm to simulate soil pH based on climate
+        // Algorithm to simulate soil pH based on climate
         // High precipitation often leads to acidic soils (leaching), dry climates to alkaline
-        let basePh = 7.0;
+        let basePh = 7.0 + (coordSeed * 0.8 - 0.4);
         if (totalPrecipitation > 40) basePh -= 0.8;
         else if (totalPrecipitation > 15) basePh -= 0.3;
-        else if (currentMoisture < 20) basePh += 0.6;
+        else if (seededMoisture < 20) basePh += 0.6;
         else if (currentTemp > 35) basePh += 0.4;
 
         setData({
+          coordinates: { lat, lng },
           weather: {
             temperature: currentTemp,
             humidity: result.current.relative_humidity_2m,
           },
           soil: {
-            moisture: currentMoisture,
+            moisture: Math.round(seededMoisture),
             pH: Number(basePh.toFixed(1)),
           },
           ndvi: Number(finalCalculatedNdvi.toFixed(2)),

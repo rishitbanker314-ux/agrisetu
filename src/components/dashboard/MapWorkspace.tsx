@@ -8,6 +8,7 @@ import WeatherWidget from '../WeatherWidget';
 import TemporalSlider from '../TemporalSlider';
 import BottomDrawer from './BottomDrawer';
 import { Layers } from 'lucide-react';
+import VoiceCopilot from '../VoiceCopilot';
 
 const Map = dynamic(() => import('../Map'), { ssr: false });
 
@@ -24,7 +25,7 @@ interface MapWorkspaceProps {
   advisoryLoading: boolean;
   fieldId: string;
   savedFields?: any[];
-  onSaveField?: () => void;
+  onSaveField?: (boundary?: [number, number][], newCenter?: [number, number]) => void;
   onSelectField?: (field: any) => void;
 }
 
@@ -44,14 +45,18 @@ export default function MapWorkspace({
   onSelectField
 }: MapWorkspaceProps) {
   
-  const [mapStyle, setMapStyle] = useState<'street' | 'satellite'>('street');
-
-  useEffect(() => {
-    const saved = localStorage.getItem('mapStyle');
-    if (saved === 'satellite' || saved === 'street') {
-      setMapStyle(saved);
+  const [mapStyle, setMapStyle] = useState<'street' | 'satellite'>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('mapStyle');
+      if (saved === 'satellite' || saved === 'street') return saved;
     }
-  }, []);
+    return 'street';
+  });
+
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [drawnBoundary, setDrawnBoundary] = useState<any[]>([]);
+
+
 
   const handleMapStyleToggle = () => {
     setMapStyle(s => {
@@ -74,14 +79,43 @@ export default function MapWorkspace({
         </div>
 
         {/* Right Side: Map Controls */}
-        <div className="pointer-events-auto flex flex-col gap-2 shrink-0">
+        <div className="pointer-events-auto flex flex-col items-end gap-2 shrink-0">
           <button 
             onClick={handleMapStyleToggle}
-            className={`bg-white border border-soft-line p-2 rounded-md shadow-sm transition-colors text-ink \${mapStyle === 'satellite' ? 'bg-moss/10 border-moss text-moss' : 'hover:bg-moss/5'}`}
+            className={`bg-white border border-soft-line p-2 rounded-md shadow-sm transition-colors text-ink ${mapStyle === 'satellite' ? 'bg-moss/10 border-moss text-moss' : 'hover:bg-moss/5'}`}
             title="Toggle Map Style"
           >
             <Layers className="w-5 h-5" />
           </button>
+          
+          <button 
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              if (!isDrawing) {
+                setDrawnBoundary(prev => [...prev, []]);
+              }
+              setIsDrawing(!isDrawing);
+            }}
+            className={`px-4 py-2 mt-1 rounded-full shadow-md text-sm font-medium transition-colors pointer-events-auto ${isDrawing ? 'bg-moss text-white' : 'bg-white text-ink hover:bg-moss/10 border border-soft-line'}`}
+          >
+            {isDrawing ? 'Finish Drawing' : 'Draw Boundary'}
+          </button>
+          
+          {drawnBoundary.length > 0 && !isDrawing && (
+            <button 
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                setDrawnBoundary([]);
+              }}
+              className="px-4 py-2 bg-white rounded-full shadow-md text-sm font-medium text-terracotta hover:bg-terracotta/10 transition-colors pointer-events-auto border border-soft-line mt-1"
+            >
+              Clear Shape
+            </button>
+          )}
+          
+          <VoiceCopilot fieldData={fieldData} crop={crop} />
         </div>
       </div>
 
@@ -90,27 +124,49 @@ export default function MapWorkspace({
         <Map 
           center={center} 
           zoom={14} 
-          markers={savedFields.map(f => ({ id: f.id, lat: f.lat, lng: f.lng, title: f.name }))}
-          activeMarker={{ lat: center[0], lng: center[1] }}
+          markers={savedFields.filter(f => f.lat != null && f.lng != null).map(f => ({ id: f.id, lat: f.lat, lng: f.lng, title: f.name, boundary: f.boundary }))}
+          activeMarker={{ 
+            lat: center[0], 
+            lng: center[1], 
+            boundary: drawnBoundary.flat().length > 2 ? drawnBoundary : savedFields.find(f => f.id && f.id.toString() === fieldId)?.boundary 
+          }}
           onLocationSelect={(lat, lng) => {
-            const existingField = savedFields.find(f => Math.abs(f.lat - lat) < 0.0001 && Math.abs(f.lng - lng) < 0.0001);
-            if (existingField && onSelectField) {
-              onSelectField(existingField);
+            if (isDrawing) {
+              setDrawnBoundary(prev => { if (prev.length === 0) return [[[lat, lng]]]; const newArr = [...prev]; newArr[newArr.length - 1] = [...newArr[newArr.length - 1], [lat, lng]]; return newArr; });
             } else {
-              setCenter([lat, lng]);
+              const existingField = savedFields.find(f => f.lat != null && f.lng != null && Math.abs(f.lat - lat) < 0.0001 && Math.abs(f.lng - lng) < 0.0001);
+              if (existingField && onSelectField) {
+                onSelectField(existingField);
+              } else {
+                setCenter([lat, lng]);
+              }
             }
           }} 
           temporalNdvi={temporalNdvi}
           mapStyle={mapStyle}
+          isDrawingMode={isDrawing}
+          drawnBoundary={drawnBoundary}
         />
       </div>
 
       {/* Floating Save Button if location is new */}
-      {!savedFields.find(f => Math.abs(f.lat - center[0]) < 0.0001 && Math.abs(f.lng - center[1]) < 0.0001) && onSaveField && (
+      {!savedFields.find(f => f.lat != null && f.lng != null && Math.abs(f.lat - center[0]) < 0.0001 && Math.abs(f.lng - center[1]) < 0.0001) && onSaveField && (
         <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-[500] pointer-events-auto">
           <button
-            onClick={onSaveField}
-            className="bg-deep-forest text-white px-6 py-2.5 rounded-full shadow-lg font-medium text-sm hover:bg-moss hover:scale-105 transition-all flex items-center gap-2"
+            onClick={() => {
+              let newCenter: [number, number] | undefined = undefined;
+              const allPts = drawnBoundary.flat();
+              if (allPts.length > 2) {
+                const sumLat = allPts.reduce((sum, p) => sum + p[0], 0);
+                const sumLng = allPts.reduce((sum, p) => sum + p[1], 0);
+                newCenter = [sumLat / allPts.length, sumLng / allPts.length];
+                setCenter(newCenter);
+              }
+              onSaveField(allPts.length > 2 ? drawnBoundary : undefined, newCenter);
+              setDrawnBoundary([]);
+              setIsDrawing(false);
+            }}
+            className="bg-deep-forest text-white px-6 py-2.5 rounded-full shadow-lg font-medium text-sm hover:bg-moss hover:scale-105 transition-all flex items-center gap-2 border border-white/20"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
@@ -125,13 +181,14 @@ export default function MapWorkspace({
       {/* Floating Bottom Controls (Above Drawer) */}
       <TemporalSlider dateOffset={dateOffset} setDateOffset={setDateOffset} maxDays={89} />
 
-      {/* The Bottom Drawer */}
+      {/* Bottom Drawer Intelligence */}
       <BottomDrawer 
         fieldData={fieldData}
         crop={crop}
         advisory={advisory}
         advisoryLoading={advisoryLoading}
         fieldId={fieldId}
+        center={center}
       />
       
     </div>

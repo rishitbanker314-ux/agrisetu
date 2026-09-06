@@ -41,7 +41,7 @@ export default function ClimateAlerts({ fieldData }: { fieldData?: LiveFieldData
       };
     }
 
-    setActiveAlert(alertFound);
+    queueMicrotask(() => setActiveAlert(alertFound));
   }, [fieldData]);
 
   const handleSubscribe = () => {

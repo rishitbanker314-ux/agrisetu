@@ -149,24 +149,24 @@ export default function SiteHeader() {
 
         <nav className="flex flex-col gap-8 text-2xl font-serif">
           {navItems.map((item) => (
-            <a key={item.label} href={item.href} className="text-ink" onClick={() => setMobileMenuOpen(false)}>
+            <Link key={item.label} href={item.href} className="text-ink" onClick={() => setMobileMenuOpen(false)}>
               {item.label}
-            </a>
+            </Link>
           ))}
           <div className="h-[1px] w-full bg-soft-line my-4"></div>
           {!user ? (
-            <a href="/en/login" className="text-lg font-sans text-ink">Log in</a>
+            <Link href="/en/login" className="text-lg font-sans text-ink">Log in</Link>
           ) : (
-            <a href="/en/dashboard" className="text-lg font-sans text-ink flex items-center gap-3">
+            <Link href="/en/dashboard" className="text-lg font-sans text-ink flex items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-moss/20 flex items-center justify-center text-moss text-sm border border-moss/30">
                 {user.email?.charAt(0).toUpperCase() || 'U'}
               </div>
               Dashboard
-            </a>
+            </Link>
           )}
-          <a href="/en/dashboard" className="bg-deep-forest text-paper-ivory text-center py-4 rounded-full text-lg font-sans w-full">
+          <Link href="/en/dashboard" className="bg-deep-forest text-paper-ivory text-center py-4 rounded-full text-lg font-sans w-full">
             Open the field view &rarr;
-          </a>
+          </Link>
         </nav>
       </motion.div>
     </>
