@@ -16,9 +16,9 @@ interface Field {
   area: string;
   status: string;
   created_at: string;
-  lat?: number;
-  lng?: number;
-  boundary?: [number, number][];
+  lat?: number | null;
+  lng?: number | null;
+  boundary?: [number, number][] | null;
 }
 
 export default function FieldsPage() {
