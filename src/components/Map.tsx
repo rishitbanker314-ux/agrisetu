@@ -32,11 +32,13 @@ const drawPointIcon = L.divIcon({
 });
 
 // A component to automatically center the map on the selected coordinates
-function RecenterAutomatically({ lat, lng }: { lat: number; lng: number }) {
+function RecenterAutomatically({ lat, lng, zoom }: { lat: number; lng: number; zoom?: number }) {
   const map = useMap();
   useEffect(() => {
-    map.setView([lat, lng]);
-  }, [lat, lng, map]);
+    map.flyTo([lat, lng], zoom || Math.max(map.getZoom(), 16), {
+      duration: 1.5
+    });
+  }, [lat, lng, zoom, map]);
   return null;
 }
 
