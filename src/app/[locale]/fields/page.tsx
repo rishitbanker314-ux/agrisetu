@@ -274,7 +274,7 @@ export default function FieldsPage() {
                     if (!isDrawing) {
                       setDrawnBoundary(prev => [...prev, []]);
                     }
-                    if (!isDrawing) setDrawnBoundary(prev => [...prev, []]); setIsDrawing(!isDrawing);
+                    setIsDrawing(!isDrawing);
                   }}
                   className={`px-4 py-2 rounded-full shadow-md text-sm font-medium transition-colors ${isDrawing ? 'bg-moss text-white' : 'bg-white text-ink hover:bg-moss/10'}`}
                 >
@@ -303,12 +303,17 @@ export default function FieldsPage() {
                 zoom={selectedLocation ? 16 : 4} 
                 onLocationSelect={(lat, lng) => {
                   if (isDrawing) {
-                    setDrawnBoundary(prev => [...prev, [lat, lng]]);
+                    setDrawnBoundary(prev => { 
+                      if (prev.length === 0) return [[[lat, lng]]]; 
+                      const newArr = [...prev]; 
+                      newArr[newArr.length - 1] = [...newArr[newArr.length - 1], [lat, lng]]; 
+                      return newArr; 
+                    });
                   } else {
                     setSelectedLocation([lat, lng]);
                   }
                 }}
-                activeMarker={selectedLocation ? { lat: selectedLocation[0], lng: selectedLocation[1], boundary: drawnBoundary.length > 2 ? drawnBoundary : undefined } : undefined}
+                activeMarker={selectedLocation ? { lat: selectedLocation[0], lng: selectedLocation[1], boundary: drawnBoundary.flat().length > 2 ? drawnBoundary : undefined } : undefined}
                 mapStyle="satellite"
                 isDrawingMode={isDrawing}
                 drawnBoundary={drawnBoundary}
@@ -377,7 +382,8 @@ export default function FieldsPage() {
                   type="button"
                   onClick={(e) => {
                     e.preventDefault();
-                    if (!isDrawing) setDrawnBoundary(prev => [...prev, []]); setIsDrawing(!isDrawing);
+                    if (!isDrawing) setDrawnBoundary(prev => [...prev, []]); 
+                    setIsDrawing(!isDrawing);
                   }}
                   className={`px-4 py-2 rounded-full shadow-md text-sm font-medium transition-colors ${isDrawing ? 'bg-moss text-white' : 'bg-white text-ink hover:bg-moss/10'}`}
                 >
@@ -406,12 +412,17 @@ export default function FieldsPage() {
                 zoom={selectedLocation ? 16 : 4} 
                 onLocationSelect={(lat, lng) => {
                   if (isDrawing) {
-                    setDrawnBoundary(prev => [...prev, [lat, lng]]);
+                    setDrawnBoundary(prev => { 
+                      if (prev.length === 0) return [[[lat, lng]]]; 
+                      const newArr = [...prev]; 
+                      newArr[newArr.length - 1] = [...newArr[newArr.length - 1], [lat, lng]]; 
+                      return newArr; 
+                    });
                   } else {
                     setSelectedLocation([lat, lng]);
                   }
                 }}
-                activeMarker={selectedLocation ? { lat: selectedLocation[0], lng: selectedLocation[1], boundary: drawnBoundary.length > 2 ? drawnBoundary : undefined } : undefined}
+                activeMarker={selectedLocation ? { lat: selectedLocation[0], lng: selectedLocation[1], boundary: drawnBoundary.flat().length > 2 ? drawnBoundary : undefined } : undefined}
                 mapStyle="satellite"
                 isDrawingMode={isDrawing}
                 drawnBoundary={drawnBoundary}
