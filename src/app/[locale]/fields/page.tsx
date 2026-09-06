@@ -8,6 +8,8 @@ import { toast } from 'sonner';
 import dynamic from 'next/dynamic';
 
 const Map = dynamic(() => import('@/components/Map'), { ssr: false });
+import LocationSearch from '@/components/LocationSearch';
+import { Layers } from 'lucide-react';
 
 interface Field {
   id: string;
@@ -33,6 +35,7 @@ export default function FieldsPage() {
   const [selectedLocation, setSelectedLocation] = useState<[number, number] | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [drawnBoundary, setDrawnBoundary] = useState<any[]>([]);
+  const [mapStyle, setMapStyle] = useState<'street' | 'satellite'>('street');
 
   useEffect(() => {
     async function loadFields() {
@@ -152,22 +155,6 @@ export default function FieldsPage() {
     setIsDeleting(false);
   };
 
-  const handleLocationSearch = async (e: React.FocusEvent<HTMLInputElement>) => {
-    const address = e.target.value;
-    if (address.length > 2) {
-      try {
-        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`);
-        const data = await res.json();
-        if (data && data.length > 0) {
-          setSelectedLocation([parseFloat(data[0].lat), parseFloat(data[0].lon)]);
-          toast.success(`Found location: ${data[0].display_name.split(',')[0]}`);
-        }
-      } catch(err) {
-        console.error("Geocoding failed", err);
-      }
-    }
-  };
-
   return (
     <div className="min-h-screen bg-paper-ivory flex flex-col font-sans selection:bg-moss/30 selection:text-deep-forest">
       <header className="bg-white border-b border-soft-line z-[9999] flex items-center justify-between px-4 md:px-6 h-16 shrink-0 relative shadow-sm">
@@ -281,7 +268,12 @@ export default function FieldsPage() {
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2 mt-4">Location Name</label>
-                  <input name="region" onBlur={handleLocationSearch} required placeholder="e.g., California, Fresno, or your city" className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" />
+                  <LocationSearch 
+                    name="region"
+                    placeholder="e.g., California, Fresno, or your city"
+                    onLocationFound={(lat, lng) => setSelectedLocation([lat, lng])}
+                    className="w-full"
+                  />
                 </div>
                 <button disabled={isSaving || (!selectedLocation && drawnBoundary.flat().length <= 2)} type="submit" className={`w-full flex items-center justify-center gap-2 py-3 rounded-md text-sm font-medium transition-colors mt-6 ${(!selectedLocation && drawnBoundary.flat().length <= 2) ? 'bg-ink/10 text-ink/40 cursor-not-allowed' : 'bg-deep-forest text-white hover:bg-moss disabled:opacity-50'}`}>
                   {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : null} {(!selectedLocation && drawnBoundary.flat().length <= 2) ? "Select location on map to save" : "Save Field"}
@@ -316,6 +308,15 @@ export default function FieldsPage() {
                   </button>
                 )}
               </div>
+              <div className="absolute top-4 left-4 z-[500] hidden md:block">
+                <button 
+                  onClick={(e) => { e.preventDefault(); setMapStyle(s => s === 'street' ? 'satellite' : 'street'); }}
+                  className={`bg-white p-2 rounded-md shadow-md transition-colors ${mapStyle === 'satellite' ? 'bg-moss/10 text-moss' : 'text-ink/60 hover:text-ink'}`}
+                  title="Toggle Map Style"
+                >
+                  <Layers className="w-5 h-5" />
+                </button>
+              </div>
               <div className="absolute top-4 right-4 z-[500] hidden md:block">
                 <button onClick={() => setIsModalOpen(false)} className="bg-white p-2 rounded-full shadow-md text-ink/40 hover:text-ink">
                   <X className="w-5 h-5" />
@@ -324,6 +325,7 @@ export default function FieldsPage() {
               <Map 
                 center={selectedLocation || [28.6139, 77.2090]} 
                 zoom={selectedLocation ? 16 : 4} 
+                mapStyle={mapStyle}
                 onLocationSelect={(lat, lng) => {
                   if (isDrawing) {
                     setDrawnBoundary(prev => { 
@@ -337,7 +339,6 @@ export default function FieldsPage() {
                   }
                 }}
                 activeMarker={selectedLocation ? { lat: selectedLocation[0], lng: selectedLocation[1], boundary: drawnBoundary.flat().length > 2 ? drawnBoundary : undefined } : undefined}
-                mapStyle="satellite"
                 isDrawingMode={isDrawing}
                 drawnBoundary={drawnBoundary}
               />
@@ -380,7 +381,13 @@ export default function FieldsPage() {
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2 mt-4">Location Name</label>
-                  <input name="region" onBlur={handleLocationSearch} defaultValue={editingField.region} required placeholder="e.g., California, Fresno, or your city" className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" />
+                  <LocationSearch 
+                    name="region"
+                    defaultValue={editingField.region || ""}
+                    placeholder="e.g., California, Fresno, or your city"
+                    onLocationFound={(lat, lng) => setSelectedLocation([lat, lng])}
+                    className="w-full"
+                  />
                 </div>
                 
                 <div className="flex gap-3 mt-6 pt-4 border-t border-soft-line">
@@ -429,6 +436,15 @@ export default function FieldsPage() {
                   </button>
                 )}
               </div>
+              <div className="absolute top-4 left-4 z-[500] hidden md:block">
+                <button 
+                  onClick={(e) => { e.preventDefault(); setMapStyle(s => s === 'street' ? 'satellite' : 'street'); }}
+                  className={`bg-white p-2 rounded-md shadow-md transition-colors ${mapStyle === 'satellite' ? 'bg-moss/10 text-moss' : 'text-ink/60 hover:text-ink'}`}
+                  title="Toggle Map Style"
+                >
+                  <Layers className="w-5 h-5" />
+                </button>
+              </div>
               <div className="absolute top-4 right-4 z-[500] hidden md:block">
                 <button onClick={() => setEditingField(null)} className="bg-white p-2 rounded-full shadow-md text-ink/40 hover:text-ink">
                   <X className="w-5 h-5" />
@@ -437,6 +453,7 @@ export default function FieldsPage() {
               <Map 
                 center={selectedLocation || [28.6139, 77.2090]} 
                 zoom={selectedLocation ? 16 : 4} 
+                mapStyle={mapStyle}
                 onLocationSelect={(lat, lng) => {
                   if (isDrawing) {
                     setDrawnBoundary(prev => { 
@@ -450,7 +467,6 @@ export default function FieldsPage() {
                   }
                 }}
                 activeMarker={selectedLocation ? { lat: selectedLocation[0], lng: selectedLocation[1], boundary: drawnBoundary.flat().length > 2 ? drawnBoundary : undefined } : undefined}
-                mapStyle="satellite"
                 isDrawingMode={isDrawing}
                 drawnBoundary={drawnBoundary}
               />
