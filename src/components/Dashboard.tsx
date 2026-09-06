@@ -277,6 +277,7 @@ export default function Dashboard() {
               const { data, error } = await supabase.from('fields').insert({
                 owner_id: user.id,
                 name: formData.get('name') as string,
+                region: formData.get('region') as string,
                 crop: formData.get('crop') as string,
                 area: (formData.get('area') as string) + ' ha',
                 lat: pendingFieldSave.center[0],
@@ -304,6 +305,12 @@ export default function Dashboard() {
                 <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2">Field Name</label>
                 <input name="name" required placeholder="e.g., East Plot" className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" />
               </div>
+
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2">Location Name</label>
+                <input name="region" required placeholder="e.g., California, Fresno, or your city" className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" />
+              </div>
+
               
               <div className="grid grid-cols-2 gap-4">
                 <div>

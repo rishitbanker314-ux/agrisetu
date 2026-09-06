@@ -19,6 +19,7 @@ interface Field {
   lat?: number | null;
   lng?: number | null;
   boundary?: [number, number][] | null;
+  region?: string;
 }
 
 export default function FieldsPage() {
@@ -74,6 +75,7 @@ export default function FieldsPage() {
       lat: targetLat || undefined,
       lng: targetLng || undefined,
       boundary: allPts.length > 2 ? drawnBoundary : null,
+      region: formData.get('region') as string,
       status: 'Healthy'
     };
 
@@ -116,6 +118,7 @@ export default function FieldsPage() {
       lat: targetLat,
       lng: targetLng,
       boundary: allPts.length > 2 ? drawnBoundary : null,
+      region: formData.get('region') as string,
     };
 
     const { error } = await supabase
@@ -213,7 +216,7 @@ export default function FieldsPage() {
                 </div>
                 
                 <h3 className="text-xl font-serif text-deep-forest font-medium mb-1">{field.name}</h3>
-                <p className="text-xs uppercase tracking-widest text-ink/50 mb-4">{field.crop} &bull; {field.area}</p>
+                <p className="text-xs uppercase tracking-widest text-ink/50 mb-4">{field.crop} &bull; {field.area}{field.region ? ` • ${field.region}` : ''}</p>
                 
                 <div className="flex justify-between items-end border-t border-soft-line pt-4 mt-2">
                   <div>
@@ -257,8 +260,12 @@ export default function FieldsPage() {
                   <input name="area" type="number" step="0.1" required placeholder="e.g., 10.5" className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" />
                 </div>
                 <div className="mt-4 p-4 bg-moss/5 border border-moss/20 rounded-lg">
-                  <p className="text-xs text-ink/70 mb-2"><strong>Location:</strong> {selectedLocation ? `Selected (${selectedLocation[0].toFixed(4)}, ${selectedLocation[1].toFixed(4)})` : 'Not selected'}</p>
+                  <p className="text-xs text-ink/70 mb-2"><strong>Location Coordinates:</strong> {selectedLocation ? `Selected (${selectedLocation[0].toFixed(4)}, ${selectedLocation[1].toFixed(4)})` : 'Not selected'}</p>
                   <p className="text-[10px] text-ink/50">Click on the map to pinpoint your field's location.</p>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2 mt-4">Location Name</label>
+                  <input name="region" required placeholder="e.g., California, Fresno, or your city" className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" />
                 </div>
                 <button disabled={isSaving} type="submit" className="w-full flex items-center justify-center gap-2 bg-deep-forest text-white py-3 rounded-md text-sm font-medium hover:bg-moss transition-colors mt-6 disabled:opacity-50">
                   {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : null} Save Field
@@ -352,8 +359,12 @@ export default function FieldsPage() {
                 </div>
                 
                 <div className="mt-4 p-4 bg-moss/5 border border-moss/20 rounded-lg">
-                  <p className="text-xs text-ink/70 mb-2"><strong>Location:</strong> {selectedLocation ? `Selected (${selectedLocation[0].toFixed(4)}, ${selectedLocation[1].toFixed(4)})` : 'Not selected'}</p>
+                  <p className="text-xs text-ink/70 mb-2"><strong>Location Coordinates:</strong> {selectedLocation ? `Selected (${selectedLocation[0].toFixed(4)}, ${selectedLocation[1].toFixed(4)})` : 'Not selected'}</p>
                   <p className="text-[10px] text-ink/50">Click on the map to pinpoint your field's location.</p>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2 mt-4">Location Name</label>
+                  <input name="region" defaultValue={editingField.region} required placeholder="e.g., California, Fresno, or your city" className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" />
                 </div>
                 
                 <div className="flex gap-3 mt-6 pt-4 border-t border-soft-line">
