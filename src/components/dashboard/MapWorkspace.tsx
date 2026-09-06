@@ -153,6 +153,7 @@ export default function MapWorkspace({
       {!savedFields.find(f => f.lat != null && f.lng != null && Math.abs(f.lat - center[0]) < 0.0001 && Math.abs(f.lng - center[1]) < 0.0001) && onSaveField && (
         <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-[500] pointer-events-auto">
           <button
+            disabled={drawnBoundary.flat().length <= 2}
             onClick={() => {
               let newCenter: [number, number] | undefined = undefined;
               const allPts = drawnBoundary.flat();
@@ -166,14 +167,18 @@ export default function MapWorkspace({
               setDrawnBoundary([]);
               setIsDrawing(false);
             }}
-            className="bg-deep-forest text-white px-6 py-2.5 rounded-full shadow-lg font-medium text-sm hover:bg-moss hover:scale-105 transition-all flex items-center gap-2 border border-white/20"
+            className={`px-6 py-2.5 rounded-full shadow-lg font-medium text-sm transition-all flex items-center gap-2 border border-white/20 ${
+              drawnBoundary.flat().length <= 2 
+                ? 'bg-ink/60 text-white/70 cursor-not-allowed backdrop-blur-sm' 
+                : 'bg-deep-forest text-white hover:bg-moss hover:scale-105'
+            }`}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
               <polyline points="17 21 17 13 7 13 7 21"></polyline>
               <polyline points="7 3 7 8 15 8"></polyline>
             </svg>
-            Save Field Location
+            {drawnBoundary.flat().length <= 2 ? "Draw Boundary to Save" : "Save Field Location"}
           </button>
         </div>
       )}
