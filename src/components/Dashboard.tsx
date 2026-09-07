@@ -347,11 +347,17 @@ export default function Dashboard() {
                 <div>
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2">Crop Type</label>
                   <select name="crop" required defaultValue={crop} className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss">
-                    <option value="wheat">Wheat</option>
-                    <option value="rice">Rice</option>
-                    <option value="corn">Corn</option>
-                    <option value="soybeans">Soybeans</option>
-                    <option value="cotton">Cotton</option>
+                    <option value="Wheat">Wheat</option>
+                    <option value="Rice">Rice</option>
+                    <option value="Cotton">Cotton</option>
+                    <option value="Sugarcane">Sugarcane</option>
+                    <option value="Maize">Maize</option>
+                    <option value="Soybeans">Soybeans</option>
+                    <option value="Chickpea">Chickpea</option>
+                    <option value="Mustard">Mustard</option>
+                    <option value="Groundnut">Groundnut</option>
+                    <option value="Bajra">Bajra</option>
+                    <option value="Jowar">Jowar</option>
                   </select>
                 </div>
                 <div>

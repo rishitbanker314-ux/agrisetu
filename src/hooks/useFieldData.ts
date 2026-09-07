@@ -24,11 +24,16 @@ export interface LiveFieldData {
 // Baseline yield (Tons/Hectare) and Market Price (INR/Ton)
 const CROP_BASELINES: Record<string, { baseYield: number, price: number }> = {
   "Wheat": { baseYield: 3.5, price: 22750 }, // MSP approx
-  "Rice (Paddy)": { baseYield: 4.0, price: 21830 },
+  "Rice": { baseYield: 4.0, price: 21830 },
   "Cotton": { baseYield: 0.5, price: 66200 },
   "Sugarcane": { baseYield: 70.0, price: 3400 },
   "Maize": { baseYield: 3.0, price: 20900 },
-  "Soybean": { baseYield: 1.2, price: 46000 }
+  "Soybeans": { baseYield: 1.2, price: 46000 },
+  "Chickpea": { baseYield: 1.0, price: 54400 },
+  "Mustard": { baseYield: 1.5, price: 56500 },
+  "Groundnut": { baseYield: 1.8, price: 63770 },
+  "Bajra": { baseYield: 1.5, price: 25000 },
+  "Jowar": { baseYield: 1.2, price: 31800 }
 };
 
 export function useFieldData(lat: number, lng: number, boundary?: any[], crop: string = "Wheat", areaHectares: number = 0) {
