@@ -79,7 +79,7 @@ export default function DrawerTabs({ fieldData, crop, advisory, advisoryLoading,
           )}
           {activeTab === 'market' && (
             <div className="h-full">
-              <h3 className="font-serif text-sm text-ink/50 uppercase tracking-widest mb-4">Generative Market Futures</h3>
+              <h3 className="font-serif text-sm text-ink/50 uppercase tracking-widest mb-4">Real-time Market Data</h3>
               <div className="bg-white rounded-lg border border-soft-line p-4">
                 <MarketScenarios crop={crop} lat={center[0]} lng={center[1]} />
               </div>

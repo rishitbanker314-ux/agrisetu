@@ -4,15 +4,19 @@ import { TrendingDown, TrendingUp, AlertTriangle, ShieldCheck, Loader2 } from 'l
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 
-interface Scenario {
-  id: string;
-  title: string;
-  probability: number;
-  trend: 'up' | 'down' | 'stable';
-  impact: string;
-  recommendation: string;
-  recColor: string;
-  prices: number[];
+interface MarketData {
+  current_market: {
+    currentPrice: number;
+    unit: string;
+    currency: string;
+    trend: 'up' | 'down' | 'stable';
+    percentageChange: string;
+    insight: string;
+  };
+  historical_data: {
+    date: string;
+    price: number;
+  }[];
 }
 
 interface MarketScenariosProps {
@@ -22,7 +26,7 @@ interface MarketScenariosProps {
 }
 
 export default function MarketScenarios({ crop, lat = 28.6139, lng = 77.2090 }: MarketScenariosProps) {
-  const [scenarios, setScenarios] = useState<Scenario[]>([]);
+  const [marketData, setMarketData] = useState<MarketData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -35,9 +39,12 @@ export default function MarketScenarios({ crop, lat = 28.6139, lng = 77.2090 }: 
         
         if (error) throw error;
         // Edge function returns an object with scenarios array
-        setScenarios(data.scenarios && Array.isArray(data.scenarios) ? data.scenarios : []);
+        // Edge function returns the direct object now
+        if (data && data.historical_data) {
+          setMarketData(data);
+        }
       } catch (err) {
-        console.error("Failed to load market scenarios:", err);
+        console.error("Failed to load market data:", err);
       } finally {
         setLoading(false);
       }
@@ -97,55 +104,48 @@ export default function MarketScenarios({ crop, lat = 28.6139, lng = 77.2090 }: 
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="flex-grow">
         {loading ? (
-          <div className="col-span-3 flex flex-col items-center justify-center py-12">
+          <div className="flex flex-col items-center justify-center py-12">
             <Loader2 className="w-8 h-8 text-green-700 animate-spin mb-4" />
-            <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Analyzing live market data & trends...</p>
+            <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Fetching live market data & trends...</p>
           </div>
-        ) : scenarios.length > 0 ? (
-          scenarios.map((scenario, idx) => (
-            <div key={scenario.id || idx} className="flex flex-col border border-soft-line rounded-lg overflow-hidden bg-white">
+        ) : marketData && marketData.historical_data && marketData.historical_data.length > 0 ? (
+          <div className="flex flex-col border border-soft-line rounded-lg overflow-hidden bg-white">
             {/* Header */}
-            <div className="bg-paper-ivory p-3 flex justify-between items-center border-b border-soft-line">
-              <span className="text-deep-forest font-sans font-medium text-sm">{scenario.title}</span>
-              {scenario.trend === 'down' ? <TrendingDown className="w-4 h-4 text-terracotta" /> : 
-               scenario.trend === 'up' ? <TrendingUp className="w-4 h-4 text-moss" /> : 
-               <AlertTriangle className="w-4 h-4 text-marigold" />}
+            <div className="bg-paper-ivory p-4 flex justify-between items-center border-b border-soft-line">
+              <span className="text-deep-forest font-sans font-medium text-lg">Historical Price Trend (Last 12 Months)</span>
+              <div className="flex items-center gap-2">
+                <span className="text-2xl font-serif text-deep-forest">{marketData.current_market.currency}{marketData.current_market.currentPrice.toFixed(2)}</span>
+                <span className="text-sm text-ink/60">{marketData.current_market.unit}</span>
+                {marketData.current_market.trend === 'down' ? <TrendingDown className="w-5 h-5 text-terracotta ml-2" /> : 
+                 marketData.current_market.trend === 'up' ? <TrendingUp className="w-5 h-5 text-moss ml-2" /> : 
+                 <span className="text-marigold ml-2 font-bold">-</span>}
+                <span className={`text-sm font-bold ${marketData.current_market.trend === 'down' ? 'text-terracotta' : marketData.current_market.trend === 'up' ? 'text-moss' : 'text-marigold'}`}>
+                  {marketData.current_market.percentageChange}
+                </span>
+              </div>
             </div>
             
             {/* Body */}
-            <div className="p-4 flex flex-col flex-grow">
-              <div className="flex justify-between items-end mb-2">
-                <span className="text-[10px] font-sans font-medium text-ink/50 uppercase tracking-widest">Probability</span>
-                <span className="text-2xl font-serif text-deep-forest leading-none">{scenario.probability}%</span>
-              </div>
-              
-              <MiniChart data={scenario.prices} />
-
-              <div className="bg-paper-ivory/50 border border-soft-line p-3 rounded-md text-sm text-ink/80 font-sans mb-4 flex-grow overflow-y-auto max-h-32 custom-scrollbar">
-                {scenario.impact || 'Analyzing market conditions...'}
+            <div className="p-6 flex flex-col flex-grow">
+              <div className="w-full h-48 mb-6 relative">
+                <MiniChart data={marketData.historical_data.map(d => d.price)} />
+                <div className="flex justify-between text-xs text-ink/50 mt-2">
+                  <span>{marketData.historical_data[0]?.date}</span>
+                  <span>{marketData.historical_data[marketData.historical_data.length - 1]?.date}</span>
+                </div>
               </div>
 
-              <button 
-                onClick={() => {
-                  window.dispatchEvent(new CustomEvent('add-notification', {
-                    detail: {
-                      title: 'Trade Action Logged',
-                      message: `Your intent to ${scenario.recommendation || 'HOLD'} based on the "${scenario.title}" scenario has been recorded.`
-                    }
-                  }));
-                }}
-                className="w-full py-2 rounded-md font-sans font-medium text-sm transition-colors border border-soft-line hover:bg-moss/5 text-deep-forest active:bg-moss/20"
-              >
-                {scenario.recommendation || 'HOLD'}
-              </button>
+              <h3 className="font-sans font-bold text-sm text-deep-forest uppercase tracking-widest mb-2">AI Market Insight</h3>
+              <div className="bg-paper-ivory/50 border border-soft-line p-4 rounded-md text-sm text-ink/80 font-sans leading-relaxed">
+                {marketData.current_market.insight || 'Analyzing market conditions...'}
+              </div>
             </div>
           </div>
-          ))
         ) : (
-          <div className="col-span-3 text-center py-8 text-gray-500 font-bold text-sm">
-            Could not fetch AI generated scenarios. Please ensure the 'market-insights' Edge Function is deployed.
+          <div className="text-center py-8 text-gray-500 font-bold text-sm">
+            Could not fetch live market data. Please try again later.
           </div>
         )}
       </div>
