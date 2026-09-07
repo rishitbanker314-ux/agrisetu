@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from 'https://esm.sh/@google/generative-ai@0.21.0'
+import yahooFinance from 'npm:yahoo-finance2'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -13,31 +14,38 @@ Deno.serve(async (req) => {
   try {
     const { lat, lng, crop } = await req.json()
     
-    // 1. Fetch real market data from Alpha Vantage
-    let commodityFunction = 'ALL_COMMODITIES';
+    // 1. Fetch real market data from Yahoo Finance
+    let ticker = 'ZC=F'; // default to Corn
     const cropUpper = crop ? crop.toUpperCase() : '';
-    if (cropUpper.includes('CORN') || cropUpper.includes('MAIZE')) commodityFunction = 'CORN';
-    else if (cropUpper.includes('COTTON')) commodityFunction = 'COTTON';
-    else if (cropUpper.includes('SUGAR')) commodityFunction = 'SUGAR';
-    else if (cropUpper.includes('COFFEE')) commodityFunction = 'COFFEE';
-    else if (cropUpper.includes('WHEAT')) commodityFunction = 'WHEAT';
+    if (cropUpper.includes('CORN') || cropUpper.includes('MAIZE')) ticker = 'ZC=F';
+    else if (cropUpper.includes('WHEAT')) ticker = 'KE=F';
+    else if (cropUpper.includes('SOY')) ticker = 'ZS=F';
+    else if (cropUpper.includes('COTTON')) ticker = 'CT=F';
+    else if (cropUpper.includes('SUGAR')) ticker = 'SB=F';
+    else if (cropUpper.includes('COFFEE')) ticker = 'KC=F';
+    else if (cropUpper.includes('RICE')) ticker = 'ZR=F';
+    else if (cropUpper.includes('OAT')) ticker = 'ZO=F';
 
     let realDataText = "No real-time data available. Use your best knowledge.";
     let currentPrice = 245;
     
     try {
-      const avResponse = await fetch(`https://www.alphavantage.co/query?function=${commodityFunction}&interval=monthly&apikey=demo`);
-      const avData = await avResponse.json();
+      const now = new Date();
+      const oneYearAgo = new Date();
+      oneYearAgo.setFullYear(now.getFullYear() - 1);
+
+      const queryOptions = { period1: oneYearAgo.toISOString().split('T')[0], interval: '1mo' };
+      const result = await yahooFinance.historical(ticker, queryOptions);
       
-      if (avData && avData.data && avData.data.length > 0) {
-        // Get the last 12 months of data, reversed so it's oldest to newest
-        const recentData = avData.data.slice(0, 12).reverse();
-        currentPrice = parseFloat(recentData[recentData.length - 1].value);
-        realDataText = `Real historical prices for ${commodityFunction} over the last 12 months (oldest to newest): \n` + 
-          recentData.map((d: any) => `${d.date}: $${parseFloat(d.value).toFixed(2)}`).join('\n');
+      if (result && result.length > 0) {
+        // Get the latest 12 months, keep chronological
+        const recentData = result.slice(-12);
+        currentPrice = recentData[recentData.length - 1].close;
+        realDataText = `Real historical prices for ${ticker} over the last 12 months: \n` + 
+          recentData.map((d: any) => `${d.date.toISOString().split('T')[0]}: $${d.close.toFixed(2)}`).join('\n');
       }
     } catch (e) {
-      console.error("Alpha Vantage fetch failed", e);
+      console.error("Yahoo Finance fetch failed", e);
     }
 
     const geminiApiKey = Deno.env.get('GEMINI_API_KEY')
@@ -48,7 +56,7 @@ Deno.serve(async (req) => {
 
     const prompt = `
       You are an agricultural commodities expert and a predictive risk analyst.
-      We have pulled the following LIVE actual market data for ${crop} (proxy: ${commodityFunction}):
+      We have pulled the following LIVE actual market data for ${crop} (Ticker: ${ticker}):
       ${realDataText}
 
       Current known price is roughly $${currentPrice.toFixed(2)}.
