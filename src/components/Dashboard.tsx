@@ -105,7 +105,9 @@ export default function Dashboard() {
   }, [initialFieldId, savedFields]); // Removed fieldId from dependencies so it doesn't force rollback
 
   // Fetch real-time data
-  const { data: fieldData, loading } = useFieldData(center[0], center[1]);
+  const currentFieldForData = savedFields.find(f => f.id?.toString() === fieldId?.toString());
+  const activeBoundary = currentFieldForData?.boundary;
+  const { data: fieldData, loading } = useFieldData(center[0], center[1], activeBoundary);
   const temporalNdvi = (fieldData as any)?.temporal?.ndviProgression?.[dateOffset] ?? fieldData?.ndvi ?? 0.5;
   
   // Fetch AI Advisory

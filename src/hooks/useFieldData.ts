@@ -21,7 +21,7 @@ export interface LiveFieldData {
   };
 }
 
-export function useFieldData(lat: number, lng: number) {
+export function useFieldData(lat: number, lng: number, boundary?: any[]) {
   const [data, setData] = useState<LiveFieldData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -54,14 +54,75 @@ export function useFieldData(lat: number, lng: number) {
 
         // Apply seed to moisture
         const seededMoisture = Math.min(100, Math.max(0, currentMoisture + (coordSeed * 15 - 7)));
-        // Algorithm to simulate a realistic NDVI based on real weather data
-        // High moisture + moderate temps = Good NDVI. Dry/Hot = Bad NDVI.
-        let baseNdvi = 0.4 + (coordSeed * 0.15 - 0.075);
-        if (seededMoisture > 30) baseNdvi += 0.2;
-        if (seededMoisture > 50) baseNdvi += 0.15;
-        if (currentTemp > 15 && currentTemp < 30) baseNdvi += 0.1;
-        if (totalPrecipitation > 20) baseNdvi += 0.1;
-        const finalCalculatedNdvi = Math.min(0.95, Math.max(0.1, baseNdvi));
+        
+        let finalCalculatedNdvi = 0.5;
+        let agroPolygonId = null;
+
+        // --- REAL SATELLITE NDVI (AGROMONITORING) ---
+        // If the user has drawn a boundary, we fetch actual live satellite crop data
+        if (boundary && boundary.length > 0) {
+          try {
+            const API_KEY = "9cd5e2d7f0db8740b17cc382e0154609";
+            
+            // Format boundary for GeoJSON (AgroMonitoring requires Longitude, Latitude)
+            // Leaflet gives us [Lat, Lng], so we map it to [Lng, Lat]
+            const geoJsonCoords = boundary[0].map((coord: number[]) => [coord[1], coord[0]]);
+            // Ensure polygon is closed (first and last coordinates match)
+            if (geoJsonCoords[0][0] !== geoJsonCoords[geoJsonCoords.length - 1][0] || 
+                geoJsonCoords[0][1] !== geoJsonCoords[geoJsonCoords.length - 1][1]) {
+              geoJsonCoords.push([...geoJsonCoords[0]]);
+            }
+
+            // 1. Create Polygon
+            const polyResponse = await fetch(`https://api.agromonitoring.com/agro/1.0/polygons?appid=${API_KEY}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                name: "User Field",
+                geo_json: {
+                  type: "Feature",
+                  properties: {},
+                  geometry: {
+                    type: "Polygon",
+                    coordinates: [geoJsonCoords]
+                  }
+                }
+              })
+            });
+
+            if (polyResponse.ok) {
+              const polyResult = await polyResponse.json();
+              agroPolygonId = polyResult.id;
+              
+              // 2. Fetch Latest NDVI
+              // AgroMonitoring returns historical data up to current day.
+              // Calculate unix timestamp for 10 days ago to today.
+              const end = Math.floor(Date.now() / 1000);
+              const start = end - (10 * 24 * 60 * 60);
+              
+              const ndviResponse = await fetch(`https://api.agromonitoring.com/agro/1.0/ndvi/history?polyid=${agroPolygonId}&start=${start}&end=${end}&appid=${API_KEY}`);
+              if (ndviResponse.ok) {
+                const ndviResult = await ndviResponse.json();
+                if (ndviResult && ndviResult.length > 0) {
+                  // Get the most recent satellite pass
+                  finalCalculatedNdvi = ndviResult[ndviResult.length - 1].data.mean;
+                }
+              }
+            }
+          } catch (e) {
+            console.error("Failed to fetch real satellite data. Falling back to prediction.", e);
+          }
+        }
+
+        // If no real data fetched, fallback to algorithm based on live weather data
+        if (finalCalculatedNdvi === 0.5) {
+          let baseNdvi = 0.4 + (coordSeed * 0.15 - 0.075);
+          if (seededMoisture > 30) baseNdvi += 0.2;
+          if (seededMoisture > 50) baseNdvi += 0.15;
+          if (currentTemp > 15 && currentTemp < 30) baseNdvi += 0.1;
+          if (totalPrecipitation > 20) baseNdvi += 0.1;
+          finalCalculatedNdvi = Math.min(0.95, Math.max(0.1, baseNdvi));
+        }
 
         // --- REAL TEMPORAL DATA (16 DAYS) ---
         // Instead of a random 90 day simulation, use the actual 16-day forecast
@@ -129,7 +190,7 @@ export function useFieldData(lat: number, lng: number) {
     }
 
     fetchData();
-  }, [lat, lng]);
+  }, [lat, lng, boundary ? JSON.stringify(boundary) : ""]);
 
   return { data, loading, error };
 }
