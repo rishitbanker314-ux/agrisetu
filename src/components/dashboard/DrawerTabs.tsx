@@ -7,7 +7,6 @@ import ClimateAlerts from '../ClimateAlerts';
 import MarketScenarios from '../MarketScenarios';
 import DiagnosisUpload from '../DiagnosisUpload';
 import AcousticBiosphere from '../AcousticBiosphere';
-import SustainabilityScore from '../SustainabilityScore';
 import NDVIChart from '../NDVIChart';
 import { Sprout, CloudRain, Bell, LineChart, Stethoscope, AudioWaveform, Globe, Activity } from 'lucide-react';
 
@@ -31,7 +30,6 @@ export default function DrawerTabs({ fieldData, crop, advisory, advisoryLoading,
     { id: 'ndvi', label: 'NDVI Trends', icon: Activity },
     { id: 'diagnostics', label: 'Diagnostics', icon: Stethoscope },
     { id: 'biosphere', label: 'Acoustic biosphere', icon: AudioWaveform },
-    { id: 'sustainability', label: 'Sustainability', icon: Globe },
   ];
 
   return (
@@ -105,14 +103,6 @@ export default function DrawerTabs({ fieldData, crop, advisory, advisoryLoading,
               <h3 className="font-serif text-sm text-ink/50 uppercase tracking-widest mb-4">Acoustic Biosphere</h3>
               <div className="bg-white rounded-lg border border-soft-line p-4">
                 <AcousticBiosphere moisture={fieldData?.soil?.moisture || 50} />
-              </div>
-            </div>
-          )}
-          {activeTab === 'sustainability' && (
-            <div className="h-full">
-              <h3 className="font-serif text-sm text-ink/50 uppercase tracking-widest mb-4">Sustainability & ESG</h3>
-              <div className="bg-white rounded-lg border border-soft-line p-4">
-                <SustainabilityScore fieldData={fieldData} />
               </div>
             </div>
           )}
