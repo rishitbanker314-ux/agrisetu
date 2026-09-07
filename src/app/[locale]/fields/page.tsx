@@ -158,7 +158,7 @@ export default function FieldsPage() {
   return (
     <div className="min-h-screen bg-paper-ivory flex flex-col font-sans selection:bg-moss/30 selection:text-deep-forest">
       <header className="bg-white border-b border-soft-line z-[9999] flex items-center justify-between px-4 md:px-6 h-16 shrink-0 relative shadow-sm">
-        <Link href="/en/dashboard" className="text-ink/60 hover:text-moss transition-colors flex items-center gap-1.5 text-sm font-medium">
+        <Link href="/en/dashboard?menu=open" className="text-ink/60 hover:text-moss transition-colors flex items-center gap-1.5 text-sm font-medium">
           <ArrowLeft className="w-4 h-4" /> <span className="hidden sm:inline">Back to Dashboard</span>
         </Link>
         <Link href="/en" className="flex items-center gap-2 absolute left-1/2 -translate-x-1/2">

@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 
 interface AppHeaderProps {
   user: User | null;
@@ -22,7 +23,21 @@ export default function AppHeader({ user, crop, setCrop, savedFields = [], field
     await supabase.auth.signOut();
   };
 
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get('menu') === 'open') {
+      setIsMobileMenuOpen(true);
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete('menu');
+      const newQuery = params.toString();
+      router.replace(`${pathname}${newQuery ? `?${newQuery}` : ''}`);
+    }
+  }, [searchParams, pathname, router]);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [notifications, setNotifications] = useState<{title: string, message: string, time: Date}[]>([
     { title: 'System Online', message: 'AgriSetu dashboard initialized. Monitoring real-time field data.', time: new Date() }
