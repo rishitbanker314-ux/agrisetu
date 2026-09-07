@@ -8,9 +8,10 @@ interface TemporalSliderProps {
   dateOffset: number;
   setDateOffset: (days: number) => void;
   maxDays?: number;
+  fieldData?: any;
 }
 
-export default function TemporalSlider({ dateOffset, setDateOffset, maxDays = 90 }: TemporalSliderProps) {
+export default function TemporalSlider({ dateOffset, setDateOffset, maxDays = 90, fieldData }: TemporalSliderProps) {
   const [isOpen, setIsOpen] = useState(false);
   
   // Calculate the target date based on offset
@@ -21,6 +22,10 @@ export default function TemporalSlider({ dateOffset, setDateOffset, maxDays = 90
   const handleDrag = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDateOffset(Number(e.target.value));
   };
+
+  const targetTemp = fieldData?.forecast?.maxTemps?.[dateOffset];
+  const targetRain = fieldData?.forecast?.precipitation?.[dateOffset];
+  const targetNdvi = fieldData?.temporal?.ndviProgression?.[dateOffset];
 
   return (
     <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-[50] flex flex-col items-center w-full max-w-2xl px-4 pointer-events-none">
@@ -93,6 +98,24 @@ export default function TemporalSlider({ dateOffset, setDateOffset, maxDays = 90
                 <ChevronRight className="w-5 h-5 text-gray-900" />
               </button>
             </div>
+
+            {/* Real-time Forecast Details */}
+            {fieldData && (
+              <div className="flex gap-4 p-3 bg-gray-900 rounded-lg border-2 border-gray-700 text-white w-full md:w-auto flex-shrink-0 text-sm justify-between">
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-black uppercase text-gray-400">Temp</span>
+                  <span className="font-bold text-orange-400">{targetTemp ?? '--'}°C</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-black uppercase text-gray-400">Rain</span>
+                  <span className="font-bold text-blue-400">{targetRain ?? '--'} mm</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-black uppercase text-gray-400">NDVI</span>
+                  <span className="font-bold text-emerald-400">{targetNdvi ?? '--'}</span>
+                </div>
+              </div>
+            )}
             
             <button 
               onClick={() => setIsOpen(false)}
