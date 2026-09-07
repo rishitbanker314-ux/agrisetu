@@ -1,15 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import { Sprout, Map as MapIcon, Plus, ChevronRight, Settings, X, Loader2, ArrowLeft, Trash2 } from 'lucide-react';
+import { Sprout, Map as MapIcon, Plus, ChevronRight, Settings, X, Loader2, ArrowLeft, Trash2, Menu } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import dynamic from 'next/dynamic';
+import NavigationSidebar from '@/components/NavigationSidebar';
 
 const Map = dynamic(() => import('@/components/Map'), { ssr: false });
 import LocationSearch from '@/components/LocationSearch';
 import { Layers } from 'lucide-react';
+import { User } from '@supabase/supabase-js';
 
 interface Field {
   id: string;
@@ -36,11 +38,14 @@ export default function FieldsPage() {
   const [isDrawing, setIsDrawing] = useState(false);
   const [drawnBoundary, setDrawnBoundary] = useState<any[]>([]);
   const [mapStyle, setMapStyle] = useState<'street' | 'satellite'>('street');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     async function loadFields() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
+        setUser(user);
         setUserId(user.id);
         const { data } = await supabase
           .from('fields')
@@ -158,14 +163,22 @@ export default function FieldsPage() {
   return (
     <div className="min-h-screen bg-paper-ivory flex flex-col font-sans selection:bg-moss/30 selection:text-deep-forest">
       <header className="bg-white border-b border-soft-line z-[9999] flex items-center justify-between px-4 md:px-6 h-16 shrink-0 relative shadow-sm">
-        <Link href="/en/dashboard?menu=open" className="text-ink/60 hover:text-moss transition-colors flex items-center gap-1.5 text-sm font-medium">
-          <ArrowLeft className="w-4 h-4" /> <span className="hidden sm:inline">Back to Dashboard</span>
-        </Link>
+        <button 
+          onClick={() => setIsMobileMenuOpen(true)}
+          className="p-2 -ml-2 text-ink/70 hover:bg-moss/10 rounded-md transition-colors"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
         <Link href="/en" className="flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
           <Sprout className="w-6 h-6 text-deep-forest" />
           <span className="font-serif text-xl tracking-tight text-ink font-medium hidden sm:block">AgriSetu</span>
         </Link>
         <div className="text-xs font-medium uppercase tracking-widest text-ink/50">My Fields</div>
+        <NavigationSidebar 
+          isOpen={isMobileMenuOpen} 
+          setIsOpen={setIsMobileMenuOpen} 
+          user={user} 
+        />
       </header>
 
       <main className="flex-grow p-6 md:p-12 max-w-6xl mx-auto w-full relative">
