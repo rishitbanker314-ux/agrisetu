@@ -21,7 +21,17 @@ export interface LiveFieldData {
   };
 }
 
-export function useFieldData(lat: number, lng: number, boundary?: any[]) {
+// Baseline yield (Tons/Hectare) and Market Price (INR/Ton)
+const CROP_BASELINES: Record<string, { baseYield: number, price: number }> = {
+  "Wheat": { baseYield: 3.5, price: 22750 }, // MSP approx
+  "Rice (Paddy)": { baseYield: 4.0, price: 21830 },
+  "Cotton": { baseYield: 0.5, price: 66200 },
+  "Sugarcane": { baseYield: 70.0, price: 3400 },
+  "Maize": { baseYield: 3.0, price: 20900 },
+  "Soybean": { baseYield: 1.2, price: 46000 }
+};
+
+export function useFieldData(lat: number, lng: number, boundary?: any[], crop: string = "Wheat", areaHectares: number = 0) {
   const [data, setData] = useState<LiveFieldData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -150,6 +160,39 @@ export function useFieldData(lat: number, lng: number, boundary?: any[]) {
         }
         
         const fullSimulatedNdvi = simulatedNdvi;
+
+        // --- INTELLIGENT DECISION ENGINE ---
+        const diseaseRisk = [];
+        const estimatedValue = [];
+        
+        const cropStats = CROP_BASELINES[crop] || { baseYield: 3.0, price: 20000 };
+        const safeArea = areaHectares > 0 ? areaHectares : 1; // Default to 1 ha if unknown
+        
+        for (let i = 0; i < maxTemps.length; i++) {
+          const rainAmount = precipitation[i] || 0;
+          const dayTemp = maxTemps[i] || currentSimTemp;
+          // Use current humidity as a base, increase if raining
+          const estHumidity = result.current.relative_humidity_2m + (rainAmount > 0 ? 15 : 0);
+          
+          // 1. Disease Risk Radar (Fungal/Blight conditions)
+          // Fungi love high humidity (>80%) and warm temps (20-30C)
+          let risk = "Low";
+          if (estHumidity > 80 && dayTemp >= 20 && dayTemp <= 30 && rainAmount > 2) {
+            risk = "CRITICAL";
+          } else if (estHumidity > 75 && dayTemp > 25) {
+            risk = "High";
+          } else if (estHumidity > 60) {
+            risk = "Medium";
+          }
+          diseaseRisk.push(risk);
+          
+          // 2. Economic Yield Optimizer
+          // NDVI is crop health (0.1 to ~0.9). Let's say 0.8 is 100% of base yield.
+          const ndviEfficiency = Math.min(1.2, simulatedNdvi[i] / 0.8);
+          const dailyYield = cropStats.baseYield * safeArea * ndviEfficiency;
+          const dailyValue = Math.round(dailyYield * cropStats.price);
+          estimatedValue.push(dailyValue);
+        }
         // -----------------------------------------------
 
         // Algorithm to simulate soil pH based on climate
@@ -179,7 +222,9 @@ export function useFieldData(lat: number, lng: number, boundary?: any[]) {
           },
           // @ts-ignore - appending temporal data
           temporal: {
-            ndviProgression: fullSimulatedNdvi
+            ndviProgression: fullSimulatedNdvi,
+            diseaseRisk,
+            estimatedValue
           }
         });
       } catch (err: any) {
@@ -190,7 +235,7 @@ export function useFieldData(lat: number, lng: number, boundary?: any[]) {
     }
 
     fetchData();
-  }, [lat, lng, boundary ? JSON.stringify(boundary) : ""]);
+  }, [lat, lng, boundary ? JSON.stringify(boundary) : "", crop, areaHectares]);
 
   return { data, loading, error };
 }

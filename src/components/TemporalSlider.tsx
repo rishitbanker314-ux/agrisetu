@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Calendar, ChevronRight, ChevronLeft, Clock, X } from 'lucide-react';
+import { Calendar, ChevronRight, ChevronLeft, Clock, X, AlertTriangle, TrendingUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface TemporalSliderProps {
@@ -26,6 +26,8 @@ export default function TemporalSlider({ dateOffset, setDateOffset, maxDays = 90
   const targetTemp = fieldData?.forecast?.maxTemps?.[dateOffset];
   const targetRain = fieldData?.forecast?.precipitation?.[dateOffset];
   const targetNdvi = fieldData?.temporal?.ndviProgression?.[dateOffset];
+  const targetValue = fieldData?.temporal?.estimatedValue?.[dateOffset];
+  const targetRisk = fieldData?.temporal?.diseaseRisk?.[dateOffset];
 
   return (
     <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-[50] flex flex-col items-center w-full max-w-2xl px-4 pointer-events-none">
@@ -99,20 +101,46 @@ export default function TemporalSlider({ dateOffset, setDateOffset, maxDays = 90
               </button>
             </div>
 
-            {/* Real-time Forecast Details */}
+            {/* Real-time Forecast & Economic Details */}
             {fieldData && (
-              <div className="flex gap-4 p-3 bg-gray-900 rounded-lg border-2 border-gray-700 text-white w-full md:w-auto flex-shrink-0 text-sm justify-between">
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-black uppercase text-gray-400">Temp</span>
-                  <span className="font-bold text-orange-400">{targetTemp ?? '--'}°C</span>
+              <div className="flex flex-col gap-2 p-3 bg-gray-900 rounded-lg border-2 border-gray-700 text-white w-full md:w-auto flex-shrink-0 text-sm">
+                <div className="flex gap-4 justify-between border-b border-gray-700 pb-2">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-black uppercase text-gray-400">Temp</span>
+                    <span className="font-bold text-orange-400">{targetTemp ?? '--'}°C</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-black uppercase text-gray-400">Rain</span>
+                    <span className="font-bold text-blue-400">{targetRain ?? '--'} mm</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-black uppercase text-gray-400">NDVI</span>
+                    <span className="font-bold text-emerald-400">{targetNdvi ?? '--'}</span>
+                  </div>
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-black uppercase text-gray-400">Rain</span>
-                  <span className="font-bold text-blue-400">{targetRain ?? '--'} mm</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-black uppercase text-gray-400">NDVI</span>
-                  <span className="font-bold text-emerald-400">{targetNdvi ?? '--'}</span>
+                
+                {/* Intelligent Engine Row */}
+                <div className="flex gap-4 justify-between items-center pt-1">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-black uppercase text-gray-400 flex items-center gap-1">
+                      Est. Value <TrendingUp className="w-3 h-3 text-emerald-400" />
+                    </span>
+                    <span className="font-bold text-emerald-400 text-lg">₹{targetValue?.toLocaleString() ?? '--'}</span>
+                  </div>
+                  
+                  {targetRisk && targetRisk !== 'Low' && (
+                    <div className="flex flex-col items-end">
+                      <span className="text-[10px] font-black uppercase text-gray-400 flex items-center gap-1">
+                        Disease Risk
+                      </span>
+                      <span className={`font-bold flex items-center gap-1 ${
+                        targetRisk === 'CRITICAL' ? 'text-red-500 animate-pulse' : 
+                        targetRisk === 'High' ? 'text-orange-500' : 'text-yellow-400'
+                      }`}>
+                        <AlertTriangle className="w-3 h-3" /> {targetRisk}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

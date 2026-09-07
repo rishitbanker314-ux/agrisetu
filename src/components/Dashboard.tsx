@@ -107,7 +107,8 @@ export default function Dashboard() {
   // Fetch real-time data
   const currentFieldForData = savedFields.find(f => f.id?.toString() === fieldId?.toString());
   const activeBoundary = currentFieldForData?.boundary;
-  const { data: fieldData, loading } = useFieldData(center[0], center[1], activeBoundary);
+  const currentArea = currentFieldForData?.area ? parseFloat(currentFieldForData.area.replace(' ha', '')) : 0;
+  const { data: fieldData, loading } = useFieldData(center[0], center[1], activeBoundary, crop, currentArea);
   const temporalNdvi = (fieldData as any)?.temporal?.ndviProgression?.[dateOffset] ?? fieldData?.ndvi ?? 0.5;
   
   // Fetch AI Advisory
