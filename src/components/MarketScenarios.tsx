@@ -86,10 +86,10 @@ export default function MarketScenarios({ crop, lat = 28.6139, lng = 77.2090 }: 
         <div>
           <h2 className="text-lg font-sans font-medium text-deep-forest flex items-center gap-2">
             <TrendingUp className="w-5 h-5 text-moss"/>
-            Scenario Comparison
+            Live Market Projections
           </h2>
           <p className="text-xs text-ink/50 font-medium tracking-wide mt-1 uppercase">
-            War-Gaming Simulator for {crop}
+            Data sourced from Alpha Vantage & AI Models
           </p>
         </div>
         <div className="bg-moss/10 text-moss text-[10px] font-bold tracking-widest px-3 py-1 rounded-sm uppercase mt-4 md:mt-0 flex items-center gap-2">
@@ -101,7 +101,7 @@ export default function MarketScenarios({ crop, lat = 28.6139, lng = 77.2090 }: 
         {loading ? (
           <div className="col-span-3 flex flex-col items-center justify-center py-12">
             <Loader2 className="w-8 h-8 text-green-700 animate-spin mb-4" />
-            <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Simulating Market Scenarios via Gemini AI...</p>
+            <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Analyzing live market data & trends...</p>
           </div>
         ) : scenarios.length > 0 ? (
           scenarios.map((scenario, idx) => (

@@ -13,6 +13,33 @@ Deno.serve(async (req) => {
   try {
     const { lat, lng, crop } = await req.json()
     
+    // 1. Fetch real market data from Alpha Vantage
+    let commodityFunction = 'ALL_COMMODITIES';
+    const cropUpper = crop ? crop.toUpperCase() : '';
+    if (cropUpper.includes('CORN') || cropUpper.includes('MAIZE')) commodityFunction = 'CORN';
+    else if (cropUpper.includes('COTTON')) commodityFunction = 'COTTON';
+    else if (cropUpper.includes('SUGAR')) commodityFunction = 'SUGAR';
+    else if (cropUpper.includes('COFFEE')) commodityFunction = 'COFFEE';
+    else if (cropUpper.includes('WHEAT')) commodityFunction = 'WHEAT';
+
+    let realDataText = "No real-time data available. Use your best knowledge.";
+    let currentPrice = 245;
+    
+    try {
+      const avResponse = await fetch(`https://www.alphavantage.co/query?function=${commodityFunction}&interval=monthly&apikey=demo`);
+      const avData = await avResponse.json();
+      
+      if (avData && avData.data && avData.data.length > 0) {
+        // Get the last 12 months of data, reversed so it's oldest to newest
+        const recentData = avData.data.slice(0, 12).reverse();
+        currentPrice = parseFloat(recentData[recentData.length - 1].value);
+        realDataText = `Real historical prices for ${commodityFunction} over the last 12 months (oldest to newest): \n` + 
+          recentData.map((d: any) => `${d.date}: $${parseFloat(d.value).toFixed(2)}`).join('\n');
+      }
+    } catch (e) {
+      console.error("Alpha Vantage fetch failed", e);
+    }
+
     const geminiApiKey = Deno.env.get('GEMINI_API_KEY')
     if (!geminiApiKey) throw new Error('GEMINI_API_KEY is missing')
 
@@ -21,17 +48,24 @@ Deno.serve(async (req) => {
 
     const prompt = `
       You are an agricultural commodities expert and a predictive risk analyst.
-      Based on the exact coordinates (Lat: ${lat}, Lng: ${lng}) and the crop (${crop}), generate a hyper-realistic "Market Intelligence Report".
+      We have pulled the following LIVE actual market data for ${crop} (proxy: ${commodityFunction}):
+      ${realDataText}
+
+      Current known price is roughly $${currentPrice.toFixed(2)}.
+
+      Based on this REAL data, the exact coordinates (Lat: ${lat}, Lng: ${lng}), and the crop (${crop}), generate a hyper-realistic "Market Intelligence Report" with 3 future scenarios.
+      
+      For the "prices" array in each scenario, the first 4-5 data points MUST closely match the recent historical trend provided above, and the remaining 5-6 points should represent your predicted future trend for that scenario.
       
       Return strictly a JSON object with this exact structure (no markdown fences, just pure JSON):
       {
         "current_market": {
-          "currentPrice": 245, // A realistic current price number
-          "unit": "/ quintal",
+          "currentPrice": ${currentPrice.toFixed(2)},
+          "unit": "/ metric ton",
           "currency": "$",
-          "trend": "up", // "up", "down", or "stable"
-          "percentageChange": "2.4%", // percentage string
-          "insight": "A 2-3 sentence highly realistic market insight based on current global/regional conditions."
+          "trend": "up", // "up", "down", or "stable" based on the real data
+          "percentageChange": "2.4%", // calculate a realistic percentage based on real data
+          "insight": "A 2-3 sentence highly realistic market insight explaining the current trend based on the real data provided."
         },
         "scenarios": [
           {
@@ -39,10 +73,10 @@ Deno.serve(async (req) => {
             "title": "A short, punchy title (Must mention ${crop})",
             "probability": 45, 
             "trend": "up", // "up", "down", or "stable"
-            "impact": "A 1-2 sentence real-world explanation of this scenario.",
+            "impact": "A 1-2 sentence real-world explanation of this future scenario.",
             "recommendation": "SELL (Secure Peak)",
             "recColor": "bg-red-800 border-red-950 text-white hover:bg-red-900", // red for sell, green for hold
-            "prices": [45, 48, 55, 62, 58, 65, 70, 75, 72, 80] // Array of 10 realistic price points
+            "prices": [100, 105, 110, 115, 112, 120, 125, 130, 128, 135] // Array of 10 realistic price points. Start with actual recent history, then project forward.
           },
           ... (2 more scenarios)
         ]
@@ -62,7 +96,7 @@ Deno.serve(async (req) => {
       console.warn("Gemini API failed, using fallback:", apiError);
       
       const seed = ((lat * 12.3) + (lng * 45.6)) % 10;
-      const fallbackPrice = Math.round(245 + seed);
+      const fallbackPrice = Math.round(currentPrice + seed);
 
       parsedJson = {
         "current_market": {
