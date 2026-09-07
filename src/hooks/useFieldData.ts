@@ -30,8 +30,8 @@ export function useFieldData(lat: number, lng: number) {
     async function fetchData() {
       try {
         setLoading(true);
-        // Fetch live weather data & 7-day forecast from Open-Meteo API
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,relative_humidity_2m,soil_moisture_0_to_7cm&daily=temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto`;
+        // Fetch live weather data & 16-day forecast from Open-Meteo API
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,relative_humidity_2m,soil_moisture_0_to_7cm&daily=temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto&forecast_days=16`;
         
         const response = await fetch(url);
         if (!response.ok) throw new Error('Failed to fetch live weather data');
@@ -63,37 +63,32 @@ export function useFieldData(lat: number, lng: number) {
         if (totalPrecipitation > 20) baseNdvi += 0.1;
         const finalCalculatedNdvi = Math.min(0.95, Math.max(0.1, baseNdvi));
 
-        // --- TEMPORAL SIMULATION EXPANSION (90 DAYS) ---
-        // We extrapolate the 7-day forecast into a 90-day simulation
-        // by applying a seasonal trend and randomized noise.
+        // --- REAL TEMPORAL DATA (16 DAYS) ---
+        // Instead of a random 90 day simulation, use the actual 16-day forecast
         const simulatedMaxTemps = [...maxTemps];
         const simulatedPrecipitation = [...precipitation];
         const simulatedNdvi = [];
         
-        let currentSimTemp = maxTemps[maxTemps.length - 1] || currentTemp;
+        let currentSimTemp = currentTemp;
         let currentSimNdvi = finalCalculatedNdvi;
 
-        for (let i = 7; i < 90; i++) {
-          // Trend temperature up slightly over 90 days (summer approaching simulation)
-          currentSimTemp += (Math.random() * 0.8) - 0.2; 
-          simulatedMaxTemps.push(Number(currentSimTemp.toFixed(1)));
+        for (let i = 0; i < maxTemps.length; i++) {
+          const rainAmount = precipitation[i] || 0;
+          const dayTemp = maxTemps[i] || currentSimTemp;
           
-          // Random rain events
-          const willRain = Math.random() > 0.85;
-          const rainAmount = willRain ? Math.random() * 15 : 0;
-          simulatedPrecipitation.push(Number(rainAmount.toFixed(1)));
-
-          // Simulate NDVI degrading if hot and dry, improving if rain
-          if (rainAmount > 5) {
-            currentSimNdvi += 0.05;
-          } else if (currentSimTemp > 30) {
-            currentSimNdvi -= 0.02; // Drought stress
+          if (i > 0) {
+            // Adjust NDVI slightly day by day based on actual forecast
+            if (rainAmount > 5) {
+              currentSimNdvi += 0.05;
+            } else if (dayTemp > 30) {
+              currentSimNdvi -= 0.02; // Drought stress
+            }
+            currentSimNdvi = Math.min(0.95, Math.max(0.1, currentSimNdvi));
           }
-          currentSimNdvi = Math.min(0.95, Math.max(0.1, currentSimNdvi));
           simulatedNdvi.push(Number(currentSimNdvi.toFixed(2)));
         }
-        // Prepend the current 7 days NDVI (static for now)
-        const fullSimulatedNdvi = [...Array(7).fill(finalCalculatedNdvi), ...simulatedNdvi];
+        
+        const fullSimulatedNdvi = simulatedNdvi;
         // -----------------------------------------------
 
         // Algorithm to simulate soil pH based on climate

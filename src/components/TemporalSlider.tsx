@@ -79,9 +79,9 @@ export default function TemporalSlider({ dateOffset, setDateOffset, maxDays = 90
                 {/* Timeline markers */}
                 <div className="absolute top-10 w-full flex justify-between px-1 text-[10px] font-black text-gray-500 uppercase tracking-widest pointer-events-none">
                   <span>Today</span>
-                  <span>+30D</span>
-                  <span>+60D</span>
-                  <span>+90D</span>
+                  <span>+5D</span>
+                  <span>+10D</span>
+                  <span>+15D</span>
                 </div>
               </div>
 

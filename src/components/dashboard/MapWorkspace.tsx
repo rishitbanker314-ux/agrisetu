@@ -186,7 +186,7 @@ export default function MapWorkspace({
       </div>
 
       {/* Floating Bottom Controls (Above Drawer) */}
-      <TemporalSlider dateOffset={dateOffset} setDateOffset={setDateOffset} maxDays={89} />
+      <TemporalSlider dateOffset={dateOffset} setDateOffset={setDateOffset} maxDays={15} />
 
       {/* Bottom Drawer Intelligence */}
       <BottomDrawer 
