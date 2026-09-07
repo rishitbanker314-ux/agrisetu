@@ -96,7 +96,7 @@ export default function MarketScenarios({ crop, lat = 28.6139, lng = 77.2090 }: 
             Live Market Projections
           </h2>
           <p className="text-xs text-ink/50 font-medium tracking-wide mt-1 uppercase">
-            Data sourced from Alpha Vantage & AI Models
+            Data sourced from Yahoo Finance & AI Models
           </p>
         </div>
         <div className="bg-moss/10 text-moss text-[10px] font-bold tracking-widest px-3 py-1 rounded-sm uppercase mt-4 md:mt-0 flex items-center gap-2">
