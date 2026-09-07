@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { Sprout, FileText, Loader2, Plus, X, Calendar, MapPin, ArrowLeft } from 'lucide-react';
+import { Sprout, FileText, Loader2, Plus, X, Calendar, MapPin, ArrowLeft, Menu } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import NavigationSidebar from '@/components/NavigationSidebar';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
@@ -31,6 +32,8 @@ export default function FieldNotesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [user, setUser] = useState<any>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   const [newNote, setNewNote] = useState({
@@ -43,6 +46,7 @@ export default function FieldNotesPage() {
     async function loadData() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
+        setUser(user);
         setUserId(user.id);
         
         // Load Fields
@@ -127,14 +131,22 @@ export default function FieldNotesPage() {
   return (
     <div className="min-h-screen bg-paper-ivory flex flex-col font-sans selection:bg-moss/30 selection:text-deep-forest relative">
       <header className="bg-white border-b border-soft-line z-[40] flex items-center justify-between px-4 md:px-6 h-16 shrink-0 shadow-sm relative">
-        <Link href="/en/dashboard" className="text-ink/60 hover:text-moss transition-colors flex items-center gap-1.5 text-sm font-medium">
-          <ArrowLeft className="w-4 h-4" /> <span className="hidden sm:inline">Back to Dashboard</span>
-        </Link>
+        <button 
+          onClick={() => setIsMobileMenuOpen(true)}
+          className="p-2 -ml-2 text-ink/70 hover:bg-moss/10 rounded-md transition-colors"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
         <Link href="/en" className="flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
           <Sprout className="w-6 h-6 text-deep-forest" />
           <span className="font-serif text-xl tracking-tight text-ink font-medium hidden sm:block">AgriSetu</span>
         </Link>
         <div className="text-xs font-medium uppercase tracking-widest text-ink/50">Field Notes</div>
+        <NavigationSidebar 
+          isOpen={isMobileMenuOpen} 
+          setIsOpen={setIsMobileMenuOpen} 
+          user={user} 
+        />
       </header>
 
       <main className="flex-grow p-6 md:p-12 max-w-7xl mx-auto w-full">
