@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriSetu — Project Context Questionnaire</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --deep-forest: #1a2f1a;
+      --moss: #4a7c59;
+      --moss-light: #e8f0ea;
+      --terracotta: #c76a3a;
+      --terracotta-light: #fef0e8;
+      --ivory: #f8f5ef;
+      --ink: #2c2c2c;
+      --soft-line: #e0dcd4;
+      --marigold: #d4a843;
+      --sky: #3b82f6;
+      --radius: 12px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+      --shadow-lg: 0 10px 40px rgba(0,0,0,0.1), 0 4px 12px rgba(0,0,0,0.06);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: var(--ivory); color: var(--ink); line-height: 1.6; min-height: 100vh; }
+    .header { background: var(--deep-forest); color: white; padding: 60px 24px 80px; text-align: center; position: relative; overflow: hidden; }
+    .header::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 30% 80%, rgba(74,124,89,0.4) 0%, transparent 60%), radial-gradient(ellipse at 70% 20%, rgba(199,106,58,0.2) 0%, transparent 50%); pointer-events: none; }
+    .header-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); padding: 8px 18px; border-radius: 100px; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600; margin-bottom: 28px; position: relative; backdrop-filter: blur(8px); }
+    .header-badge .dot { width: 8px; height: 8px; background: var(--moss); border-radius: 50%; animation: pulse-dot 2s infinite; }
+    @keyframes pulse-dot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.3); } }
+    .header h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 700; margin-bottom: 16px; position: relative; letter-spacing: -0.02em; }
+    .header p { font-size: 16px; opacity: 0.75; max-width: 600px; margin: 0 auto; font-weight: 400; line-height: 1.7; }
+    .container { max-width: 860px; margin: -40px auto 60px; padding: 0 20px; position: relative; }
+    .progress-bar-wrap { position: sticky; top: 0; z-index: 100; background: rgba(248,245,239,0.92); backdrop-filter: blur(12px); padding: 16px 0; border-bottom: 1px solid var(--soft-line); margin: 0 -20px; padding-left: 20px; padding-right: 20px; }
+    .progress-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .progress-info span { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--moss); }
+    .progress-track { width: 100%; height: 6px; background: var(--soft-line); border-radius: 100px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--moss), var(--terracotta)); border-radius: 100px; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+    .section { background: white; border-radius: var(--radius); border: 1px solid var(--soft-line); box-shadow: var(--shadow-sm); margin-bottom: 24px; overflow: hidden; transition: box-shadow 0.3s; }
+    .section:hover { box-shadow: var(--shadow-md); }
+    .section-header { padding: 24px 28px; border-bottom: 1px solid var(--soft-line); background: linear-gradient(135deg, var(--ivory) 0%, white 100%); }
+    .section-category { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.2em; color: var(--moss); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .section-category .cat-icon { width: 18px; height: 18px; background: var(--moss-light); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+    .section-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 600; color: var(--deep-forest); letter-spacing: -0.01em; }
+    .section-body { padding: 28px; }
+    .question-block { margin-bottom: 32px; padding-bottom: 32px; border-bottom: 1px solid var(--soft-line); }
+    .question-block:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+    .question-number { font-size: 10px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--terracotta); margin-bottom: 8px; }
+    .question-text { font-size: 16px; font-weight: 600; color: var(--deep-forest); margin-bottom: 6px; line-height: 1.5; }
+    .question-hint { font-size: 13px; color: #888; margin-bottom: 16px; font-style: italic; }
+    .options-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+    .option-label { display: flex; align-items: flex-start; gap: 14px; padding: 14px 18px; border: 2px solid var(--soft-line); border-radius: 10px; cursor: pointer; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); position: relative; background: white; }
+    .option-label:hover { border-color: var(--moss); background: var(--moss-light); }
+    .option-label.selected { border-color: var(--moss); background: var(--moss-light); box-shadow: 0 0 0 1px var(--moss); }
+    .option-label input[type="checkbox"] { display: none; }
+    .custom-check { width: 22px; height: 22px; border: 2px solid var(--soft-line); border-radius: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.25s; margin-top: 1px; }
+    .option-label.selected .custom-check { background: var(--moss); border-color: var(--moss); }
+    .custom-check svg { width: 14px; height: 14px; stroke: white; stroke-width: 3; fill: none; opacity: 0; transition: opacity 0.2s; }
+    .option-label.selected .custom-check svg { opacity: 1; }
+    .option-content { flex: 1; }
+    .option-title { font-size: 14px; font-weight: 600; color: var(--ink); line-height: 1.4; }
+    .option-desc { font-size: 12px; color: #999; margin-top: 3px; }
+    .custom-answer-wrap { margin-top: 16px; }
+    .custom-answer-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: var(--terracotta); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    .custom-answer-label svg { width: 14px; height: 14px; }
+    .custom-answer-wrap textarea { width: 100%; min-height: 80px; border: 2px solid var(--soft-line); border-radius: 10px; padding: 14px 16px; font-family: 'Inter', sans-serif; font-size: 14px; color: var(--ink); resize: vertical; transition: border-color 0.3s; background: var(--ivory); line-height: 1.6; }
+    .custom-answer-wrap textarea:focus { outline: none; border-color: var(--terracotta); background: white; }
+    .custom-answer-wrap textarea::placeholder { color: #bbb; }
+    .export-panel { background: var(--deep-forest); border-radius: var(--radius); padding: 40px; text-align: center; margin-top: 40px; color: white; position: relative; overflow: hidden; }
+    .export-panel::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 100%, rgba(74,124,89,0.3) 0%, transparent 60%); }
+    .export-panel h2 { font-family: 'Playfair Display', serif; font-size: 24px; margin-bottom: 10px; position: relative; }
+    .export-panel p { font-size: 14px; opacity: 0.7; margin-bottom: 28px; position: relative; }
+    .export-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; position: relative; }
+    .btn-export { display: inline-flex; align-items: center; gap: 10px; padding: 14px 28px; border-radius: 10px; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; cursor: pointer; border: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .btn-export:active { transform: scale(0.97); }
+    .btn-pdf { background: var(--terracotta); color: white; }
+    .btn-pdf:hover { background: #b05c33; box-shadow: 0 4px 20px rgba(199,106,58,0.4); }
+    .btn-copy { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
+    .btn-copy:hover { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.4); }
+    .btn-export svg { width: 18px; height: 18px; }
+    .toast { position: fixed; bottom: 24px; right: 24px; background: var(--deep-forest); color: white; padding: 16px 24px; border-radius: 10px; font-size: 14px; font-weight: 600; z-index: 10000; box-shadow: var(--shadow-lg); transform: translateY(120%); opacity: 0; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; gap: 10px; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast .toast-icon { width: 24px; height: 24px; background: var(--moss); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .toast .toast-icon svg { width: 14px; height: 14px; stroke: white; stroke-width: 3; fill: none; }
+    @media (max-width: 640px) { .header { padding: 40px 16px 60px; } .section-header, .section-body { padding: 20px; } .export-panel { padding: 28px 20px; } .export-buttons { flex-direction: column; align-items: stretch; } }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-badge"><span class="dot"></span>Project Context Builder</div>
+    <h1>AgriSetu — Questionnaire</h1>
+    <p>Answer these questions to generate a comprehensive AI-searchable project context document. Select all options that apply and add custom details where needed.</p>
+  </div>
+  <div class="container">
+    <div class="progress-bar-wrap">
+      <div class="progress-info"><span>Progress</span><span id="progressText">0 / 32 answered</span></div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width: 0%"></div></div>
+    </div>
+
+    <!-- SECTION 1 -->
+    <div class="section" style="margin-top: 24px;">
+      <div class="section-header">
+        <div class="section-category"><span class="cat-icon">🎯</span>Section 1 — Project Purpose & Vision</div>
+        <div class="section-title">Why does AgriSetu exist?</div>
+      </div>
+      <div class="section-body">
+        <div class="question-block" data-question="1">
+          <div class="question-number">Question 01</div>
+          <div class="question-text">What is the primary problem AgriSetu solves?</div>
+          <div class="question-hint">Select all that apply</div>
+          <div class="options-grid">
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q1" value="Farmers lack access to real-time, data-driven agricultural advice personalized to their specific field conditions"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">Farmers lack access to real-time, data-driven agricultural advice personalized to their specific field conditions</div></div></label>
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q1" value="Agricultural decisions are made on guesswork rather than satellite, soil, and weather intelligence"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">Agricultural decisions are made on guesswork rather than satellite, soil, and weather intelligence</div></div></label>
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q1" value="Cross-border agricultural cooperation across BRICS nations lacks a unified digital platform"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">Cross-border agricultural cooperation across BRICS nations lacks a unified digital platform</div></div></label>
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q1" value="Low-literacy farmers cannot access complex weather/soil data in their own language"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">Low-literacy farmers cannot access complex weather/soil data in their own language</div></div></label>
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q1" value="Policymakers lack aggregated, real-time data on regional crop health and trends"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">Policymakers lack aggregated, real-time data on regional crop health and trends</div></div></label>
+          </div>
+          <div class="custom-answer-wrap"><div class="custom-answer-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Custom / Additional Context</div><textarea placeholder="Add your own answer or additional details..." oninput="updateProgress()"></textarea></div>
+        </div>
+        <div class="question-block" data-question="2">
+          <div class="question-number">Question 02</div>
+          <div class="question-text">Who are the primary users of AgriSetu?</div>
+          <div class="question-hint">Select all that apply</div>
+          <div class="options-grid">
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q2" value="Smallholder farmers in BRICS countries (India, Brazil, South Africa, etc.)"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">Smallholder farmers in BRICS countries (India, Brazil, South Africa, etc.)</div></div></label>
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q2" value="Agricultural policymakers and government officials"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">Agricultural policymakers and government officials</div></div></label>
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q2" value="Agricultural extension workers and field advisors"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">Agricultural extension workers and field advisors</div></div></label>
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q2" value="Researchers studying regional agricultural health"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">Researchers studying regional agricultural health</div></div></label>
+          </div>
+          <div class="custom-answer-wrap"><div class="custom-answer-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Custom / Additional Context</div><textarea placeholder="Add your own answer or additional details..." oninput="updateProgress()"></textarea></div>
+        </div>
+        <div class="question-block" data-question="3">
+          <div class="question-number">Question 03</div>
+          <div class="question-text">What competition/initiative is AgriSetu built for?</div>
+          <div class="options-grid">
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q3" value="Build with AI: Code for Communities 2 (BRICS) — Cooperation Track: Agriculture"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">Build with AI: Code for Communities 2 (BRICS) — Cooperation Track: Agriculture</div></div></label>
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q3" value="Inspired by BRICS Network on Digital Agriculture (coordinated by IIT Delhi)"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">Inspired by BRICS Network on Digital Agriculture (coordinated by IIT Delhi)</div></div></label>
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q3" value="SDG 2 (Zero Hunger) and SDG 13 (Climate Action) alignment"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">SDG 2 (Zero Hunger) and SDG 13 (Climate Action) alignment</div></div></label>
+          </div>
+          <div class="custom-answer-wrap"><div class="custom-answer-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Custom / Additional Context</div><textarea placeholder="Add your own answer or additional details..." oninput="updateProgress()"></textarea></div>
+        </div>
+        <div class="question-block" data-question="4">
+          <div class="question-number">Question 04</div>
+          <div class="question-text">What is the meaning of "Setu" in AgriSetu?</div>
+          <div class="options-grid">
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q4" value="Setu means bridge in Hindi — bridging farmers to AI-driven intelligence"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">"Setu" means "bridge" in Hindi — bridging farmers to AI-driven intelligence</div></div></label>
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q4" value="It bridges satellite data, weather APIs, and AI into a farmer-readable advisory"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">It bridges satellite data, weather APIs, and AI into a farmer-readable advisory</div></div></label>
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q4" value="It bridges BRICS nations for cross-border agricultural cooperation"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">It bridges BRICS nations for cross-border agricultural cooperation</div></div></label>
+          </div>
+          <div class="custom-answer-wrap"><div class="custom-answer-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Custom / Additional Context</div><textarea placeholder="Add your own answer or additional details..." oninput="updateProgress()"></textarea></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: TECH STACK -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-category"><span class="cat-icon">⚙️</span>Section 2 — Overall Tech Stack</div>
+        <div class="section-title">What technologies power AgriSetu?</div>
+      </div>
+      <div class="section-body">
+        <div class="question-block" data-question="5">
+          <div class="question-number">Question 05</div>
+          <div class="question-text">What is the frontend tech stack?</div>
+          <div class="question-hint">Select all that apply</div>
+          <div class="options-grid">
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q5" value="Next.js 16.3.1 (App Router, React Server Components)"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">Next.js 16.3.1 (App Router, React Server Components)</div></div></label>
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q5" value="React 19.2.8 with TypeScript 5"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">React 19.2.8 with TypeScript 5</div></div></label>
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q5" value="Tailwind CSS v4 for styling"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">Tailwind CSS v4 for styling</div></div></label>
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q5" value="Framer Motion for animations and transitions"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">Framer Motion for animations and transitions</div></div></label>
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q5" value="Zustand for client-side state management"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">Zustand for client-side state management</div></div></label>
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q5" value="Leaflet.js + react-leaflet + OpenStreetMap for maps"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">Leaflet.js + react-leaflet + OpenStreetMap for maps (no Google Maps)</div></div></label>
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q5" value="Lucide React for icon library"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">Lucide React for icon library</div></div></label>
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q5" value="next-intl for internationalization"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">next-intl for internationalization (i18n)</div></div></label>
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q5" value="Sonner for toast notifications"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">Sonner for toast notifications</div></div></label>
+          </div>
+          <div class="custom-answer-wrap"><div class="custom-answer-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Custom / Additional Context</div><textarea placeholder="Add your own answer or additional details..." oninput="updateProgress()"></textarea></div>
+        </div>
+        <div class="question-block" data-question="6">
+          <div class="question-number">Question 06</div>
+          <div class="question-text">What is the backend / infrastructure stack?</div>
+          <div class="options-grid">
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q6" value="Supabase Postgres (free tier, 500MB) for structured data"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">Supabase Postgres (free tier, 500MB) for all structured data</div></div></label>
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q6" value="Supabase Auth for authentication (farmer/policymaker roles)"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">Supabase Auth for authentication (farmer/policymaker roles)</div></div></label>
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q6" value="Supabase Storage (free tier, 1GB) for crop photos"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">Supabase Storage (free tier, 1GB) for crop photos</div></div></label>
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q6" value="Supabase Edge Functions (Deno runtime) for serverless backend logic"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">Supabase Edge Functions (Deno runtime) for serverless backend</div></div></label>
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q6" value="Row Level Security (RLS) for data privacy enforcement"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">Row Level Security (RLS) for data privacy enforcement</div></div></label>
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q6" value="Vercel for frontend hosting / deployment"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">Vercel for frontend hosting / deployment</div></div></label>
+          </div>
+          <div class="custom-answer-wrap"><div class="custom-answer-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Custom / Additional Context</div><textarea placeholder="Add your own answer or additional details..." oninput="updateProgress()"></textarea></div>
+        </div>
+        <div class="question-block" data-question="7">
+          <div class="question-number">Question 07</div>
+          <div class="question-text">What AI / ML services does AgriSetu use?</div>
+          <div class="options-grid">
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q7" value="Gemini Flash via Google AI Studio (free tier)"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">Gemini Flash via Google AI Studio (free tier, ~1500 req/day)</div><div class="option-desc">NOT Vertex AI — uses API key from ai.google.dev</div></div></label>
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q7" value="Gemini multimodal image input for crop disease diagnosis"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">Gemini multimodal image input for crop disease diagnosis</div></div></label>
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q7" value="Gemini handles translation in-prompt (no separate Translation API)"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">Gemini handles translation in-prompt (no separate Translation API)</div></div></label>
+          </div>
+          <div class="custom-answer-wrap"><div class="custom-answer-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Custom / Additional Context</div><textarea placeholder="Add your own answer or additional details..." oninput="updateProgress()"></textarea></div>
+        </div>
+        <div class="question-block" data-question="8">
+          <div class="question-number">Question 08</div>
+          <div class="question-text">What external data sources feed into AgriSetu?</div>
+          <div class="options-grid">
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q8" value="Open-Meteo API — live weather data, 7-day forecasts, soil moisture"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">Open-Meteo API — live weather, 7-day forecasts, soil moisture</div><div class="option-desc">Free, no API key required</div></div></label>
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q8" value="Google Earth Engine + Sentinel-2 — satellite NDVI data"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">Google Earth Engine + Sentinel-2 — satellite NDVI data</div></div></label>
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q8" value="SoilGrids via GEE Community Catalog — soil properties"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">SoilGrids via GEE Community Catalog — soil properties</div></div></label>
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q8" value="FAOSTAT API — historical crop context data"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">FAOSTAT API — historical crop context data</div></div></label>
+            <label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q8" value="OpenStreetMap + Esri satellite tiles for map rendering"><span class="custom-check"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></span><div class="option-content"><div class="option-title">OpenStreetMap + Esri satellite tiles for map rendering</div></div></label>
+          </div>
+          <div class="custom-answer-wrap"><div class="custom-answer-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Custom / Additional Context</div><textarea placeholder="Add your own answer or additional details..." oninput="updateProgress()"></textarea></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 3: CORE FEATURES (abbreviated for remaining questions 9-19) -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-category"><span class="cat-icon">🌾</span>Section 3 — Core Features & How They Work</div>
+        <div class="section-title">Feature-by-feature deep dive</div>
+      </div>
+      <div class="section-body" id="featureQuestions"></div>
+    </div>
+
+    <!-- SECTION 4: ARCHITECTURE -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-category"><span class="cat-icon">🏗️</span>Section 4 — Architecture, Data Model & Security</div>
+        <div class="section-title">How is the system structured?</div>
+      </div>
+      <div class="section-body" id="archQuestions"></div>
+    </div>
+
+    <!-- SECTION 5: i18n -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-category"><span class="cat-icon">🌍</span>Section 5 — Internationalization & Cross-Border</div>
+        <div class="section-title">How does AgriSetu work across countries?</div>
+      </div>
+      <div class="section-body" id="i18nQuestions"></div>
+    </div>
+
+    <!-- SECTION 6-10 -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-category"><span class="cat-icon">🎨</span>Section 6 — UX, Design & Landing Page</div>
+        <div class="section-title">How does the app look and feel?</div>
+      </div>
+      <div class="section-body" id="uxQuestions"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-category"><span class="cat-icon">🗂️</span>Section 7 — Pages, Routes & Edge Functions</div>
+        <div class="section-title">What pages and serverless functions exist?</div>
+      </div>
+      <div class="section-body" id="routeQuestions"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-category"><span class="cat-icon">🛡️</span>Section 8 — Compliance, Deployment & Cost</div>
+        <div class="section-title">How is AgriSetu deployed and maintained?</div>
+      </div>
+      <div class="section-body" id="complianceQuestions"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-category"><span class="cat-icon">📝</span>Section 9 — Additional Context</div>
+        <div class="section-title">Anything else to capture?</div>
+      </div>
+      <div class="section-body">
+        <div class="question-block" data-question="32">
+          <div class="question-number">Question 32</div>
+          <div class="question-text">Is there any additional context, clarifications, corrections, or features not covered above?</div>
+          <div class="question-hint">Use this space to add anything missed, correct answers, or provide deeper context.</div>
+          <div class="custom-answer-wrap" style="margin-top: 0;"><textarea placeholder="Write any additional context, corrections, or details here..." style="min-height: 160px;" oninput="updateProgress()"></textarea></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPORT PANEL -->
+    <div class="export-panel">
+      <h2>Export Your Answers</h2>
+      <p>Download as a formatted PDF or copy all answers to clipboard for pasting.</p>
+      <div class="export-buttons">
+        <button class="btn-export btn-pdf" onclick="exportPDF()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Export as PDF
+        </button>
+        <button class="btn-export btn-copy" onclick="copyToClipboard()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy to Clipboard
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const TOTAL_QUESTIONS = 32;
+    const checkSvg = '<svg><polyline points="20 6 9 17 4 12"></polyline></svg>';
+    const editSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+
+    function makeQ(num, text, hint, options, targetId) {
+      const block = document.createElement('div');
+      block.className = 'question-block';
+      block.dataset.question = num;
+      let optHtml = options.map(o => {
+        const t = typeof o === 'string' ? o : o.title;
+        const d = typeof o === 'object' && o.desc ? `<div class="option-desc">${o.desc}</div>` : '';
+        return `<label class="option-label" onclick="toggleOption(this)"><input type="checkbox" name="q${num}" value="${t}"><span class="custom-check">${checkSvg}</span><div class="option-content"><div class="option-title">${t}</div>${d}</div></label>`;
+      }).join('');
+      block.innerHTML = `
+        <div class="question-number">Question ${String(num).padStart(2,'0')}</div>
+        <div class="question-text">${text}</div>
+        ${hint ? `<div class="question-hint">${hint}</div>` : ''}
+        <div class="options-grid">${optHtml}</div>
+        <div class="custom-answer-wrap"><div class="custom-answer-label">${editSvg}Custom / Additional Context</div><textarea placeholder="Add your own answer or additional details..." oninput="updateProgress()"></textarea></div>
+      `;
+      document.getElementById(targetId).appendChild(block);
+    }
+
+    // Section 3: Features Q9-Q19
+    makeQ(9, 'Interactive Map & Field Management — What does it do?', 'Select all that apply', [
+      'Displays an interactive Leaflet map with street and satellite views (Esri tiles)',
+      'Farmers can pin their field location by clicking or dragging a marker',
+      'Supports polygon boundary drawing to outline exact field shapes',
+      'NDVI-based color overlay on fields (green=healthy, red=drought stress)',
+      'Multiple saved fields per user stored in Supabase, switchable via header dropdown'
+    ], 'featureQuestions');
+    makeQ(10, 'Live Field Data & Weather Integration — How does it work?', 'Select all that apply', [
+      'useFieldData hook fetches live data from Open-Meteo API on every location change',
+      'Pulls current temperature, humidity, soil moisture, and 7-day forecast',
+      'Algorithmically computes NDVI from weather data (moisture, temperature, precipitation)',
+      'Simulates soil pH based on precipitation patterns and climate',
+      'Uses coordinate-based pseudo-random seeding for distinct data per field'
+    ], 'featureQuestions');
+    makeQ(11, '90-Day Temporal Simulation — What does this feature do?', 'Select all that apply', [
+      'Extrapolates the 7-day forecast into a 90-day simulation with seasonal trends',
+      'NDVI degrades in hot/dry conditions and improves with rain events',
+      'A Time Travel slider lets users scrub through 0-90 days into the future',
+      'Map field boundary colors update dynamically based on the simulated date',
+      'NDVIChart renders the full 90-day NDVI trend as an SVG area chart'
+    ], 'featureQuestions');
+    makeQ(12, 'AI Advisory Engine — How does the advisory pipeline work?', null, [
+      'Field data is sent to the advisory-engine Supabase Edge Function',
+      'Edge Function calls Gemini Flash with structured prompt including crop, weather, and language',
+      'Gemini generates recommendations and translates in the same prompt',
+      'Advisory is rendered as markdown in the dashboard advisory panel'
+    ], 'featureQuestions');
+    makeQ(13, 'Crop Disease Diagnosis — How does image analysis work?', null, [
+      'User uploads a crop photo via DiagnosisUpload component',
+      'Image is read as base64 client-side and sent to the diagnostic-module Edge Function',
+      'Edge Function passes the image to Gemini Flash multimodal vision analysis',
+      'Returns disease label, confidence score, and treatment advice (as markdown)'
+    ], 'featureQuestions');
+    makeQ(15, 'Market Insights & Scenario Simulation — What does it provide?', null, [
+      'Calls the market-insights Edge Function with crop type and coordinates',
+      'Returns current price, trend direction, percentage change, and AI insight',
+      'MarketScenarios renders 3 AI-generated war-gaming scenarios',
+      'Each scenario includes probability, price chart, impact analysis, and action'
+    ], 'featureQuestions');
+    makeQ(16, 'Sustainability & ESG Score — How is it calculated?', null, [
+      'ESG score computed from fertilizer usage (ideal ~80 kg/ha) and water usage (ideal ~300mm)',
+      'Interactive sliders for nitrogen and water usage with real-time score updates',
+      'Carbon credit value calculated when score > 60: (score - 60) x $12.50',
+      'Smart defaults adjust automatically based on real forecast data'
+    ], 'featureQuestions');
+    makeQ(17, 'Acoustic Biosphere Monitor — What does this unique feature do?', null, [
+      'Simulates subsurface acoustic monitoring of root cavitation events',
+      'Radar-style UI with animated sweep, pulsing blips, and mycelial network',
+      'Stress level derived from soil moisture data',
+      'Shows mycelial health %, 24h acoustic events, and detection logic'
+    ], 'featureQuestions');
+    makeQ(18, 'Climate Alerts & Notification System — How does it work?', null, [
+      'Analyzes 7-day forecast for frost, heatwave, and flood risk thresholds',
+      'Automated real-time notifications triggered on field data load',
+      'SMS/WhatsApp subscription button for mobile alert enrollment',
+      'Notifications via custom browser events to a global notification center'
+    ], 'featureQuestions');
+    makeQ(19, '7-Day Forecast Chart — How is it rendered?', null, [
+      'Custom SVG bar chart with temperature and precipitation for 7 days',
+      'Hover tooltips show exact values per day',
+      'No third-party charting library — hand-built with SVG and CSS'
+    ], 'featureQuestions');
+
+    // Section 4: Architecture Q20-Q22
+    makeQ(20, 'What is the system architecture pattern?', null, [
+      '4-layer pipeline: Data Sources → Ingestion/Fusion → AI Core → Delivery',
+      'Country-adapter pattern with abstract interface and country-specific implementations',
+      'Serverless backend via 4 Supabase Edge Functions',
+      'Fully decoupled: frontend on Vercel, backend on Supabase'
+    ], 'archQuestions');
+    makeQ(21, 'What are the key database tables?', 'Select all that apply', [
+      'profiles — user identity, role, language, country, region',
+      'fields — locations, crop type, boundaries, area, linked to owner',
+      'health_profiles — NDVI, soil properties, weather forecast per field',
+      'advisories — AI-generated recommendations, language',
+      'diagnoses — image URL, disease label, confidence, treatment advice',
+      'regional_trends (materialized view) — aggregated stats for policymakers'
+    ], 'archQuestions');
+    makeQ(22, 'How does Row Level Security (RLS) work?', null, [
+      'Farmers can only see their own fields (auth.uid() = owner_id)',
+      'Policymakers only access aggregated regional_trends view, never raw data',
+      'This is the do-no-harm story for DPG compliance'
+    ], 'archQuestions');
+
+    // Section 5: i18n Q23-Q24
+    makeQ(23, 'Which languages does AgriSetu support?', 'Select all that apply', [
+      'English (en)', 'Hindi (hi)', 'Portuguese (pt) — for Brazil cross-border demo',
+      'Chinese (zh)', 'Gujarati (via Gemini in-prompt translation)'
+    ], 'i18nQuestions');
+    makeQ(24, 'How does cross-border (India to Brazil) functionality work?', null, [
+      'Country-adapter interface with country-specific implementations',
+      'All data sources are global — same pipeline works for any coordinate',
+      'Brazil demo: real coordinates, FAOSTAT with Brazil code, Portuguese output',
+      'BRICS country selection during user onboarding'
+    ], 'i18nQuestions');
+
+    // Section 6: UX Q25-Q26
+    makeQ(25, 'What is the design language / aesthetic?', null, [
+      'Editorial / magazine-style with custom nature color palette',
+      'Playfair Display for headings, Inter for body text',
+      'Framer Motion animations (parallax, staggered reveals, springs)',
+      'Mobile-first with bottom drawer navigation on dashboard'
+    ], 'uxQuestions');
+    makeQ(26, 'What are the landing page sections?', 'Select all that apply', [
+      'EditorialHero — Hero with parallax farmland imagery',
+      'SignalTranslation — Data pipeline explanation',
+      'CropCycleTimeline — Crop growth stages visualization',
+      'FieldAtlasReveal — Animated field atlas demonstration',
+      'FieldNotes, FinalCTA, SiteHeader, SiteFooter'
+    ], 'uxQuestions');
+
+    // Section 7: Routes Q27-Q28
+    makeQ(27, 'What are the main app routes?', 'Select all that apply', [
+      '/[locale]/ — Landing page (editorial homepage)',
+      '/[locale]/dashboard — Farmer dashboard with map and AI features',
+      '/[locale]/fields — Field management page',
+      '/[locale]/login — Authentication page',
+      'reports, settings, about, solution, platform, field-notes pages'
+    ], 'routeQuestions');
+    makeQ(28, 'What are the 4 Supabase Edge Functions?', null, [
+      'advisory-engine — Generates AI crop recommendations via Gemini',
+      'diagnostic-module — AI crop disease diagnosis via Gemini vision',
+      'fusion-engine — Fuses satellite + soil + weather data in parallel',
+      'market-insights — AI-powered market price analysis and scenarios'
+    ], 'routeQuestions');
+
+    // Section 8: Compliance Q29-Q31
+    makeQ(29, 'What is the total infrastructure cost?', null, [
+      '$0 — entire project runs on free tiers',
+      'No credit card or billing account required'
+    ], 'complianceQuestions');
+    makeQ(30, 'What are the Digital Public Good (DPG) compliance items?', 'Select all that apply', [
+      'Open-source license (MIT or Apache 2.0)',
+      'SDG alignment (SDG 2, SDG 13)',
+      'RLS policy tested — no cross-farmer data leakage',
+      'No hardcoded secrets — environment variables only'
+    ], 'complianceQuestions');
+    makeQ(31, 'How is Supabase kept alive during the judging period?', null, [
+      'Keep-alive ping via cron-job.org or GitHub Actions every 3-4 days',
+      'Lightweight Edge Function returns 200 OK to prevent pausing'
+    ], 'complianceQuestions');
+
+    function toggleOption(label) {
+      const cb = label.querySelector('input[type="checkbox"]');
+      cb.checked = !cb.checked;
+      label.classList.toggle('selected', cb.checked);
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const blocks = document.querySelectorAll('.question-block');
+      let answered = 0;
+      blocks.forEach(block => {
+        const checked = block.querySelectorAll('input[type="checkbox"]:checked');
+        const ta = block.querySelector('textarea');
+        if (checked.length > 0 || (ta && ta.value.trim().length > 0)) answered++;
+      });
+      const pct = Math.round((answered / TOTAL_QUESTIONS) * 100);
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('progressText').textContent = answered + ' / ' + TOTAL_QUESTIONS + ' answered';
+    }
+
+    function gatherAnswers() {
+      const blocks = document.querySelectorAll('.question-block');
+      const results = [];
+      blocks.forEach((block, i) => {
+        const num = block.querySelector('.question-number')?.textContent || `Q${i+1}`;
+        const text = block.querySelector('.question-text')?.textContent || '';
+        const checked = block.querySelectorAll('input[type="checkbox"]:checked');
+        const ta = block.querySelector('textarea');
+        const custom = ta ? ta.value.trim() : '';
+        const opts = [];
+        checked.forEach(cb => opts.push(cb.value));
+        if (opts.length > 0 || custom) results.push({ number: num, question: text, selectedOptions: opts, customAnswer: custom });
+      });
+      return results;
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.innerHTML = `<div class="toast-icon"><svg><polyline points="20 6 9 17 4 12"></polyline></svg></div>${msg}`;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    function copyToClipboard() {
+      const answers = gatherAnswers();
+      if (!answers.length) { showToast('Please answer at least one question first.'); return; }
+      let text = '=== AGRISETU — PROJECT CONTEXT QUESTIONNAIRE ===\n\n';
+      answers.forEach(a => {
+        text += `── ${a.number} ──\nQ: ${a.question}\n\n`;
+        if (a.selectedOptions.length) { text += 'Selected:\n'; a.selectedOptions.forEach(o => text += `  ✓ ${o}\n`); }
+        if (a.customAnswer) text += `\nCustom: ${a.customAnswer}\n`;
+        text += '\n─────────────────────────────────\n\n';
+      });
+      navigator.clipboard.writeText(text).then(() => showToast('All answers copied to clipboard!')).catch(() => {
+        const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); showToast('All answers copied to clipboard!');
+      });
+    }
+
+    function exportPDF() {
+      const answers = gatherAnswers();
+      if (!answers.length) { showToast('Please answer at least one question first.'); return; }
+      const el = document.createElement('div');
+      el.style.cssText = 'font-family:Inter,Helvetica,sans-serif;padding:40px;color:#2c2c2c;line-height:1.6;max-width:700px';
+      el.innerHTML = `<div style="text-align:center;margin-bottom:40px;border-bottom:3px solid #1a2f1a;padding-bottom:30px"><h1 style="font-size:28px;font-weight:800;color:#1a2f1a;margin:0 0 8px">AgriSetu — Project Context</h1><p style="font-size:14px;color:#888;margin:0">Questionnaire Responses • ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}</p></div>`;
+      answers.forEach(a => {
+        let h = `<div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:#c76a3a;margin-bottom:6px">${a.number}</div><div style="font-size:15px;font-weight:700;color:#1a2f1a;margin-bottom:12px">${a.question}</div>`;
+        a.selectedOptions.forEach(o => h += `<div style="padding:8px 12px;background:#e8f0ea;border-left:3px solid #4a7c59;margin-bottom:6px;border-radius:4px;font-size:13px;color:#1a2f1a">✓ ${o}</div>`);
+        if (a.customAnswer) h += `<div style="margin-top:12px;padding:12px 14px;background:#fef0e8;border-left:3px solid #c76a3a;border-radius:4px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#c76a3a;margin-bottom:4px">Custom Answer</div><div style="font-size:13px;color:#2c2c2c">${a.customAnswer}</div></div>`;
+        const d = document.createElement('div'); d.style.cssText = 'margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid #e0dcd4'; d.innerHTML = h; el.appendChild(d);
+      });
+      el.innerHTML += `<div style="text-align:center;padding-top:20px;border-top:2px solid #1a2f1a"><p style="font-size:11px;color:#888">${answers.length} of ${TOTAL_QUESTIONS} questions answered</p></div>`;
+      showToast('Generating PDF...');
+      html2pdf().from(el).set({margin:[10,10,10,10],filename:'AgriSetu_Project_Context_Questionnaire.pdf',image:{type:'jpeg',quality:0.98},html2canvas:{scale:2},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}}).save().then(() => setTimeout(() => showToast('PDF downloaded!'), 500));
+    }
+
+    updateProgress();
+  </script>
+</body>
+</html>

@@ -49,16 +49,6 @@ const capabilities = [
   },
   {
     number: '05',
-    title: 'Voice guidance',
-    description: 'Ask questions naturally in the field. Receive spoken, actionable advice in your local language.',
-    icon: (
-      <svg width="40" height="40" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M30 50 V 50 M40 30 V 70 M50 10 V 90 M60 30 V 70 M70 50 V 50" strokeLinecap="round" opacity="0.7"/>
-      </svg>
-    )
-  },
-  {
-    number: '06',
     title: 'Predictive alerts',
     description: 'Receive early warnings for frost, drought, or extreme rainfall events days before they hit.',
     icon: (

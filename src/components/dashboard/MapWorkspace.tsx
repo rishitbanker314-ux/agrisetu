@@ -8,7 +8,6 @@ import WeatherWidget from '../WeatherWidget';
 import TemporalSlider from '../TemporalSlider';
 import BottomDrawer from './BottomDrawer';
 import { Layers } from 'lucide-react';
-import VoiceCopilot from '../VoiceCopilot';
 
 const Map = dynamic(() => import('../Map'), { ssr: false });
 
@@ -115,7 +114,7 @@ export default function MapWorkspace({
             </button>
           )}
           
-          <VoiceCopilot fieldData={fieldData} crop={crop} />
+
         </div>
       </div>
 

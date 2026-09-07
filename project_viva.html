@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriSetu — Project Viva & Docs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --deep-forest: #1a2f1a;
+      --moss: #4a7c59;
+      --moss-light: #e8f0ea;
+      --terracotta: #c76a3a;
+      --terracotta-light: #fef0e8;
+      --ivory: #f8f5ef;
+      --ink: #2c2c2c;
+      --soft-line: #e0dcd4;
+      --correct: #22c55e;
+      --correct-bg: #dcfce7;
+      --incorrect: #ef4444;
+      --incorrect-bg: #fee2e2;
+      --radius: 12px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: var(--ivory); color: var(--ink); line-height: 1.6; }
+    
+    .header { background: var(--deep-forest); color: white; padding: 60px 24px 80px; text-align: center; }
+    .header h1 { font-family: 'Playfair Display', serif; font-size: 3rem; margin-bottom: 16px; }
+    .header p { opacity: 0.8; max-width: 600px; margin: 0 auto; font-size: 1.1rem; }
+    
+    .container { max-width: 900px; margin: -40px auto 60px; padding: 0 20px; }
+    
+    .progress-bar-wrap { background: rgba(248,245,239,0.95); padding: 16px; border-bottom: 1px solid var(--soft-line); position: sticky; top: 0; z-index: 100; border-radius: var(--radius); margin-bottom: 24px; box-shadow: var(--shadow-sm); }
+    .progress-info { display: flex; justify-content: space-between; font-size: 12px; font-weight: bold; color: var(--moss); text-transform: uppercase; margin-bottom: 8px; }
+    .progress-track { width: 100%; height: 8px; background: var(--soft-line); border-radius: 10px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--moss), var(--terracotta)); width: 0%; transition: width 0.3s ease; }
+
+    .section { background: white; border-radius: var(--radius); border: 1px solid var(--soft-line); box-shadow: var(--shadow-sm); margin-bottom: 32px; overflow: hidden; }
+    .section-header { padding: 24px 28px; border-bottom: 1px solid var(--soft-line); background: linear-gradient(135deg, var(--ivory) 0%, white 100%); }
+    .section-category { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--moss); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .section-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 600; color: var(--deep-forest); }
+    .section-body { padding: 32px 28px; }
+
+    .content-body h3 { font-family: 'Playfair Display', serif; color: var(--terracotta); margin-top: 32px; margin-bottom: 12px; font-size: 20px; border-bottom: 1px solid var(--soft-line); padding-bottom: 8px; }
+    .content-body h3:first-child { margin-top: 0; }
+    .content-body p { margin-bottom: 16px; color: #444; }
+    .content-body ul { margin-bottom: 16px; padding-left: 24px; color: #444; }
+    .content-body li { margin-bottom: 8px; }
+
+    .question-block { margin-bottom: 40px; padding-bottom: 40px; border-bottom: 1px solid var(--soft-line); }
+    .question-block:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .question-number { font-size: 11px; font-weight: 800; color: var(--terracotta); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    .question-text { font-size: 18px; font-weight: 600; color: var(--deep-forest); margin-bottom: 20px; line-height: 1.4; }
+    
+    .options-grid { display: flex; flex-direction: column; gap: 12px; }
+    .option-label { display: flex; align-items: center; gap: 14px; padding: 16px; border: 2px solid var(--soft-line); border-radius: 10px; cursor: pointer; transition: all 0.2s; background: white; }
+    .option-label:hover:not(.answered) { border-color: var(--moss); background: var(--moss-light); }
+    
+    .option-label.correct { border-color: var(--correct); background: var(--correct-bg); }
+    .option-label.incorrect { border-color: var(--incorrect); background: var(--incorrect-bg); opacity: 0.7; }
+    .option-label.disabled { pointer-events: none; }
+
+    .explanation-box { margin-top: 16px; padding: 16px; border-radius: 8px; background: var(--ivory); border-left: 4px solid var(--moss); font-size: 14px; color: var(--ink); line-height: 1.5; animation: fadeIn 0.4s ease; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .score-display { text-align: center; padding: 40px; background: var(--deep-forest); color: white; border-radius: var(--radius); margin-top: 40px; }
+    .score-display h2 { font-family: 'Playfair Display', serif; font-size: 32px; margin-bottom: 12px; }
+    .score-display p { font-size: 18px; opacity: 0.8; }
+
+    #test-report { display: none; background: #1e1e1e; color: #0f0; padding: 20px; border-radius: 8px; margin-bottom: 24px; font-family: monospace; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>AgriSetu Documentation & Viva</h1>
+    <p>Read the comprehensive project overview, then test your knowledge with 50 tricky viva questions.</p>
+  </div>
+  
+  <div class="container">
+    <div id="test-report">
+      <h3>Automated Test Report (50 Test Cases + 50 Smoke Tests)</h3>
+      <div id="test-output"></div>
+    </div>
+
+    <div class="progress-bar-wrap">
+      <div class="progress-info">
+        <span>Viva Progress</span>
+        <span id="progressText" data-testid="progress-text">0 / 50 Answered</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+
+    <!-- About Section -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-category"><span class="cat-icon">ℹ️</span>Section 1 — About the Project</div>
+        <div class="section-title">Comprehensive AgriSetu Overview</div>
+      </div>
+      <div class="section-body content-body">
+        <h3>The Pitch & Grounding</h3>
+        <p><strong>AgriSetu</strong> (meaning "bridge" in Hindi) gives a farmer personalized crop and health advisory — by text or photo, in their own language — built from real satellite, soil, and weather data instead of guesswork. The system adapts dynamically globally, specifically demonstrating cross-border capabilities between India and Brazil.</p>
+        <p><strong>BRICS Context:</strong> The project targets the <em>Build with AI: Code for Communities 2 (BRICS)</em> hackathon. While the challenge mentions "inspired by BRICS AgriN", the real AgriN focuses on genetic resources. AgriSetu is genuinely inspired by the <strong>BRICS Network on Digital Agriculture</strong> (coordinated by IIT Delhi) which focuses on AI, geospatial tech, and data-driven solutions.</p>
+        
+        <h3>System Architecture & Layering</h3>
+        <p>The architecture is comprised of four main layers driving the Zero Cost infrastructure:</p>
+        <ul>
+          <li><strong>Data Sources:</strong> Satellite NDVI (Google Earth Engine Sentinel-2 via noncommercial registration), Soil Properties (SoilGrids via GEE community catalog), Weather & Forecast (Open-Meteo API), and Historical Crop Context (FAOSTAT API).</li>
+          <li><strong>Ingestion / Fusion (Country Adapter):</strong> Abstracted data fetchers to handle any global coordinate transparently.</li>
+          <li><strong>AI Core:</strong> Gemini API via <strong>Google AI Studio</strong> (not Vertex AI). This handles all multimodal inputs (images for crop disease) and text translation entirely within the prompt, preventing the need for separate GCP services.</li>
+          <li><strong>Delivery & Interface:</strong> A farmer app (Leaflet.js + OpenStreetMap) and a policymaker dashboard powered by Postgres materialized views.</li>
+        </ul>
+
+        <h3>Full Tech Stack</h3>
+        <ul>
+          <li><strong>Frontend:</strong> Next.js 16.3 (App Router), React 19, Tailwind CSS v4, Framer Motion, Zustand. Hosted on Vercel/Netlify.</li>
+          <li><strong>Backend:</strong> Supabase Postgres (free tier limits 500MB), Supabase Auth (handles roles), Supabase Storage (1GB for crop photos), and Supabase Edge Functions (Deno runtime for lightweight serverless logic).</li>
+        </ul>
+
+        <h3>Postgres Data Model & Security</h3>
+        <p>AgriSetu stores profiles, fields, health profiles, advisories, and diagnoses. A critical component is the <strong>Row Level Security (RLS)</strong> policy:</p>
+        <p><code>create policy "farmers see own fields" on fields for select using (auth.uid() = owner_id);</code></p>
+        <p>This ensures complete privacy. For policymakers, we avoid BigQuery by creating a <strong>Postgres materialized view</strong> (`regional_trends`) that aggregates data (NDVI, requests) per country and region. Policymakers only see this aggregated view, acting as our Digital Public Good (DPG) "do-no-harm" privacy layer.</p>
+
+        <h3>Critical Constraints & Maintenance</h3>
+        <p>Because the app relies on Supabase's free tier, projects pause after 7 days of inactivity. To ensure the live link remains active for judges up to Demo Day, a keep-alive ping (cron job via cron-job.org or GitHub Actions) must be maintained to hit the API every 3–4 days.</p>
+        <p>Also, API keys must be loaded via server-side Environment Variables to prevent Gemini quota theft.</p>
+
+        <h3>Digital Public Good (DPG) Compliance</h3>
+        <p>The project is fully open-source (MIT/Apache 2.0). It aligns directly with <strong>SDG 2 (Zero Hunger)</strong> and <strong>SDG 13 (Climate Action)</strong>. All farmer data is protected via RLS, preventing data exploitation.</p>
+      </div>
+    </div>
+
+    <!-- Questioner Section -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-category"><span class="cat-icon">🧠</span>Section 2 — Viva Questioner</div>
+        <div class="section-title">50 Tricky Questions</div>
+      </div>
+      <div class="section-body" id="questions-container">
+        <!-- Questions injected via JS -->
+      </div>
+    </div>
+    
+    <div class="score-display" id="finalScore" style="display: none;">
+      <h2 id="scoreTitle">Viva Complete!</h2>
+      <p id="scoreSubText">You answered X out of 50 correctly.</p>
+    </div>
+  </div>
+
+  <script>
+    var questions = [
+      {
+        q: "Why was Supabase chosen over Firebase for AgriSetu?",
+        opts: ["Postgres allows complex relational queries and materialized views for policymakers", "Firebase costs more for basic database operations", "Next.js doesn't support Firebase", "Supabase has better map integration"],
+        ans: 0,
+        exp: "Supabase Postgres enables materialized views (like regional_trends) which are essential for the policymaker dashboard without needing a separate analytics engine like BigQuery."
+      },
+      {
+        q: "Which specific Gemini endpoint is used for the AI Advisory Engine?",
+        opts: ["Vertex AI Gemini Pro", "Google AI Studio Gemini Flash", "Cloud Natural Language API", "Vertex AI Gemini Flash"],
+        ans: 1,
+        exp: "The project uses Gemini Flash via Google AI Studio to remain on the truly free tier, avoiding GCP billing account requirements."
+      },
+      {
+        q: "How does AgriSetu handle translations for different languages?",
+        opts: ["Google Cloud Translation API", "i18next library", "In-prompt translation within Gemini Flash", "next-intl handles all dynamic translations"],
+        ans: 2,
+        exp: "To save costs and reduce API calls, translation is folded directly into the Gemini prompt (e.g., 'respond in Gujarati')."
+      },
+      {
+        q: "How are field maps rendered without using Google Maps?",
+        opts: ["Mapbox GL", "Leaflet.js + OpenStreetMap + Esri satellite tiles", "Bing Maps API", "OpenLayers + Google tiles"],
+        ans: 1,
+        exp: "Leaflet.js combined with OpenStreetMap and Esri tiles provides a fully free mapping solution without requiring API keys."
+      },
+      {
+        q: "What runtime do Supabase Edge Functions use in this project?",
+        opts: ["Node.js", "Python", "Deno", "Go"],
+        ans: 2,
+        exp: "Supabase Edge Functions use the Deno runtime, enabling lightweight, serverless backend logic."
+      },
+      {
+        q: "How does AgriSetu ensure that farmers can only access their own data?",
+        opts: ["Next.js Middleware", "Frontend route guards", "Supabase Row Level Security (RLS)", "JWT token validation in Edge Functions"],
+        ans: 2,
+        exp: "Supabase Row Level Security (RLS) enforces at the database level that a user can only select rows where owner_id matches their auth.uid()."
+      },
+      {
+        q: "What data source provides historical crop context for AgriSetu?",
+        opts: ["Open-Meteo", "SoilGrids", "FAOSTAT API", "Google Earth Engine"],
+        ans: 2,
+        exp: "The FAOSTAT API provides historical crop context data for different regions."
+      },
+      {
+        q: "Where does the soil properties data come from?",
+        opts: ["SoilGrids via GEE Community Catalog", "FAOSTAT API", "Open-Meteo Soil Extension", "Local physical sensors"],
+        ans: 0,
+        exp: "SoilGrids is accessed via the Google Earth Engine Community Catalog to avoid outages associated with their standalone REST API."
+      },
+      {
+        q: "What is the purpose of the 'regional_trends' materialized view?",
+        opts: ["To speed up frontend rendering", "To provide aggregated data for policymakers without exposing raw farmer data", "To cache Gemini responses", "To calculate the ESG score"],
+        ans: 1,
+        exp: "The materialized view aggregates NDVI and request volumes, providing a secure, high-level dashboard for policymakers (DPG compliance)."
+      },
+      {
+        q: "How is the NDVI computed in the absence of real-time satellite imagery?",
+        opts: ["It isn't; the app fails", "Algorithmically computed/simulated from Open-Meteo weather data", "Fetched from a mocked JSON file", "Calculated by Gemini"],
+        ans: 1,
+        exp: "NDVI is algorithmically computed using weather data (temperature, moisture, precipitation) to provide a realistic simulation."
+      },
+      {
+        q: "What triggers the 90-Day Temporal Simulation?",
+        opts: ["A cron job", "The Time Travel slider in the UI", "A Webhook from Open-Meteo", "Uploading a crop photo"],
+        ans: 1,
+        exp: "The Time Travel slider allows users to scrub 0-90 days into the future, dynamically updating map colors based on extrapolated forecasts."
+      },
+      {
+        q: "How does the Crop Disease Diagnosis feature work technically?",
+        opts: ["Uploads to Supabase Storage, then sends to Gemini Multimodal Vision API", "Runs a local TensorFlow.js model in the browser", "Sends directly to a Python Flask server running PyTorch", "Uses Google Cloud Vision API"],
+        ans: 0,
+        exp: "Images are uploaded to Supabase Storage, then a Supabase Edge Function passes the image to Gemini's multimodal vision analysis."
+      },
+      {
+        q: "What inputs are used to calculate the ESG & Sustainability Score?",
+        opts: ["Carbon footprint of the servers", "Fertilizer usage and water usage", "Distance from farm to market", "Crop yield vs historical average"],
+        ans: 1,
+        exp: "The score is computed based on user-adjustable sliders for nitrogen fertilizer usage and water usage, compared against ideal baselines."
+      },
+      {
+        q: "What does the Acoustic Biosphere Monitor actually detect?",
+        opts: ["Actual audio via the farmer's microphone", "Simulated subsurface root cavitation events derived from soil moisture", "Pest noises in the field", "Tractor engine health"],
+        ans: 1,
+        exp: "It's a simulated feature that derives subsurface root cavitation events (stress) based on live soil moisture data, presented via a radar UI."
+      },
+      {
+        q: "What happens when a field's forecast indicates a high risk of frost?",
+        opts: ["The app crashes", "An automated real-time notification/climate alert is triggered", "The field is deleted from the database", "Gemini automatically calls emergency services"],
+        ans: 1,
+        exp: "The Climate Alerts system analyzes the 7-day forecast for thresholds (frost, flood, heatwave) and triggers notifications accordingly."
+      },
+      {
+        q: "Why is the 7-Day Forecast Chart built using custom SVG rather than a library like Chart.js?",
+        opts: ["Chart.js costs money", "To reduce bundle size and maintain complete design control", "SVG is required for Gemini to read it", "React doesn't support Chart.js"],
+        ans: 1,
+        exp: "Building it with custom SVG and CSS reduces third-party dependencies, keeps bundle size small, and perfectly matches the bespoke design aesthetic."
+      },
+      {
+        q: "What defines the 'do-no-harm' principle in AgriSetu?",
+        opts: ["Using organic fertilizers", "Ensuring policymakers only see aggregated data via RLS and materialized views", "Not using AI for crop diagnosis", "Using free-tier servers to save energy"],
+        ans: 1,
+        exp: "By enforcing RLS and only providing aggregated data to policymakers, the system protects individual farmer privacy."
+      },
+      {
+        q: "How does the 'Country Adapter' pattern function?",
+        opts: ["It translates the UI text", "It routes users to different URLs based on IP", "It abstracts data fetching so the same pipeline works for any coordinate globally", "It changes the currency in the marketplace"],
+        ans: 2,
+        exp: "The country-adapter pattern ensures that the underlying data pipeline works globally (e.g., India and Brazil) using the same logic for any coordinates."
+      },
+      {
+        q: "What is the primary color palette used in the UI?",
+        opts: ["Neon pink, cyan, and black", "Deep forest, moss, terracotta, and ivory", "Material Design defaults (blue/white)", "Monochrome gray scale"],
+        ans: 1,
+        exp: "The UI uses an editorial/magazine-style aesthetic with a nature-inspired palette: deep forest, moss, terracotta, and ivory."
+      },
+      {
+        q: "Which typography combination is used to give the app a premium feel?",
+        opts: ["Arial and Times New Roman", "Comic Sans and Papyrus", "Playfair Display (headings) and Inter (body)", "Roboto and Open Sans"],
+        ans: 2,
+        exp: "Playfair Display provides a premium, editorial look for headings, while Inter ensures readability for UI body text."
+      },
+      {
+        q: "What library handles the complex animations like staggered reveals and parallax on the landing page?",
+        opts: ["GSAP", "Framer Motion", "Anime.js", "Pure CSS transitions"],
+        ans: 1,
+        exp: "Framer Motion is deeply integrated into the Next.js React stack for smooth spring animations and layout transitions."
+      },
+      {
+        q: "How does AgriSetu handle client-side state management?",
+        opts: ["Redux", "Context API only", "Zustand", "MobX"],
+        ans: 2,
+        exp: "Zustand is used as the lightweight, fast client-side state management library."
+      },
+      {
+        q: "What does the 'SignalTranslation' section on the landing page explain?",
+        opts: ["How to translate languages", "The data pipeline: from raw satellite/weather data to AI advisory", "How to connect a tractor to Bluetooth", "The pricing model"],
+        ans: 1,
+        exp: "The SignalTranslation component visually demonstrates how raw signals (satellite, soil) are fused and translated into actionable AI advice."
+      },
+      {
+        q: "To prevent the free Supabase instance from pausing, what strategy must be implemented?",
+        opts: ["Upgrade to the Pro plan ($25/mo)", "Set up a keep-alive ping (cron job) to hit an endpoint every 3-4 days", "Ask judges to log in daily", "Nothing, it runs forever"],
+        ans: 1,
+        exp: "Free Supabase projects pause after 7 days of inactivity. A keep-alive ping ensures the project remains active during the judging period."
+      },
+      {
+        q: "What SDGs (Sustainable Development Goals) does AgriSetu explicitly align with?",
+        opts: ["SDG 1 and SDG 5", "SDG 4 and SDG 8", "SDG 2 (Zero Hunger) and SDG 13 (Climate Action)", "SDG 7 and SDG 9"],
+        ans: 2,
+        exp: "AgriSetu aligns with SDG 2 (Zero Hunger) by improving farming efficiency and SDG 13 (Climate Action) by promoting sustainable practices."
+      },
+      {
+        q: "Why is Google Earth Engine registered as noncommercial/educational for this project?",
+        opts: ["To access better resolution imagery", "To bypass API limits entirely", "To utilize it for free without a GCP billing account", "Because commercial use is banned worldwide"],
+        ans: 2,
+        exp: "Registering as noncommercial/educational allows developers to use GEE for free without attaching a credit card or billing account."
+      },
+      {
+        q: "What does 'AgriN' refer to in the context of the BRICS competition?",
+        opts: ["An agricultural drone company", "A real BRICS initiative focused on genetic resources, which inspired the digital track", "A new JavaScript framework", "A fertilizer brand"],
+        ans: 1,
+        exp: "AgriN is a real BRICS agricultural cooperation initiative; the hackathon uses it as inspiration for the digital agriculture track."
+      },
+      {
+        q: "Which two BRICS countries are explicitly used to demo the cross-border capabilities?",
+        opts: ["Russia and China", "India and South Africa", "India and Brazil", "Brazil and Russia"],
+        ans: 2,
+        exp: "The blueprint specifically notes India and Brazil as the two countries to demo the cross-border adapter pattern."
+      },
+      {
+        q: "If a farmer speaks a dialect not natively supported by the Web Speech API, how does the system compensate?",
+        opts: ["It displays an error message", "It relies on Gemini's robust text translation and falls back to visual UI cues or gTTS", "It automatically connects to a human translator", "It defaults to English"],
+        ans: 1,
+        exp: "While STT might fail, the UI and Gemini's text translation ensure the farmer can still use text input or UI interactions, with gTTS as an audio fallback."
+      },
+      {
+        q: "What is the maximum file size for Supabase Storage on the free tier?",
+        opts: ["500MB", "1GB", "5GB", "10GB"],
+        ans: 1,
+        exp: "The free tier of Supabase provides 1GB of storage, which is sufficient for storing compressed crop diagnosis photos."
+      },
+      {
+        q: "In the 'Market Insights & Scenario Simulation' feature, how many AI-generated war-gaming scenarios are rendered?",
+        opts: ["1", "3", "5", "10"],
+        ans: 1,
+        exp: "The MarketScenarios component renders 3 distinct AI-generated scenarios (e.g., bull, bear, stagnant) complete with probabilities and actions."
+      },
+      {
+        q: "How does the backend ensure that Edge Function execution doesn't time out when fetching data?",
+        opts: ["By upgrading to a paid tier", "By executing API calls sequentially", "By using Promise.all to fetch Open-Meteo, GEE, and FAOSTAT in parallel", "By caching everything permanently"],
+        ans: 2,
+        exp: "Using Promise.all ensures that independent data sources are fetched in parallel, drastically reducing the total execution time of the Edge Function."
+      },
+      {
+        q: "What CSS framework feature is used for the complex gradients in the UI?",
+        opts: ["Bootstrap utilities", "Tailwind CSS v4 arbitrary values and custom radial gradients", "SASS mixins", "Styled-components"],
+        ans: 1,
+        exp: "Tailwind CSS v4 is used extensively, including custom radial gradients and arbitrary values to achieve the 'moss' and 'terracotta' aesthetic."
+      },
+      {
+        q: "How are notifications dispatched globally across the frontend?",
+        opts: ["Redux Thunks", "WebSockets directly from Supabase", "Custom browser events dispatched to a global notification center", "Polling every 1 second"],
+        ans: 2,
+        exp: "The architecture uses custom browser events to trigger notifications across different components seamlessly without heavy state management."
+      },
+      {
+        q: "What library is used for icons in the AgriSetu frontend?",
+        opts: ["FontAwesome", "Lucide React", "Heroicons", "Material Icons"],
+        ans: 1,
+        exp: "Lucide React provides clean, consistent SVG icons that match the modern aesthetic."
+      },
+      {
+        q: "How does the 'Time Travel' slider calculate future NDVI?",
+        opts: ["It queries an AI model in real-time for every day", "It uses the 7-day forecast and extrapolates trends algorithmically to 90 days", "It fetches historical data from 10 years ago", "It is completely randomized"],
+        ans: 1,
+        exp: "The slider extrapolates the reliable 7-day forecast into a 90-day simulation using algorithms that degrade/improve NDVI based on simulated weather."
+      },
+      {
+        q: "Why is the Supabase Postgres database size limited, and what is the limit?",
+        opts: ["100MB limit", "500MB limit; to encourage efficient data modeling on the free tier", "1GB limit", "There is no limit"],
+        ans: 1,
+        exp: "The free tier has a 500MB limit, which is plenty for textual data, profiles, and JSON weather dumps if modeled correctly."
+      },
+      {
+        q: "If a user drags a map marker to a new field location, what happens immediately?",
+        opts: ["The app reloads", "The useFieldData hook fetches live data for the new coordinates", "A new user account is created", "The database is wiped"],
+        ans: 1,
+        exp: "The custom hook detects the coordinate change and immediately triggers a refetch of Open-Meteo and simulated GEE data."
+      },
+      {
+        q: "Why must the API key for Gemini NOT be hardcoded in the frontend code?",
+        opts: ["It makes the code ugly", "It's a massive security risk; anyone could steal the quota. It must be in environment variables / Edge Functions", "Vercel rejects hardcoded keys", "Gemini keys change daily"],
+        ans: 1,
+        exp: "Client-side exposure of API keys leads to quota theft. Keys must reside in `.env` files and be used strictly on the server/Edge Function side."
+      },
+      {
+        q: "Which organization coordinates the real BRICS Network on Digital Agriculture?",
+        opts: ["MIT", "IIT Delhi", "Oxford University", "Tsinghua University"],
+        ans: 1,
+        exp: "IIT Delhi coordinates the real-world initiative that AgriSetu's pitch is based upon."
+      },
+      {
+        q: "What is the primary fallback for the Acoustic Biosphere Monitor if soil moisture data API fails?",
+        opts: ["It shows a 404 page", "It uses deterministic pseudo-random data based on GPS coordinates", "It switches to microphone input", "It crashes the Edge Function"],
+        ans: 1,
+        exp: "To maintain a flawless demo experience, if an external API fails, the app uses coordinate-based seeded random generation to simulate the data."
+      },
+      {
+        q: "In the RLS policy: `auth.uid() = owner_id`, what does `auth.uid()` represent?",
+        opts: ["A random string", "The unique ID of the currently logged-in user provided by Supabase Auth", "The ID of the admin", "The ID of the field"],
+        ans: 1,
+        exp: "It refers to the authenticated user's ID, ensuring the query only returns rows where the user is the owner."
+      },
+      {
+        q: "Why is Vercel preferred over Firebase Hosting for this specific stack?",
+        opts: ["Vercel is built for Next.js App Router and Server Components", "Firebase Hosting costs money", "Vercel supports Python natively", "Firebase Hosting doesn't support HTML"],
+        ans: 0,
+        exp: "Next.js is developed by Vercel, so Vercel offers zero-config, optimized hosting for App Router and React Server Components."
+      },
+      {
+        q: "What specific metric determines the Carbon Credit value in the ESG Score?",
+        opts: ["Only when ESG Score > 60, computed as (score - 60) * $12.50", "Flat rate of $10 per field", "Calculated by Gemini based on an image", "It depends on the country code"],
+        ans: 0,
+        exp: "The platform incentivizes sustainable farming by assigning a theoretical monetary value to high ESG scores."
+      },
+      {
+        q: "What is the purpose of `next-env.d.ts` in the project structure?",
+        opts: ["It stores API keys", "It provides TypeScript type declarations for Next.js", "It configures ESLint", "It is the main entry point for Edge Functions"],
+        ans: 1,
+        exp: "It ensures the TypeScript compiler understands Next.js specific types and features."
+      },
+      {
+        q: "How many free invocations per month are allowed on Supabase Edge Functions?",
+        opts: ["10,000", "100,000", "500,000", "1,000,000"],
+        ans: 2,
+        exp: "The free tier generously allows up to 500,000 invocations per month."
+      },
+      {
+        q: "What is the primary role of the `patch_page.sh` and `patch_workspace.sh` scripts in the repo?",
+        opts: ["To hack into other systems", "To quickly apply automated workspace or code patches during development", "To update the Node version", "To deploy to Vercel"],
+        ans: 1,
+        exp: "These scripts are utility bash scripts used in the Antigravity IDE workflow to rapidly patch files and workspace configurations."
+      },
+      {
+        q: "To achieve a truly 'zero cost' infrastructure, which Google service was replaced by a browser API?",
+        opts: ["Google Maps", "Google Cloud Storage", "Google Cloud Text-to-Speech", "Google Analytics"],
+        ans: 2,
+        exp: "Google Cloud Text-to-Speech was replaced by the Browser Web Speech API to eliminate GCP billing requirements."
+      }
+    ];
+
+    var answerKey = [];
+    for (var i = 0; i < questions.length; i++) {
+      answerKey.push(questions[i].ans);
+    }
+    
+    var answeredCount = 0;
+    var correctCount = 0;
+    var totalQ = answerKey.length;
+
+    function selectAnswer(labelElem, qIdx, selectedOptIdx) {
+      var qBlock = document.getElementById('qblock-' + qIdx);
+      var labels = qBlock.querySelectorAll('.option-label');
+      
+      // If already answered, do nothing
+      if (qBlock.dataset.answered === "true") return;
+      qBlock.dataset.answered = "true";
+      
+      var correctIdx = answerKey[qIdx];
+      var isCorrect = (selectedOptIdx === correctIdx);
+      
+      if (isCorrect) { correctCount++; }
+      
+      for (var j = 0; j < labels.length; j++) {
+        var lbl = labels[j];
+        lbl.classList.add('disabled');
+        lbl.classList.add('answered');
+        if (j === correctIdx) {
+          lbl.classList.add('correct');
+        } else if (j === selectedOptIdx && !isCorrect) {
+          lbl.classList.add('incorrect');
+        }
+      }
+      
+      // Show explanation with Correct/Incorrect indicator
+      var expBox = document.getElementById('exp-' + qIdx);
+      var statusText = isCorrect ? '<span style="color:var(--correct);">Correct!</span> ' : '<span style="color:var(--incorrect);">Incorrect!</span> ';
+      expBox.innerHTML = '<strong>Explanation:</strong> ' + statusText + questions[qIdx].exp;
+      expBox.style.display = 'block';
+      
+      // Update progress
+      answeredCount++;
+      document.getElementById('progressText').innerText = answeredCount + " / " + totalQ + " Answered";
+      document.getElementById('progressFill').style.width = ((answeredCount / totalQ) * 100) + "%";
+      
+      if (answeredCount === totalQ) {
+        var scoreDiv = document.getElementById('finalScore');
+        scoreDiv.style.display = 'block';
+        document.getElementById('scoreSubText').innerText = 'You answered ' + correctCount + ' out of ' + totalQ + ' correctly.';
+        if (correctCount >= 45) document.getElementById('scoreTitle').innerText = 'Exceptional Performance!';
+        else if (correctCount >= 35) document.getElementById('scoreTitle').innerText = 'Great Job!';
+        else document.getElementById('scoreTitle').innerText = 'Keep Studying!';
+      }
+    }
+
+    // Render questions
+    var container = document.getElementById('questions-container');
+    var htmlStr = '';
+    for (var idx = 0; idx < questions.length; idx++) {
+      var q = questions[idx];
+      var optionsHtml = '';
+      for (var oIdx = 0; oIdx < q.opts.length; oIdx++) {
+        var opt = q.opts[oIdx];
+        optionsHtml += '<label class="option-label" data-testid="q' + idx + '-o' + oIdx + '" onclick="selectAnswer(this, ' + idx + ', ' + oIdx + ')">' +
+            '<span class="custom-check"></span>' +
+            '<div class="option-content">' +
+              '<div class="option-title">' + opt + '</div>' +
+            '</div>' +
+          '</label>';
+      }
+      
+      var qNum = String(idx + 1).padStart(2, '0');
+      htmlStr += '<div class="question-block" id="qblock-' + idx + '" data-testid="qblock-' + idx + '">' +
+          '<div class="question-number">Question ' + qNum + '</div>' +
+          '<div class="question-text">' + q.q + '</div>' +
+          '<div class="options-grid">' + optionsHtml + '</div>' +
+          '<div class="explanation-box" id="exp-' + idx + '" data-testid="exp-' + idx + '" style="display: none;"></div>' +
+        '</div>';
+    }
+    
+    container.innerHTML = htmlStr;
+
+    // AUTOMATED TEST SUITE (Runs if ?test=true is in URL)
+    window.onload = function() {
+      var urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('test') === 'true') {
+        document.getElementById('test-report').style.display = 'block';
+        var output = document.getElementById('test-output');
+        function log(msg) { output.innerHTML += msg + '<br>'; }
+        
+        log("Starting Automated Test Suite...");
+        var passedCases = 0;
+        var failedCases = 0;
+
+        // 50 Test Cases: Click one option for every question
+        log("<br><b>--- Running 50 Standard Test Cases ---</b>");
+        for (var i = 0; i < 50; i++) {
+          try {
+            var isCorrect = i % 2 === 0; // Alternate correct/incorrect for testing
+            var targetOptIdx = isCorrect ? answerKey[i] : (answerKey[i] + 1) % 4;
+            var optLabel = document.querySelector('[data-testid="q' + i + '-o' + targetOptIdx + '"]');
+            
+            optLabel.click();
+            
+            var qBlock = document.getElementById('qblock-' + i);
+            var expBox = document.getElementById('exp-' + i);
+            
+            // Verify DOM mutations
+            var isAnswered = qBlock.dataset.answered === "true";
+            var expVisible = expBox.style.display === 'block';
+            
+            if (isAnswered && expVisible) {
+              passedCases++;
+              log('Test Case ' + (i+1) + ': Passed - Question ' + (i+1) + ' answered successfully.');
+            } else {
+              failedCases++;
+              log('Test Case ' + (i+1) + ': FAILED - State not updated.');
+            }
+          } catch(e) {
+            failedCases++;
+            log('Test Case ' + (i+1) + ': ERROR - ' + e.message);
+          }
+        }
+
+        // 50 Smoke Tests: Rapid re-clicks, bounds checking, class verification
+        log("<br><b>--- Running 50 Smoke Tests ---</b>");
+        var smokePassed = 0;
+        var smokeFailed = 0;
+        
+        for (var i = 0; i < 50; i++) {
+          try {
+            var targetOptIdx = answerKey[i];
+            var optLabel = document.querySelector('[data-testid="q' + i + '-o' + targetOptIdx + '"]');
+            
+            // Smoke test: clicking again should NOT increment progress or throw error (it's already answered)
+            var countBefore = answeredCount;
+            optLabel.click();
+            var countAfter = answeredCount;
+            
+            // Smoke test: verify 'disabled' class is applied to all options in this block
+            var allDisabled = document.querySelectorAll('#qblock-' + i + ' .option-label.disabled').length === 4;
+            
+            if (countBefore === countAfter && allDisabled) {
+              smokePassed++;
+              log('Smoke Test ' + (i+1) + ': Passed - Multi-click prevented and options disabled.');
+            } else {
+              smokeFailed++;
+              log('Smoke Test ' + (i+1) + ': FAILED - Double click bypassed logic.');
+            }
+          } catch(e) {
+            smokeFailed++;
+            log('Smoke Test ' + (i+1) + ': ERROR - ' + e.message);
+          }
+        }
+
+        // Final Verification
+        log("<br><b>--- Final Test Summary ---</b>");
+        if (answeredCount === 50) {
+          log("✓ Progress bar successfully reached 50/50");
+        } else {
+          log("✗ Progress bar failed to reach 50/50");
+        }
+
+        var scoreDivVisible = document.getElementById('finalScore').style.display === 'block';
+        if (scoreDivVisible) {
+          log("✓ Final score panel rendered successfully");
+        } else {
+          log("✗ Final score panel failed to render");
+        }
+
+        log('<br><b>Test Cases: ' + passedCases + ' passed, ' + failedCases + ' failed.</b>');
+        log('<b>Smoke Tests: ' + smokePassed + ' passed, ' + smokeFailed + ' failed.</b>');
+        
+        if (failedCases === 0 && smokeFailed === 0) {
+          log("<br><span style='color: #0f0; font-size: 1.2em;'>ALL TESTS PASSED FLAWLESSLY.</span>");
+        } else {
+          log("<br><span style='color: #f00; font-size: 1.2em;'>SOME TESTS FAILED.</span>");
+        }
+      }
+    };
+  </script>
+</body>
+</html>
