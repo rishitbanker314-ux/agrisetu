@@ -86,35 +86,6 @@ export default function MapWorkspace({
           >
             <Layers className="w-5 h-5" />
           </button>
-          
-          <button 
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              if (!isDrawing) {
-                setDrawnBoundary(prev => [...prev, []]);
-              }
-              setIsDrawing(!isDrawing);
-            }}
-            className={`px-4 py-2 mt-1 rounded-full shadow-md text-sm font-medium transition-colors pointer-events-auto ${isDrawing ? 'bg-moss text-white' : 'bg-white text-ink hover:bg-moss/10 border border-soft-line'}`}
-          >
-            {isDrawing ? 'Finish Drawing' : 'Draw Boundary'}
-          </button>
-          
-          {drawnBoundary.length > 0 && !isDrawing && (
-            <button 
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                setDrawnBoundary([]);
-              }}
-              className="px-4 py-2 bg-white rounded-full shadow-md text-sm font-medium text-terracotta hover:bg-terracotta/10 transition-colors pointer-events-auto border border-soft-line mt-1"
-            >
-              Clear Shape
-            </button>
-          )}
-          
-
         </div>
       </div>
 
@@ -148,9 +119,41 @@ export default function MapWorkspace({
         />
       </div>
 
-      {/* Floating Save Button if location is new */}
-      {!savedFields.find(f => f.lat != null && f.lng != null && Math.abs(f.lat - center[0]) < 0.0001 && Math.abs(f.lng - center[1]) < 0.0001) && onSaveField && (
-        <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-[500] pointer-events-auto">
+      {/* Floating Bottom Left Controls (Draw & Save) */}
+      <div className="absolute bottom-24 left-4 z-[500] flex flex-col items-start gap-2 pointer-events-none">
+        
+        {/* Draw Controls */}
+        <div className="flex gap-2">
+          <button 
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              if (!isDrawing) {
+                setDrawnBoundary(prev => [...prev, []]);
+              }
+              setIsDrawing(!isDrawing);
+            }}
+            className={`px-4 py-2 rounded-full shadow-md text-sm font-medium transition-colors pointer-events-auto ${isDrawing ? 'bg-moss text-white' : 'bg-white text-ink hover:bg-moss/10 border border-soft-line'}`}
+          >
+            {isDrawing ? 'Finish Drawing' : 'Draw Boundary'}
+          </button>
+
+          {drawnBoundary.length > 0 && !isDrawing && (
+            <button 
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                setDrawnBoundary([]);
+              }}
+              className="px-4 py-2 bg-white rounded-full shadow-md text-sm font-medium text-terracotta hover:bg-terracotta/10 transition-colors pointer-events-auto border border-soft-line"
+            >
+              Clear Shape
+            </button>
+          )}
+        </div>
+
+        {/* Floating Save Button if location is new */}
+        {!savedFields.find(f => f.lat != null && f.lng != null && Math.abs(f.lat - center[0]) < 0.0001 && Math.abs(f.lng - center[1]) < 0.0001) && onSaveField && (
           <button
             disabled={drawnBoundary.flat().length <= 2}
             onClick={() => {
@@ -166,7 +169,7 @@ export default function MapWorkspace({
               setDrawnBoundary([]);
               setIsDrawing(false);
             }}
-            className={`px-6 py-2.5 rounded-full shadow-lg font-medium text-sm transition-all flex items-center gap-2 border border-white/20 ${
+            className={`px-6 py-2.5 rounded-full shadow-lg font-medium text-sm transition-all flex items-center gap-2 border border-white/20 pointer-events-auto ${
               drawnBoundary.flat().length <= 2 
                 ? 'bg-ink/60 text-white/70 cursor-not-allowed backdrop-blur-sm' 
                 : 'bg-deep-forest text-white hover:bg-moss hover:scale-105'
@@ -179,8 +182,8 @@ export default function MapWorkspace({
             </svg>
             {drawnBoundary.flat().length <= 2 ? "Draw Boundary to Save" : "Save Field Location"}
           </button>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Floating Bottom Controls (Above Drawer) */}
       <TemporalSlider dateOffset={dateOffset} setDateOffset={setDateOffset} maxDays={89} />
