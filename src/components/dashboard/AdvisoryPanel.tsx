@@ -36,13 +36,7 @@ export default function AdvisoryPanel({ advisory, loading }: AdvisoryPanelProps)
         )}
       </div>
       
-      {!loading && advisory && (
-        <div className="mt-6 pt-4 border-t border-soft-line">
-          <button className="bg-terracotta text-paper-ivory px-6 py-2 rounded-full text-sm font-medium hover:bg-[#b05c33] transition-colors shadow-sm">
-            Log Action Completed
-          </button>
-        </div>
-      )}
+
     </div>
   );
 }

@@ -34,7 +34,7 @@ export default function LoginPage() {
             <Leaf className="w-7 h-7 text-paper-ivory" />
           </div>
           <h1 className="text-3xl font-serif text-paper-ivory tracking-tight font-medium">AgriSetu</h1>
-          <p className="text-sand/80 text-[10px] mt-2 uppercase tracking-widest font-medium">BRICS Agricultural Intelligence</p>
+          <p className="text-sand/80 text-[10px] mt-2 uppercase tracking-widest font-medium">Bharat Krishi Intelligence</p>
         </div>
 
         {/* Body */}

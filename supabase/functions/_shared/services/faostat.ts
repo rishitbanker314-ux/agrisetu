@@ -14,32 +14,14 @@ export async function getHistoricalCropData(countryCode: string, crop: string): 
     // const response = await fetch(url);
     // const data = await response.json();
     
-    // Returning robust context for the BRICS scope (India and Brazil)
-    if (countryCode === 'IN' || countryCode === 'India') {
-      return {
-        crop: crop,
-        countryCode: 'IN',
-        averageYield: 3.2, // tonnes/ha
-        historicalPlantingDates: ['June', 'July'],
-        context: `In India, ${crop} relies heavily on the monsoon season. Historical data shows yield fluctuations based on rainfall consistency.`
-      };
-    } else if (countryCode === 'BR' || countryCode === 'Brazil') {
-      return {
-        crop: crop,
-        countryCode: 'BR',
-        averageYield: 4.1, // tonnes/ha
-        historicalPlantingDates: ['October', 'November'],
-        context: `In Brazil, ${crop} is typically planted before the rainy season. Large-scale mechanized farming contributes to higher average yields.`
-      };
-    }
-
-    // Generic fallback
+    // Returning robust context for the Indian scope
+    // We simulate state-level Indian agricultural data
     return {
       crop: crop,
-      countryCode: countryCode,
-      averageYield: 2.5,
-      historicalPlantingDates: ['Spring'],
-      context: `General historical context for ${crop} in region.`
+      countryCode: 'IN',
+      averageYield: 3.2, // tonnes/ha
+      historicalPlantingDates: ['Kharif (June-July)', 'Rabi (October-November)'],
+      context: `In India, ${crop} yields are heavily influenced by the monsoon intensity and local soil types such as Alluvial or Black Cotton soil. Historical data indicates that localized droughts in central Indian states can cause up to 15% yield fluctuation.`
     };
   } catch (error) {
     console.error("Error fetching FAOSTAT data:", error);

@@ -1,5 +1,5 @@
 # AgriSetu — Full Build Blueprint (Supabase + Free-Tier Google AI)
-**Build with AI: Code for Communities 2 (BRICS) · Cooperation Track — Agriculture / AgriN**
+**Build with AI: Digital India Agritech · Cooperation Track — Agriculture / AgriN**
 **Deadline: August 24, 2026 · Built in Antigravity IDE · $0 infrastructure cost**
 
 ---
@@ -10,21 +10,21 @@
 |---|---|
 | Today | Aug 18, 2026 — **7 days to deadline** |
 | Deadline | Aug 24, 2026 (confirm exact cutoff time on the portal) |
-| Track | Cooperation — Agriculture (BRICS AgriN–inspired) |
-| Real initiative this maps to | BRICS Network on Digital Agriculture, coordinated by IIT Delhi — see §1 |
+| Track | Cooperation — Agriculture (India AgriN–inspired) |
+| Real initiative this maps to | India Network on Digital Agriculture, coordinated by IIT Delhi — see §1 |
 | Build tool | Antigravity IDE |
 | **What stays Google (both genuinely free, no card)** | Gemini API via **Google AI Studio** (not Vertex AI) · Google Earth Engine, registered **noncommercial** |
 | **What moves to free-tier alternatives** | Firestore → **Supabase Postgres** · Firebase Auth → **Supabase Auth** · Cloud Storage → **Supabase Storage** · Cloud Functions/Run → **Supabase Edge Functions** · BigQuery → **Postgres materialized views** · Firebase Hosting → **Vercel/Netlify** · Google Maps Platform → **Leaflet.js + OpenStreetMap** · Cloud Translation API → **Gemini (same call)** · Cloud Speech-to-Text → **Gemini audio input (same call)** · Cloud Text-to-Speech → **browser Web Speech API**, gTTS fallback |
-| Second BRICS demo country | Brazil |
+| Second India demo country | Brazil |
 | **Critical risk to manage** | Supabase free projects pause after 7 days idle — set up a keep-alive ping (§7) |
 
 ---
 
 ## 1. The pitch, and why it's grounded in something real
 
-**AgriSetu** (*setu* = bridge) gives a farmer a personalized crop and health advisory — by voice, text, or photo, in their own language — built from real satellite, soil, and weather data instead of guesswork. The same pipeline runs for any BRICS country because every data source underneath it is global.
+**AgriSetu** (*setu* = bridge) gives a farmer a personalized crop and health advisory — by voice, text, or photo, in their own language — built from real satellite, soil, and weather data instead of guesswork. The same pipeline runs for any India country because every data source underneath it is global.
 
-**The research hook for your deck:** the challenge says "inspired by BRICS AgriN," but real AgriN (from India's actual BRICS Agriculture Ministers' meeting in Indore, June 2026) is about cooperation on seeds and genetic resources — not satellite data or disease diagnosis. What this challenge actually describes is a different real initiative announced the same day: the **BRICS Network on Digital Agriculture**, focused on AI, geospatial tech, and data-driven agricultural solutions, coordinated by **IIT Delhi**. Open your deck with this.
+**The research hook for your deck:** the challenge says "inspired by India AgriN," but real AgriN (from India's actual India Agriculture Ministers' meeting in Indore, June 2026) is about cooperation on seeds and genetic resources — not satellite data or disease diagnosis. What this challenge actually describes is a different real initiative announced the same day: the **India Network on Digital Agriculture**, focused on AI, geospatial tech, and data-driven agricultural solutions, coordinated by **IIT Delhi**. Open your deck with this.
 
 **Users:** farmers (primary) and policymakers (secondary, via an aggregated dashboard).
 

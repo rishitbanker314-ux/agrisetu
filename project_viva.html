@@ -102,7 +102,7 @@
       <div class="section-body content-body">
         <h3>The Pitch & Grounding</h3>
         <p><strong>AgriSetu</strong> (meaning "bridge" in Hindi) gives a farmer personalized crop and health advisory — by text or photo, in their own language — built from real satellite, soil, and weather data instead of guesswork. The system adapts dynamically globally, specifically demonstrating cross-border capabilities between India and Brazil.</p>
-        <p><strong>BRICS Context:</strong> The project targets the <em>Build with AI: Code for Communities 2 (BRICS)</em> hackathon. While the challenge mentions "inspired by BRICS AgriN", the real AgriN focuses on genetic resources. AgriSetu is genuinely inspired by the <strong>BRICS Network on Digital Agriculture</strong> (coordinated by IIT Delhi) which focuses on AI, geospatial tech, and data-driven solutions.</p>
+        <p><strong>India Context:</strong> The project targets the <em>Build with AI: Digital India Agritech</em> hackathon. While the challenge mentions "inspired by India AgriN", the real AgriN focuses on genetic resources. AgriSetu is genuinely inspired by the <strong>India Network on Digital Agriculture</strong> (coordinated by IIT Delhi) which focuses on AI, geospatial tech, and data-driven solutions.</p>
         
         <h3>System Architecture & Layering</h3>
         <p>The architecture is comprised of four main layers driving the Zero Cost infrastructure:</p>
@@ -309,13 +309,13 @@
         exp: "Registering as noncommercial/educational allows developers to use GEE for free without attaching a credit card or billing account."
       },
       {
-        q: "What does 'AgriN' refer to in the context of the BRICS competition?",
-        opts: ["An agricultural drone company", "A real BRICS initiative focused on genetic resources, which inspired the digital track", "A new JavaScript framework", "A fertilizer brand"],
+        q: "What does 'AgriN' refer to in the context of the India competition?",
+        opts: ["An agricultural drone company", "A real India initiative focused on genetic resources, which inspired the digital track", "A new JavaScript framework", "A fertilizer brand"],
         ans: 1,
-        exp: "AgriN is a real BRICS agricultural cooperation initiative; the hackathon uses it as inspiration for the digital agriculture track."
+        exp: "AgriN is a real India agricultural cooperation initiative; the hackathon uses it as inspiration for the digital agriculture track."
       },
       {
-        q: "Which two BRICS countries are explicitly used to demo the cross-border capabilities?",
+        q: "Which two India countries are explicitly used to demo the cross-border capabilities?",
         opts: ["Russia and China", "India and South Africa", "India and Brazil", "Brazil and Russia"],
         ans: 2,
         exp: "The blueprint specifically notes India and Brazil as the two countries to demo the cross-border adapter pattern."
@@ -333,10 +333,10 @@
         exp: "The free tier of Supabase provides 1GB of storage, which is sufficient for storing compressed crop diagnosis photos."
       },
       {
-        q: "In the 'Market Insights & Scenario Simulation' feature, how many AI-generated war-gaming scenarios are rendered?",
-        opts: ["1", "3", "5", "10"],
-        ans: 1,
-        exp: "The MarketScenarios component renders 3 distinct AI-generated scenarios (e.g., bull, bear, stagnant) complete with probabilities and actions."
+        q: "In the 'Market Insights & Scenario Simulation' feature, how does it source data?",
+        opts: ["Live Mandi prices from data.gov.in and historical from Yahoo Finance", "1", "3", "5"],
+        ans: 0,
+        exp: "The MarketScenarios component fetches real-time actual Mandi data from data.gov.in and historical price trends from Yahoo Finance."
       },
       {
         q: "How does the backend ensure that Edge Function execution doesn't time out when fetching data?",
@@ -387,7 +387,7 @@
         exp: "Client-side exposure of API keys leads to quota theft. Keys must reside in `.env` files and be used strictly on the server/Edge Function side."
       },
       {
-        q: "Which organization coordinates the real BRICS Network on Digital Agriculture?",
+        q: "Which organization coordinates the real India Network on Digital Agriculture?",
         opts: ["MIT", "IIT Delhi", "Oxford University", "Tsinghua University"],
         ans: 1,
         exp: "IIT Delhi coordinates the real-world initiative that AgriSetu's pitch is based upon."

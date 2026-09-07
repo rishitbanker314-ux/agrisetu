@@ -1,0 +1,2 @@
+sed -i '' 's/const \[drawnBoundary, setDrawnBoundary\] = useState<\[number, number\]\[\]>(\[\]);/const [drawnBoundary, setDrawnBoundary] = useState<any[]>([]);/g' src/components/dashboard/MapWorkspace.tsx
+sed -i '' 's/setDrawnBoundary(prev => \[...prev, \[lat, lng\]\]);/setDrawnBoundary(prev => { if (prev.length === 0) return [[[lat, lng]]]; const newArr = [...prev]; newArr[newArr.length - 1] = [...newArr[newArr.length - 1], [lat, lng]]; return newArr; });/g' src/components/dashboard/MapWorkspace.tsx

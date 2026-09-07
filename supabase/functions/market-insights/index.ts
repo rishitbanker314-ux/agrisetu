@@ -1,5 +1,4 @@
 import { GoogleGenerativeAI } from 'https://esm.sh/@google/generative-ai@0.21.0'
-import yahooFinance from 'npm:yahoo-finance2'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -28,24 +27,79 @@ Deno.serve(async (req) => {
 
     let realDataText = "No real-time data available. Use your best knowledge.";
     let currentPrice = 245;
+    let mandiPriceINR = 2050; // Fallback Indian Mandi price in INR/Quintal
+    let historicalData: any[] = [];
     
     try {
-      const now = new Date();
-      const oneYearAgo = new Date();
-      oneYearAgo.setFullYear(now.getFullYear() - 1);
+      // 1. Try to fetch REAL Indian Mandi Spot Prices from data.gov.in
+      try {
+        const mandiUrl = 'https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070?api-key=579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b&format=json&limit=50';
+        const mandiRes = await fetch(mandiUrl);
+        const mandiData = await mandiRes.json();
+        
+        if (mandiData && mandiData.records) {
+          // Find our crop in the latest mandi arrivals
+          const targetCrop = crop.toLowerCase();
+          const matchedRecord = mandiData.records.find((r: any) => 
+            r.commodity && r.commodity.toLowerCase().includes(targetCrop)
+          );
+          
+          if (matchedRecord && matchedRecord.modal_price) {
+            mandiPriceINR = matchedRecord.modal_price;
+            realDataText = `REAL LIVE INDIAN MANDI DATA FOUND: ${matchedRecord.commodity} in ${matchedRecord.market}, ${matchedRecord.state} is trading today at ₹${mandiPriceINR} per Quintal.\n\n`;
+          }
+        }
+      } catch (mandiErr) {
+        console.error("Mandi API fetch failed, falling back to simulated spot", mandiErr);
+      }
 
-      const queryOptions = { period1: oneYearAgo.toISOString().split('T')[0], interval: '1mo' };
-      const result = await yahooFinance.historical(ticker, queryOptions);
+      // 2. Fetch Historical Trends from Yahoo Finance Global Futures
+      const yfUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?range=1y&interval=1mo`;
+      const response = await fetch(yfUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        }
+      });
+      const data = await response.json();
       
-      if (result && result.length > 0) {
-        // Get the latest 12 months, keep chronological
-        const recentData = result.slice(-12);
-        currentPrice = recentData[recentData.length - 1].close;
-        realDataText = `Real historical prices for ${ticker} over the last 12 months: \n` + 
-          recentData.map((d: any) => `${d.date.toISOString().split('T')[0]}: $${d.close.toFixed(2)}`).join('\n');
+      if (data && data.chart && data.chart.result && data.chart.result.length > 0) {
+        const result = data.chart.result[0];
+        const timestamps = result.timestamp || [];
+        const closes = result.indicators.quote[0].close || [];
+        
+        let recentData = [];
+        for (let i = 0; i < timestamps.length; i++) {
+          if (closes[i] !== null) {
+            recentData.push({
+              date: new Date(timestamps[i] * 1000).toISOString().split('T')[0],
+              close: closes[i]
+            });
+          }
+        }
+        
+        // Ensure chronological and max 12 months
+        recentData = recentData.slice(-12);
+        
+        if (recentData.length > 0) {
+          currentPrice = recentData[recentData.length - 1].close;
+          
+          // If we didn't find a real Mandi price from the API, simulate one based on global futures
+          if (realDataText === "No real-time data available. Use your best knowledge.") {
+            mandiPriceINR = Math.round((currentPrice * 83.5) / 10); 
+            realDataText = `Estimated local Indian Mandi Spot Price: ₹${mandiPriceINR} per Quintal (Derived from Global Futures).\n`;
+          }
+          
+          realDataText += `Real historical global futures trend for ${ticker} over the last 12 months (Use this to establish the trend context): \n` + 
+            recentData.map((d: any) => `${d.date}: $${d.close.toFixed(2)}/ton`).join('\n');
+            
+          historicalData = recentData.map(d => ({
+            date: d.date,
+            price: d.close
+          }));
+        }
       }
     } catch (e) {
-      console.error("Yahoo Finance fetch failed", e);
+      console.error("Market data fetch failed", e);
     }
 
     const geminiApiKey = Deno.env.get('GEMINI_API_KEY')
@@ -55,39 +109,22 @@ Deno.serve(async (req) => {
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" })
 
     const prompt = `
-      You are an agricultural commodities expert and a predictive risk analyst.
-      We have pulled the following LIVE actual market data for ${crop} (Ticker: ${ticker}):
+      You are an expert Indian agricultural commodities analyst.
+      We have pulled the following LIVE market data for ${crop} (Ticker: ${ticker}):
       ${realDataText}
 
-      Current known price is roughly $${currentPrice.toFixed(2)}.
-
-      Based on this REAL data, the exact coordinates (Lat: ${lat}, Lng: ${lng}), and the crop (${crop}), generate a hyper-realistic "Market Intelligence Report" with 3 future scenarios.
-      
-      For the "prices" array in each scenario, the first 4-5 data points MUST closely match the recent historical trend provided above, and the remaining 5-6 points should represent your predicted future trend for that scenario.
+      Based on this data, the exact Indian coordinates (Lat: ${lat}, Lng: ${lng}), and the crop (${crop}), provide a realistic analysis of the current market context specifically for an Indian farmer. Consider Indian seasons (Kharif/Rabi) if applicable.
       
       Return strictly a JSON object with this exact structure (no markdown fences, just pure JSON):
       {
         "current_market": {
-          "currentPrice": ${currentPrice.toFixed(2)},
-          "unit": "/ metric ton",
-          "currency": "$",
+          "currentPrice": ${mandiPriceINR},
+          "unit": "/ Quintal",
+          "currency": "₹",
           "trend": "up", // "up", "down", or "stable" based on the real data
           "percentageChange": "2.4%", // calculate a realistic percentage based on real data
-          "insight": "A 2-3 sentence highly realistic market insight explaining the current trend based on the real data provided."
-        },
-        "scenarios": [
-          {
-            "id": "scenario-1",
-            "title": "A short, punchy title (Must mention ${crop})",
-            "probability": 45, 
-            "trend": "up", // "up", "down", or "stable"
-            "impact": "A 1-2 sentence real-world explanation of this future scenario.",
-            "recommendation": "SELL (Secure Peak)",
-            "recColor": "bg-red-800 border-red-950 text-white hover:bg-red-900", // red for sell, green for hold
-            "prices": [100, 105, 110, 115, 112, 120, 125, 130, 128, 135] // Array of 10 realistic price points. Start with actual recent history, then project forward.
-          },
-          ... (2 more scenarios)
-        ]
+          "insight": "A 2-3 sentence highly realistic market insight explaining the current trend based on the real data provided, heavily localized to Indian Mandi dynamics."
+        }
       }
     `
 
@@ -104,51 +141,22 @@ Deno.serve(async (req) => {
       console.warn("Gemini API failed, using fallback:", apiError);
       
       const seed = ((lat * 12.3) + (lng * 45.6)) % 10;
-      const fallbackPrice = Math.round(currentPrice + seed);
+      const fallbackPrice = Math.round(mandiPriceINR + seed * 10);
 
       parsedJson = {
         "current_market": {
           "currentPrice": fallbackPrice,
-          "unit": "/ quintal",
-          "currency": "$",
+          "unit": "/ Quintal",
+          "currency": "₹",
           "trend": "up",
           "percentageChange": "3.2%",
-          "insight": `Global demand for ${crop} is slightly elevated due to recent weather anomalies in key producing regions. Consider locking in current rates for a portion of your inventory.`
-        },
-        "scenarios": [
-          {
-            "id": "scenario-1",
-            "title": `${crop} Supply Shock`,
-            "probability": 45, 
-            "trend": "up",
-            "impact": `Unexpected weather disruptions in major exporting regions could reduce ${crop} yields globally.`,
-            "recommendation": "SELL (Secure Peak)",
-            "recColor": "bg-red-800 border-red-950 text-white hover:bg-red-900",
-            "prices": [45, 48, 55, 62, 58, 65, 70, 75, 72, 80]
-          },
-          {
-            "id": "scenario-2",
-            "title": "Stable Harvest Cycle",
-            "probability": 65, 
-            "trend": "stable",
-            "impact": `Regional harvests are progressing as expected, stabilizing local ${crop} inventories.`,
-            "recommendation": "HOLD",
-            "recColor": "bg-moss/20 border-moss/50 text-moss hover:bg-moss/30",
-            "prices": [50, 52, 51, 50, 49, 50, 51, 52, 50, 51]
-          },
-          {
-            "id": "scenario-3",
-            "title": "Export Surplus",
-            "probability": 25, 
-            "trend": "down",
-            "impact": `An unexpected surplus from neighboring markets might flood the domestic supply chain.`,
-            "recommendation": "SELL (Minimize Loss)",
-            "recColor": "bg-terracotta border-terracotta text-white hover:bg-orange-800",
-            "prices": [60, 58, 55, 50, 45, 42, 40, 38, 35, 30]
-          }
-        ]
+          "insight": `Global demand for ${crop} is slightly elevated due to recent weather anomalies. Expect Mandi prices to reflect this upside over the coming weeks.`
+        }
       };
     }
+    
+    // Attach the real historical data
+    parsedJson.historical_data = historicalData;
 
     return new Response(
       JSON.stringify(parsedJson),
