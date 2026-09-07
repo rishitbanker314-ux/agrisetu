@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Sprout, User, Bell, Shield, Smartphone, Save, Loader2, ArrowLeft } from 'lucide-react';
+import { Sprout, User, Bell, Shield, Smartphone, Save, Loader2, ArrowLeft, LogOut } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
@@ -11,6 +12,7 @@ export default function SettingsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const router = useRouter();
 
   const [settings, setSettings] = useState({
     name: '',
@@ -82,6 +84,11 @@ export default function SettingsPage() {
     } else {
       toast.success('Password reset link sent to your email!');
     }
+  };
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.push('/en/login');
   };
 
 
@@ -227,12 +234,22 @@ export default function SettingsPage() {
                 <h2 className="text-lg font-serif text-deep-forest font-medium">Security</h2>
               </div>
               <p className="text-sm text-ink/60 mb-4">Manage your password and secure your account with Supabase authentication.</p>
-              <button 
-                onClick={handleResetPassword}
-                className="text-xs font-bold uppercase tracking-widest text-moss hover:text-deep-forest transition-colors"
-              >
-                Update Password &rarr;
-              </button>
+              <div className="flex items-center justify-between">
+                <button 
+                  onClick={handleResetPassword}
+                  className="text-xs font-bold uppercase tracking-widest text-moss hover:text-deep-forest transition-colors"
+                >
+                  Update Password &rarr;
+                </button>
+
+                <button 
+                  onClick={handleSignOut}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-terracotta hover:bg-terracotta/10 rounded-md transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Sign Out
+                </button>
+              </div>
             </section>
             
           </div>
