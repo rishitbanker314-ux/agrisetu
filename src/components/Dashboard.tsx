@@ -40,7 +40,7 @@ export default function Dashboard() {
   
   // Fields state
   const [savedFields, setSavedFields] = useState<any[]>([]);
-  const [pendingFieldSave, setPendingFieldSave] = useState<{ boundary?: [number, number][], center: [number, number] } | null>(null);
+  const [pendingFieldSave, setPendingFieldSave] = useState<{ boundary?: any[], center: [number, number], calculatedArea?: string } | null>(null);
   const [isSavingNewField, setIsSavingNewField] = useState(false);
   
   // Profile Onboarding State
@@ -239,10 +239,38 @@ export default function Dashboard() {
                 setSavedFields(prev => prev.map(f => f.id === data.id ? data : f));
               }
             } else {
+              // Calculate area if boundary is drawn
+              let calculatedArea = "";
+              if (boundary && boundary.length > 0) {
+                const R = 6378137; // Earth radius in meters
+                let totalArea = 0;
+                for (const poly of (boundary as any[])) {
+                  if (!Array.isArray(poly) || poly.length < 3) continue;
+                  
+                  let sumLat = 0;
+                  for (const pt of poly) sumLat += pt[0];
+                  const centerLat = (sumLat / poly.length) * Math.PI / 180;
+                  
+                  let area = 0;
+                  for (let i = 0; i < poly.length; i++) {
+                    const j = (i + 1) % poly.length;
+                    const x1 = poly[i][1] * Math.PI / 180 * Math.cos(centerLat) * R;
+                    const y1 = poly[i][0] * Math.PI / 180 * R;
+                    const x2 = poly[j][1] * Math.PI / 180 * Math.cos(centerLat) * R;
+                    const y2 = poly[j][0] * Math.PI / 180 * R;
+                    area += (x1 * y2 - x2 * y1);
+                  }
+                  totalArea += Math.abs(area / 2);
+                }
+                if (totalArea > 0) {
+                  calculatedArea = (totalArea / 10000).toFixed(2);
+                }
+              }
+
               // Prompt user to enter details for a new field
               const targetLat = newCenter ? newCenter[0] : center[0];
               const targetLng = newCenter ? newCenter[1] : center[1];
-              setPendingFieldSave({ boundary, center: [targetLat, targetLng] });
+              setPendingFieldSave({ boundary, center: [targetLat, targetLng], calculatedArea });
             }
           }}
           onSelectField={(field) => {
@@ -325,7 +353,7 @@ export default function Dashboard() {
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2">Area (Hectares)</label>
-                  <input name="area" type="number" step="0.1" min="0.1" required placeholder="e.g., 2.5" className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" />
+                  <input name="area" type="number" step="0.1" min="0.1" required placeholder="e.g., 2.5" defaultValue={pendingFieldSave.calculatedArea} className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" />
                 </div>
               </div>
 
