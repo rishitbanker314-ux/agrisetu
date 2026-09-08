@@ -21,6 +21,16 @@ interface ReportData {
     diseaseRisk?: string;
     soilMoisture?: number;
     soilPh?: number;
+    forecast?: {
+      maxTemps: number[];
+      minTemps: number[];
+      precipitation: number[];
+    };
+    temporal?: {
+      ndviProgression: number[];
+      diseaseRisk: string[];
+      estimatedValue: number[];
+    };
   };
 }
 
