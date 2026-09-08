@@ -216,6 +216,8 @@ export default function Dashboard() {
           advisoryLoading={advisoryLoading}
           fieldId={fieldId}
           savedFields={savedFields}
+          setCrop={handleCropChange}
+          onFieldChange={handleFieldChange}
           onSaveField={async (boundary?: [number, number][], newCenter?: [number, number]) => {
             if (!user) {
               toast.error("Please log in to save fields.");

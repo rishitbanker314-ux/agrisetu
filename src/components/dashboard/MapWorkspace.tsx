@@ -24,6 +24,8 @@ interface MapWorkspaceProps {
   advisoryLoading: boolean;
   fieldId: string;
   savedFields?: any[];
+  setCrop: (crop: string) => void;
+  onFieldChange: (id: string) => void;
   onSaveField?: (boundary?: [number, number][], newCenter?: [number, number]) => void;
   onSelectField?: (field: any) => void;
 }
@@ -40,6 +42,8 @@ export default function MapWorkspace({
   advisoryLoading,
   fieldId,
   savedFields = [],
+  setCrop,
+  onFieldChange,
   onSaveField,
   onSelectField
 }: MapWorkspaceProps) {
@@ -196,6 +200,9 @@ export default function MapWorkspace({
         advisoryLoading={advisoryLoading}
         fieldId={fieldId}
         center={center}
+        savedFields={savedFields}
+        setCrop={setCrop}
+        onFieldChange={onFieldChange}
       />
       
     </div>

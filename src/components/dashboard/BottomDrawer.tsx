@@ -12,6 +12,9 @@ interface BottomDrawerProps {
   advisoryLoading: boolean;
   fieldId: string;
   center: [number, number];
+  savedFields?: any[];
+  setCrop?: (crop: string) => void;
+  onFieldChange?: (id: string) => void;
 }
 
 export default function BottomDrawer(props: BottomDrawerProps) {
@@ -66,9 +69,55 @@ export default function BottomDrawer(props: BottomDrawerProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="flex-grow overflow-hidden"
+              className="flex-grow flex flex-col overflow-hidden"
             >
-              <DrawerTabs {...props} />
+              {/* Context Selectors */}
+              <div className="bg-moss/5 border-b border-soft-line px-4 py-3 flex items-center justify-between sm:justify-start gap-4 overflow-x-auto shrink-0">
+                <span className="text-xs font-medium text-deep-forest uppercase tracking-widest hidden sm:block">Intelligence Context:</span>
+                
+                <div className="flex items-center gap-2">
+                  <select 
+                    className="bg-white border border-soft-line hover:border-moss px-3 py-1.5 rounded-md text-sm font-sans font-medium text-ink outline-none cursor-pointer focus:border-moss focus:ring-1 focus:ring-moss/30 shadow-sm transition-all"
+                    value={props.fieldId?.toString() || ''}
+                    onChange={(e) => {
+                      // Prevent closing drawer when clicking select
+                      e.stopPropagation();
+                      if (props.onFieldChange) props.onFieldChange(e.target.value);
+                    }}
+                  >
+                    {(!props.savedFields || props.savedFields.length === 0) ? (
+                      <option value="" disabled>No fields available</option>
+                    ) : (
+                      props.savedFields.map((f: any) => (
+                        <option key={f.id} value={f.id.toString()}>{f.name || 'Unnamed Field'}</option>
+                      ))
+                    )}
+                  </select>
+
+                  <span className="text-soft-line">&mdash;</span>
+
+                  <select 
+                    value={props.crop}
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      if (props.setCrop) props.setCrop(e.target.value);
+                    }}
+                    className="bg-white border border-soft-line hover:border-moss px-3 py-1.5 rounded-md text-sm font-sans font-medium text-ink outline-none cursor-pointer focus:border-moss focus:ring-1 focus:ring-moss/30 shadow-sm transition-all capitalize"
+                  >
+                    {['wheat', 'rice', 'corn', 'cotton', 'sugarcane', 'soybean', 'potato', 'tomato', 'onion', 'apple', 'grapes', 'coffee', 'tea', 'millet', 'sorghum', 'barley', 'oats', 'peanut'].map(c => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                <p className="text-[10px] text-ink/50 ml-auto hidden md:block">
+                  Changing these parameters instantly recalculates all predictive AI models and temporal forecasts below.
+                </p>
+              </div>
+
+              <div className="flex-grow overflow-hidden relative">
+                <DrawerTabs {...props} />
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

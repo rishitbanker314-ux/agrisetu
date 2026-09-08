@@ -81,38 +81,8 @@ export default function AppHeader({ user, crop, setCrop, savedFields = [], field
         </span>
       </div>
 
-      {/* Center: Field/Crop selectors */}
-      <div className="flex items-center gap-1 md:gap-2 absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0">
-        <select 
-          className="hidden md:block bg-transparent border border-soft-line hover:border-moss px-3 py-1.5 rounded-sm text-sm font-sans font-medium text-ink outline-none cursor-pointer focus:border-moss"
-          value={fieldId?.toString() || ''}
-          onChange={(e) => onFieldChange && onFieldChange(e.target.value)}
-        >
-          {savedFields.length === 0 ? (
-            <option value="" disabled>No fields available</option>
-          ) : (
-            savedFields.map((f: any) => (
-              <option key={f.id} value={f.id.toString()}>{f.name || 'Unnamed Field'}</option>
-            ))
-          )}
-        </select>
-
-        <span className="hidden md:inline text-soft-line">&mdash;</span>
-
-        <select 
-          value={crop}
-          onChange={(e) => setCrop(e.target.value)}
-          className="bg-white md:bg-transparent border border-soft-line hover:border-moss px-2 md:px-3 py-1 md:py-1.5 rounded-sm text-xs md:text-sm font-sans font-medium text-ink outline-none cursor-pointer focus:border-moss capitalize"
-        >
-          {['wheat', 'rice', 'corn', 'cotton', 'sugarcane', 'soybean', 'potato', 'tomato', 'onion', 'apple', 'grapes', 'coffee', 'tea', 'millet', 'sorghum', 'barley', 'oats', 'peanut'].map(c => (
-            <option key={c} value={c}>{c}</option>
-          ))}
-        </select>
-
-        <div className="hidden lg:block text-xs text-ink/50 bg-moss/5 px-2 py-1 rounded-sm ml-2 font-medium">
-          Rabi 2025–26
-        </div>
-      </div>
+      {/* Center: Removed (Moved to BottomDrawer Intelligence Context) */}
+      <div className="flex-1"></div>
 
       {/* Right side */}
       <div className="flex items-center gap-4">
