@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { FileText, Download, ArrowLeft, Loader2, Sprout, MapPin, Activity, Droplets, TrendingUp, AlertTriangle, Thermometer } from 'lucide-react';
+import { FileText, Download, ArrowLeft, Loader2, Sprout, MapPin, Activity, Droplets, TrendingUp, AlertTriangle, Thermometer, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 
 interface ReportData {
@@ -89,6 +89,26 @@ export default function ReportViewPage() {
     return "Vegetation is sparse or under significant stress. Immediate intervention, such as targeted watering or fertilization, is strongly advised.";
   };
 
+  const handleDeleteReport = async () => {
+    if (!report || !confirm('Are you sure you want to delete this report? This cannot be undone.')) return;
+    
+    try {
+      const { error } = await supabase
+        .from('reports')
+        .delete()
+        .eq('id', report.id);
+        
+      if (!error) {
+        router.push('/en/reports');
+      } else {
+        console.error("Failed to delete report:", error);
+        alert("Could not delete the report. Please try again.");
+      }
+    } catch (err) {
+      console.error("Failed to delete report:", err);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white md:bg-paper-ivory font-sans selection:bg-moss/30 selection:text-deep-forest">
       {/* Non-printable Header & Controls */}
@@ -99,12 +119,20 @@ export default function ReportViewPage() {
         >
           <ArrowLeft className="w-4 h-4" /> Back to Reports
         </button>
-        <button 
-          onClick={() => window.print()}
-          className="bg-deep-forest text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-moss transition-colors flex items-center gap-2 shadow-sm"
-        >
-          <Download className="w-4 h-4" /> Download PDF
-        </button>
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={handleDeleteReport}
+            className="text-ink/40 hover:text-terracotta bg-white border border-soft-line hover:bg-terracotta/10 px-4 py-2 rounded-full text-sm font-medium transition-colors flex items-center gap-2 shadow-sm"
+          >
+            <Trash2 className="w-4 h-4" /> <span className="hidden sm:inline">Delete</span>
+          </button>
+          <button 
+            onClick={() => window.print()}
+            className="bg-deep-forest text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-moss transition-colors flex items-center gap-2 shadow-sm"
+          >
+            <Download className="w-4 h-4" /> Download PDF
+          </button>
+        </div>
       </div>
 
       {/* Printable Report Document */}

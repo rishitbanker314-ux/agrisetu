@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Sprout, FileText, Download, Calendar, Filter, Loader2, ArrowLeft, Menu } from 'lucide-react';
+import { Calendar, Filter, FileText, Download, Menu, Sprout, Loader2, Trash2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import NavigationSidebar from '@/components/NavigationSidebar';
 import { supabase } from '@/lib/supabase';
@@ -141,6 +141,26 @@ export default function ReportsPage() {
     }
   };
 
+  const handleDeleteReport = async (reportId: string) => {
+    if (!confirm('Are you sure you want to delete this report?')) return;
+    
+    try {
+      const { error } = await supabase
+        .from('reports')
+        .delete()
+        .eq('id', reportId);
+        
+      if (!error) {
+        setReports(reports.filter(r => r.id !== reportId));
+      } else {
+        console.error("Failed to delete report:", error);
+        alert("Could not delete the report. Please try again.");
+      }
+    } catch (err) {
+      console.error("Failed to delete report:", err);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-paper-ivory flex flex-col font-sans selection:bg-moss/30 selection:text-deep-forest">
       <header className="bg-white border-b border-soft-line z-[9999] flex items-center justify-between px-4 md:px-6 h-16 shrink-0 relative shadow-sm">
@@ -254,6 +274,13 @@ export default function ReportsPage() {
                   >
                     <Download className="w-4 h-4" /> Download <span className="text-[10px] opacity-70 font-normal ml-1">PDF</span>
                   </Link>
+                  <button 
+                    onClick={() => handleDeleteReport(report.id)}
+                    className="flex items-center justify-center w-9 h-9 text-ink/40 hover:text-terracotta hover:bg-terracotta/10 transition-colors bg-white border border-soft-line rounded-full shadow-sm ml-1"
+                    title="Delete Report"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
             ))}
