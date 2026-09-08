@@ -58,6 +58,19 @@ export default function ReportsPage() {
   const [user, setUser] = useState<User | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [reportToDelete, setReportToDelete] = useState<string | null>(null);
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const [filterCrop, setFilterCrop] = useState<string | null>(null);
+  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
+
+  const uniqueCrops = Array.from(new Set(reports.map(r => r.metadata?.crop).filter(Boolean)));
+
+  const filteredReports = reports
+    .filter(r => filterCrop ? r.metadata?.crop?.toLowerCase() === filterCrop.toLowerCase() : true)
+    .sort((a, b) => {
+      const dateA = new Date(a.created_at).getTime();
+      const dateB = new Date(b.created_at).getTime();
+      return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
+    });
 
   useEffect(() => {
     async function loadData() {
@@ -190,9 +203,56 @@ export default function ReportsPage() {
             <p className="text-ink/60 max-w-xl leading-relaxed">Download and review highly detailed satellite-derived analytics, soil assessments, and yield predictions.</p>
           </div>
           <div className="flex gap-3 relative">
-            <button className="bg-white border border-soft-line text-ink px-4 py-2 rounded-full text-sm font-medium hover:bg-moss/5 transition-colors flex items-center gap-2 shadow-sm">
-              <Filter className="w-4 h-4" /> Filter
+            <button 
+              onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+              className={`bg-white border border-soft-line text-ink px-4 py-2 rounded-full text-sm font-medium hover:bg-moss/5 transition-colors flex items-center gap-2 shadow-sm ${showFilterDropdown || filterCrop ? 'bg-moss/5 border-moss text-moss' : ''}`}
+            >
+              <Filter className="w-4 h-4" /> Filter {filterCrop && `(${filterCrop})`}
             </button>
+            
+            {/* Filter Dropdown */}
+            {showFilterDropdown && (
+              <div className="absolute top-full right-0 mt-2 w-64 bg-white border border-soft-line rounded-xl shadow-lg z-50 overflow-hidden p-4">
+                <div className="mb-4">
+                  <h4 className="text-xs font-medium uppercase tracking-widest text-ink/50 mb-2">Sort By Date</h4>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => setSortOrder('newest')}
+                      className={`flex-1 py-1.5 text-xs rounded-md border ${sortOrder === 'newest' ? 'bg-moss text-white border-moss' : 'bg-paper-ivory text-ink/70 border-soft-line hover:border-moss/50'}`}
+                    >
+                      Newest
+                    </button>
+                    <button 
+                      onClick={() => setSortOrder('oldest')}
+                      className={`flex-1 py-1.5 text-xs rounded-md border ${sortOrder === 'oldest' ? 'bg-moss text-white border-moss' : 'bg-paper-ivory text-ink/70 border-soft-line hover:border-moss/50'}`}
+                    >
+                      Oldest
+                    </button>
+                  </div>
+                </div>
+                
+                <div>
+                  <h4 className="text-xs font-medium uppercase tracking-widest text-ink/50 mb-2">Filter by Crop</h4>
+                  <div className="flex flex-wrap gap-2">
+                    <button 
+                      onClick={() => setFilterCrop(null)}
+                      className={`px-3 py-1 text-xs rounded-full border ${!filterCrop ? 'bg-moss/10 text-deep-forest border-moss' : 'bg-paper-ivory text-ink/70 border-soft-line hover:border-moss/50'}`}
+                    >
+                      All
+                    </button>
+                    {uniqueCrops.map(c => (
+                      <button 
+                        key={c}
+                        onClick={() => setFilterCrop(c as string)}
+                        className={`px-3 py-1 text-xs rounded-full border capitalize ${filterCrop === c ? 'bg-moss/10 text-deep-forest border-moss' : 'bg-paper-ivory text-ink/70 border-soft-line hover:border-moss/50'}`}
+                      >
+                        {c as string}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
             <button 
               onClick={() => setShowFieldSelector(!showFieldSelector)}
               disabled={isGenerating || isLoading}
@@ -241,8 +301,8 @@ export default function ReportsPage() {
           </div>
         ) : (
           <div className="bg-white border border-soft-line rounded-xl shadow-sm overflow-hidden">
-            {reports.map((report, idx) => (
-              <div key={report.id} className={`p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-moss/5 transition-colors ${idx !== reports.length - 1 ? 'border-b border-soft-line' : ''}`}>
+            {filteredReports.map((report, idx) => (
+              <div key={report.id} className={`p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-moss/5 transition-colors ${idx !== filteredReports.length - 1 ? 'border-b border-soft-line' : ''}`}>
                 <div className="flex items-start gap-4">
                   <div className="bg-terracotta/10 p-3 rounded-lg shrink-0">
                     <FileText className="w-6 h-6 text-terracotta" />
