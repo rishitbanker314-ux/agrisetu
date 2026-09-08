@@ -38,8 +38,10 @@ export default function ReportViewPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
+  
   const [report, setReport] = useState<ReportData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
     async function fetchReport() {
@@ -90,7 +92,7 @@ export default function ReportViewPage() {
   };
 
   const handleDeleteReport = async () => {
-    if (!report || !confirm('Are you sure you want to delete this report? This cannot be undone.')) return;
+    if (!report) return;
     
     try {
       const { error } = await supabase
@@ -121,7 +123,7 @@ export default function ReportViewPage() {
         </button>
         <div className="flex items-center gap-3">
           <button 
-            onClick={handleDeleteReport}
+            onClick={() => setShowDeleteModal(true)}
             className="text-ink/40 hover:text-terracotta bg-white border border-soft-line hover:bg-terracotta/10 px-4 py-2 rounded-full text-sm font-medium transition-colors flex items-center gap-2 shadow-sm"
           >
             <Trash2 className="w-4 h-4" /> <span className="hidden sm:inline">Delete</span>
@@ -376,6 +378,37 @@ export default function ReportViewPage() {
         </footer>
 
       </main>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="print:hidden fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-ink/20 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-xl border border-soft-line w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-6">
+              <div className="w-12 h-12 bg-terracotta/10 text-terracotta rounded-full flex items-center justify-center mb-4">
+                <Trash2 className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-serif text-deep-forest font-medium mb-2">Delete Report</h3>
+              <p className="text-ink/60 text-sm leading-relaxed mb-6">
+                Are you sure you want to permanently delete this report? This action cannot be undone.
+              </p>
+              <div className="flex gap-3 w-full">
+                <button 
+                  onClick={() => setShowDeleteModal(false)}
+                  className="flex-1 bg-paper-ivory border border-soft-line text-ink hover:bg-soft-line/50 px-4 py-2.5 rounded-full text-sm font-medium transition-colors"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={handleDeleteReport}
+                  className="flex-1 bg-terracotta text-white hover:bg-terracotta/90 px-4 py-2.5 rounded-full text-sm font-medium transition-colors"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

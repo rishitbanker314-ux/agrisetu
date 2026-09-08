@@ -1,10 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { Calendar, Filter, FileText, Download, Menu, Sprout, Loader2, Trash2 } from 'lucide-react';
+import { Calendar, Filter, FileText, Download, Menu, Sprout, Loader2, Trash2, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import NavigationSidebar from '@/components/NavigationSidebar';
 import { supabase } from '@/lib/supabase';
+import type { User } from '@supabase/supabase-js';
 import { generateFieldIntelligence } from '@/lib/fieldIntelligence';
 
 interface Report {
@@ -54,8 +55,9 @@ export default function ReportsPage() {
   const [showFieldSelector, setShowFieldSelector] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [reportToDelete, setReportToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadData() {
@@ -142,8 +144,6 @@ export default function ReportsPage() {
   };
 
   const handleDeleteReport = async (reportId: string) => {
-    if (!confirm('Are you sure you want to delete this report?')) return;
-    
     try {
       const { error } = await supabase
         .from('reports')
@@ -152,6 +152,7 @@ export default function ReportsPage() {
         
       if (!error) {
         setReports(reports.filter(r => r.id !== reportId));
+        setReportToDelete(null);
       } else {
         console.error("Failed to delete report:", error);
         alert("Could not delete the report. Please try again.");
@@ -275,7 +276,7 @@ export default function ReportsPage() {
                     <Download className="w-4 h-4" /> Download <span className="text-[10px] opacity-70 font-normal ml-1">PDF</span>
                   </Link>
                   <button 
-                    onClick={() => handleDeleteReport(report.id)}
+                    onClick={() => setReportToDelete(report.id)}
                     className="flex items-center justify-center w-9 h-9 text-ink/40 hover:text-terracotta hover:bg-terracotta/10 transition-colors bg-white border border-soft-line rounded-full shadow-sm ml-1"
                     title="Delete Report"
                   >
@@ -287,6 +288,37 @@ export default function ReportsPage() {
           </div>
         )}
       </main>
+
+      {/* Delete Confirmation Modal */}
+      {reportToDelete && (
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-ink/20 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-xl border border-soft-line w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-6">
+              <div className="w-12 h-12 bg-terracotta/10 text-terracotta rounded-full flex items-center justify-center mb-4">
+                <Trash2 className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-serif text-deep-forest font-medium mb-2">Delete Report</h3>
+              <p className="text-ink/60 text-sm leading-relaxed mb-6">
+                Are you sure you want to permanently delete this report? This action cannot be undone.
+              </p>
+              <div className="flex gap-3 w-full">
+                <button 
+                  onClick={() => setReportToDelete(null)}
+                  className="flex-1 bg-paper-ivory border border-soft-line text-ink hover:bg-soft-line/50 px-4 py-2.5 rounded-full text-sm font-medium transition-colors"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={() => handleDeleteReport(reportToDelete)}
+                  className="flex-1 bg-terracotta text-white hover:bg-terracotta/90 px-4 py-2.5 rounded-full text-sm font-medium transition-colors"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
