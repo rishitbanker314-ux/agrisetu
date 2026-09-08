@@ -8,7 +8,8 @@ import MarketScenarios from '../MarketScenarios';
 import DiagnosisUpload from '../DiagnosisUpload';
 import AcousticBiosphere from '../AcousticBiosphere';
 import NDVIChart from '../NDVIChart';
-import { Sprout, CloudRain, Bell, LineChart, Stethoscope, AudioWaveform, Globe, Activity } from 'lucide-react';
+import { Sprout, CloudRain, Bell, LineChart, Stethoscope, AudioWaveform, Globe, Activity, AlertOctagon } from 'lucide-react';
+import { checkCropViability } from '@/lib/cropViability';
 
 interface DrawerTabsProps {
   fieldData: any;
@@ -31,6 +32,30 @@ export default function DrawerTabs({ fieldData, crop, advisory, advisoryLoading,
     { id: 'diagnostics', label: 'Diagnostics', icon: Stethoscope },
     { id: 'biosphere', label: 'Acoustic biosphere', icon: AudioWaveform },
   ];
+
+  const viability = checkCropViability(crop, fieldData);
+
+  if (!viability.isViable) {
+    return (
+      <div className="flex flex-col h-full bg-paper-ivory rounded-t-xl overflow-hidden shadow-[0_-10px_40px_rgba(0,0,0,0.1)]">
+        <div className="flex-grow flex items-center justify-center p-8 text-center">
+          <div className="max-w-md">
+            <div className="w-16 h-16 bg-terracotta/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <AlertOctagon className="w-8 h-8 text-terracotta" />
+            </div>
+            <h2 className="font-serif text-2xl text-deep-forest mb-4">Cultivation Not Viable</h2>
+            <p className="text-ink/70 font-sans text-sm leading-relaxed mb-6">
+              {viability.reason}
+            </p>
+            <div className="bg-white border border-soft-line p-4 rounded-lg text-left">
+              <h4 className="text-xs font-bold uppercase tracking-widest text-ink/50 mb-2">Agronomic Assessment</h4>
+              <p className="text-sm text-ink/80 font-medium">Please select a different crop from the Context Selectors above that is suited for the current climatic parameters and geographic latitude of this field.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full bg-paper-ivory rounded-t-xl overflow-hidden shadow-[0_-10px_40px_rgba(0,0,0,0.1)]">
