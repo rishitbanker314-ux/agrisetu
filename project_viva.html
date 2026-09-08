@@ -439,6 +439,18 @@
         opts: ["Google Maps", "Google Cloud Storage", "Google Cloud Text-to-Speech", "Google Analytics"],
         ans: 2,
         exp: "Google Cloud Text-to-Speech was replaced by the Browser Web Speech API to eliminate GCP billing requirements."
+      },
+      {
+        q: "What CSS framework and engine version is used in AgriSetu to achieve a modern, responsive UI with zero runtime overhead?",
+        opts: ["Tailwind CSS v4 with PostCSS", "Bootstrap 5", "Material UI (MUI)", "Chakra UI"],
+        ans: 0,
+        exp: "AgriSetu uses Tailwind CSS v4 with PostCSS for high-contrast, zero-runtime utility styling optimized for mobile screens under bright sunlight."
+      },
+      {
+        q: "How does AgriSetu ensure offline functionality and installability on mobile devices for rural farmers?",
+        opts: ["By publishing a native Android APK to Google Play", "Using Progressive Web App (PWA) service workers via @ducanh2912/next-pwa", "By requiring a continuous satellite link", "Through an SMS chatbot gateway only"],
+        ans: 1,
+        exp: "AgriSetu uses @ducanh2912/next-pwa to configure offline service worker caching and home-screen installability without app store friction."
       }
     ];
 

@@ -40,7 +40,7 @@ export default function BottomDrawer(props: BottomDrawerProps) {
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2">
               <div className={`w-2 h-2 rounded-full ${hasAlerts ? 'bg-terracotta' : 'bg-moss'} animate-pulse`}></div>
-              <span className="font-sans font-medium text-ink/80 text-sm">North Field Status</span>
+              <span className="font-sans font-medium text-ink/80 text-sm">{props.fieldData?.name ? `${props.fieldData.name} Status` : 'Field Intelligence'}</span>
             </div>
             
             <div className="hidden sm:flex items-center gap-4 text-xs font-sans text-ink/60">
