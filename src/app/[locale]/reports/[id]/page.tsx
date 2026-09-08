@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { FileText, Download, ArrowLeft, Loader2, Sprout, MapPin, Activity, Droplets } from 'lucide-react';
+import { FileText, Download, ArrowLeft, Loader2, Sprout, MapPin, Activity, Droplets, TrendingUp, AlertTriangle, Thermometer } from 'lucide-react';
 import Link from 'next/link';
 
 interface ReportData {
@@ -16,6 +16,11 @@ interface ReportData {
     lat: number;
     lng: number;
     ndvi: number;
+    areaHectares?: number;
+    estimatedValue?: number;
+    diseaseRisk?: string;
+    soilMoisture?: number;
+    soilPh?: number;
   };
 }
 
@@ -170,15 +175,69 @@ export default function ReportViewPage() {
           </div>
         )}
 
-        {/* AI Insights Section */}
+        {/* Intelligent Forecasting Section */}
+        {report.metadata && (report.metadata.estimatedValue !== undefined || report.metadata.diseaseRisk) && (
+          <div className="mb-12">
+            <h3 className="text-2xl font-serif text-deep-forest font-medium mb-6 flex items-center gap-3">
+              <TrendingUp className="w-6 h-6 text-moss" /> Intelligent Forecasting
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              
+              {/* Economic Yield */}
+              <div className="bg-moss/5 p-6 rounded-xl border border-moss/20">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-xs text-ink/60 uppercase tracking-widest font-medium">Estimated Value</div>
+                  <TrendingUp className="w-4 h-4 text-moss" />
+                </div>
+                <div className="text-3xl font-serif text-deep-forest font-medium">
+                  {report.metadata.estimatedValue ? `₹${report.metadata.estimatedValue.toLocaleString('en-IN')}` : 'Calculating...'}
+                </div>
+                <div className="text-sm text-ink/60 mt-1">Based on live Mandi rates and {report.metadata.areaHectares || 1} ha area</div>
+              </div>
+
+              {/* Disease Risk */}
+              <div className={`p-6 rounded-xl border ${report.metadata.diseaseRisk === 'CRITICAL' ? 'bg-terracotta/5 border-terracotta/20' : report.metadata.diseaseRisk === 'High' ? 'bg-yellow-500/5 border-yellow-500/20' : 'bg-paper-ivory border-soft-line'}`}>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-xs text-ink/60 uppercase tracking-widest font-medium">16-Day Pest Risk</div>
+                  <AlertTriangle className={`w-4 h-4 ${report.metadata.diseaseRisk === 'CRITICAL' ? 'text-terracotta' : report.metadata.diseaseRisk === 'High' ? 'text-yellow-600' : 'text-moss'}`} />
+                </div>
+                <div className={`text-2xl font-medium ${report.metadata.diseaseRisk === 'CRITICAL' ? 'text-terracotta' : report.metadata.diseaseRisk === 'High' ? 'text-yellow-600' : 'text-deep-forest'}`}>
+                  {report.metadata.diseaseRisk}
+                </div>
+                <div className="text-sm text-ink/60 mt-1">Forecasted fungal & blight conditions</div>
+              </div>
+
+              {/* Soil Metrics */}
+              <div className="bg-paper-ivory p-6 rounded-xl border border-soft-line">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-xs text-ink/60 uppercase tracking-widest font-medium">Soil Status</div>
+                  <Thermometer className="w-4 h-4 text-moss" />
+                </div>
+                <div className="flex items-baseline gap-4 mt-2">
+                  <div>
+                    <div className="text-2xl font-medium text-deep-forest">{report.metadata.soilMoisture || '--'}%</div>
+                    <div className="text-xs text-ink/50 mt-1">Moisture</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-medium text-deep-forest">{report.metadata.soilPh ? report.metadata.soilPh.toFixed(1) : '--'}</div>
+                    <div className="text-xs text-ink/50 mt-1">pH Level</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        )}
+
+        {/* Detailed AI Insights Section */}
         {report.metadata && (
           <div className="mb-12">
             <h3 className="text-2xl font-serif text-deep-forest font-medium mb-6 flex items-center gap-3">
-              <Droplets className="w-6 h-6 text-moss" /> Analysis & Recommendations
+              <Droplets className="w-6 h-6 text-moss" /> Agronomic Assessment & Recommendations
             </h3>
             <div className="prose prose-stone max-w-none">
               <p className="text-ink leading-relaxed">
-                Based on the multi-spectral satellite imagery captured and processed for the coordinates <strong>{report.metadata.lat.toFixed(4)}, {report.metadata.lng.toFixed(4)}</strong>, the following agronomic assessment has been generated for your <strong>{report.metadata.crop}</strong> crop.
+                Based on the multi-spectral satellite imagery captured and processed for the coordinates <strong>{report.metadata.lat.toFixed(4)}, {report.metadata.lng.toFixed(4)}</strong>, the following agronomic assessment has been generated for your <strong>{report.metadata.crop}</strong> crop. This analysis utilizes the normalized difference vegetation index (NDVI) alongside localized weather models and soil parameter estimations.
               </p>
               
               <div className="bg-moss/5 border-l-4 border-moss p-6 my-6 rounded-r-xl">
@@ -187,10 +246,87 @@ export default function ReportViewPage() {
                   {getNdviAssessment(report.metadata.ndvi)}
                 </p>
               </div>
-              
+
+              <h4 className="text-xl font-serif text-deep-forest font-medium mt-8 mb-4">Crop-Specific Directives</h4>
               <p className="text-ink leading-relaxed">
-                Continual monitoring is advised. Weather fluctuations in the upcoming week may require adjustments to your irrigation schedule. Please check the AgriSetu dashboard for real-time temporal progression and climate alerts.
+                {report.metadata.crop === 'Wheat' || report.metadata.crop === 'Rice' || report.metadata.crop === 'Maize' ? 
+                  `Cereal crops like ${report.metadata.crop} require precise nitrogen management. Given the current soil moisture of ${report.metadata.soilMoisture || 'optimal'}%, ensure that any top-dressing is timed before forecasted precipitation to maximize root uptake and minimize volatilization losses.` : 
+                 report.metadata.crop === 'Cotton' || report.metadata.crop === 'Sugarcane' ? 
+                  `Cash crops such as ${report.metadata.crop} demand deep root-zone moisture tracking. Your current soil pH of ${report.metadata.soilPh ? report.metadata.soilPh.toFixed(1) : 'around 7.0'} is generally acceptable, but monitor for micronutrient lockout if heavy rains alter the topsoil chemistry.` :
+                  `For ${report.metadata.crop}, closely monitor vegetative vigor. The current temporal trends suggest standard growth, but watch for moisture stress during critical flowering stages.`
+                }
               </p>
+
+              <h4 className="text-xl font-serif text-deep-forest font-medium mt-8 mb-4">Pest & Disease Advisory</h4>
+              <p className="text-ink leading-relaxed">
+                {report.metadata.diseaseRisk === 'CRITICAL' ? 
+                  `URGENT: The 16-day forecast indicates extended periods of high humidity and optimal temperatures for fungal proliferation. You are at CRITICAL risk for blight, rust, or mildew. Preventative fungicide application is highly recommended immediately.` :
+                 report.metadata.diseaseRisk === 'High' ?
+                  `WARNING: Conditions are becoming highly favorable for disease outbreaks. The combination of incoming precipitation and temperature spikes creates an environment suitable for pathogen development. Scout fields every 2-3 days.` :
+                  `The current microclimate models show a low-to-medium risk for widespread fungal infections. However, localized pest pressure may still exist. Maintain standard integrated pest management protocols.`
+                }
+              </p>
+              
+              <p className="text-ink leading-relaxed mt-6">
+                Continual monitoring is advised. Weather fluctuations in the upcoming week may require adjustments to your irrigation schedule. Please review the 16-day telemetry below for precise daily planning.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* 16-Day Forecast Table */}
+        {report.metadata && report.metadata.forecast && report.metadata.temporal && (
+          <div className="mb-12">
+            <h3 className="text-2xl font-serif text-deep-forest font-medium mb-6">16-Day Microclimate & Agronomic Forecast</h3>
+            <div className="overflow-x-auto rounded-xl border border-soft-line bg-white shadow-sm">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-paper-ivory text-ink border-b border-soft-line">
+                    <th className="p-4 font-medium text-sm uppercase tracking-widest text-ink/60">Day</th>
+                    <th className="p-4 font-medium text-sm uppercase tracking-widest text-ink/60">Max Temp</th>
+                    <th className="p-4 font-medium text-sm uppercase tracking-widest text-ink/60">Min Temp</th>
+                    <th className="p-4 font-medium text-sm uppercase tracking-widest text-ink/60">Precipitation</th>
+                    <th className="p-4 font-medium text-sm uppercase tracking-widest text-ink/60">Est. NDVI</th>
+                    <th className="p-4 font-medium text-sm uppercase tracking-widest text-ink/60">Pest Risk</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-soft-line">
+                  {report.metadata.forecast.maxTemps.map((_, index) => {
+                    const date = new Date();
+                    date.setDate(date.getDate() + index);
+                    const dayLabel = index === 0 ? 'Today' : index === 1 ? 'Tomorrow' : date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                    
+                    const maxT = report.metadata!.forecast!.maxTemps[index];
+                    const minT = report.metadata!.forecast!.minTemps[index];
+                    const precip = report.metadata!.forecast!.precipitation[index];
+                    const ndviSim = report.metadata!.temporal!.ndviProgression[index];
+                    const risk = report.metadata!.temporal!.diseaseRisk[index];
+
+                    return (
+                      <tr key={index} className="hover:bg-moss/5 transition-colors">
+                        <td className="p-4 text-ink font-medium">{dayLabel}</td>
+                        <td className="p-4 text-deep-forest">{maxT ? `${maxT.toFixed(1)}°C` : '--'}</td>
+                        <td className="p-4 text-ink/70">{minT ? `${minT.toFixed(1)}°C` : '--'}</td>
+                        <td className="p-4">
+                          <span className={precip > 0 ? 'text-blue-600 font-medium' : 'text-ink/50'}>
+                            {precip !== undefined ? `${precip.toFixed(1)} mm` : '--'}
+                          </span>
+                        </td>
+                        <td className="p-4 text-moss font-medium">{ndviSim !== undefined ? ndviSim.toFixed(2) : '--'}</td>
+                        <td className="p-4">
+                          <span className={`px-2 py-1 rounded-sm text-xs font-medium uppercase tracking-wider ${
+                            risk === 'CRITICAL' ? 'bg-terracotta/20 text-terracotta' :
+                            risk === 'High' ? 'bg-yellow-500/20 text-yellow-700' :
+                            'bg-moss/10 text-moss'
+                          }`}>
+                            {risk || 'Low'}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           </div>
         )}

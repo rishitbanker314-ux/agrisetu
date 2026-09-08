@@ -5,6 +5,7 @@ import { Sprout, FileText, Download, Calendar, Filter, Loader2, ArrowLeft, Menu 
 import { useState, useEffect } from 'react';
 import NavigationSidebar from '@/components/NavigationSidebar';
 import { supabase } from '@/lib/supabase';
+import { generateFieldIntelligence } from '@/lib/fieldIntelligence';
 
 interface Report {
   id: string;
@@ -18,6 +19,21 @@ interface Report {
     lat: number;
     lng: number;
     ndvi: number;
+    areaHectares?: number;
+    estimatedValue?: number;
+    diseaseRisk?: string;
+    soilMoisture?: number;
+    soilPh?: number;
+    forecast?: {
+      maxTemps: number[];
+      minTemps: number[];
+      precipitation: number[];
+    };
+    temporal?: {
+      ndviProgression: number[];
+      diseaseRisk: string[];
+      estimatedValue: number[];
+    };
   };
 }
 
@@ -27,6 +43,8 @@ interface Field {
   crop: string;
   lat: number;
   lng: number;
+  boundary?: any[];
+  area?: number;
 }
 
 export default function ReportsPage() {
@@ -72,10 +90,19 @@ export default function ReportsPage() {
     setIsGenerating(true);
     setShowFieldSelector(false);
     
-    // Simulate generation time, then insert to DB
-    setTimeout(async () => {
-      // Mock NDVI score calculation based on coordinates (similar to Dashboard)
-      const mockNdvi = Number((0.6 + (Math.sin(field.lat * 100) * 0.15)).toFixed(2));
+    try {
+      // Run the Intelligent Decision Engine
+      const intelligence = await generateFieldIntelligence(
+        field.lat, 
+        field.lng, 
+        field.boundary, 
+        field.crop, 
+        field.area || 1 // default to 1 hectare if unknown
+      );
+
+      // We use the most immediate forecast metrics for the report snapshot
+      const currentEstimatedValue = intelligence.temporal.estimatedValue[0] || 0;
+      const currentDiseaseRisk = intelligence.temporal.diseaseRisk[0] || 'Low';
 
       const newReport = {
         owner_id: userId,
@@ -87,7 +114,14 @@ export default function ReportsPage() {
           crop: field.crop,
           lat: field.lat,
           lng: field.lng,
-          ndvi: mockNdvi
+          ndvi: intelligence.ndvi,
+          areaHectares: field.area || 0,
+          estimatedValue: currentEstimatedValue,
+          diseaseRisk: currentDiseaseRisk,
+          soilMoisture: intelligence.soil.moisture,
+          soilPh: intelligence.soil.pH,
+          forecast: intelligence.forecast,
+          temporal: intelligence.temporal
         }
       };
       
@@ -100,8 +134,11 @@ export default function ReportsPage() {
       if (!error && data) {
         setReports([data, ...reports]);
       }
+    } catch (err) {
+      console.error("Failed to generate report:", err);
+    } finally {
       setIsGenerating(false);
-    }, 1500);
+    }
   };
 
   return (
