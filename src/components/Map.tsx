@@ -10,17 +10,10 @@ import L from 'leaflet';
 // Instead of default blue marker, we'll use a nice custom SVG marker
 const iconDefault = L.divIcon({
   className: 'custom-map-marker',
-  html: `
-    <div style="transform: translate(-50%, -100%);">
-      <svg width="32" height="42" viewBox="0 0 32 42" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M16 0C7.163 0 0 7.163 0 16C0 26.667 16 42 16 42C16 42 32 26.667 32 16C32 7.163 24.837 0 16 0Z" fill="#10b981" />
-        <circle cx="16" cy="16" r="6" fill="white" />
-      </svg>
-    </div>
-  `,
+  html: `<div style="width: 14px; height: 14px; background-color: #10b981; border: 2px solid white; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.3); transform: translate(-50%, -50%);"></div>`,
   iconSize: [0, 0],
   iconAnchor: [0, 0],
-  popupAnchor: [0, -42],
+  popupAnchor: [0, -10],
 });
 
 const transparentIcon = L.divIcon({

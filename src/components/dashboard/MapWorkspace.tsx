@@ -98,7 +98,21 @@ export default function MapWorkspace({
         <Map 
           center={center} 
           zoom={14} 
-          markers={savedFields.filter(f => f.lat != null && f.lng != null).map(f => ({ id: f.id, lat: f.lat, lng: f.lng, title: f.name, boundary: f.boundary }))}
+          markers={savedFields
+            .filter(f => f.lat != null && f.lng != null)
+            .filter((f, _, arr) => {
+              if (!f.boundary || f.boundary.flat().length <= 2) {
+                const hasPolygon = arr.some(other => 
+                  other.id !== f.id && 
+                  Math.abs(other.lat - f.lat) < 0.0001 && 
+                  Math.abs(other.lng - f.lng) < 0.0001 && 
+                  other.boundary && other.boundary.flat().length > 2
+                );
+                return !hasPolygon;
+              }
+              return true;
+            })
+            .map(f => ({ id: f.id, lat: f.lat, lng: f.lng, title: f.name, boundary: f.boundary }))}
           activeMarker={{ 
             lat: center[0], 
             lng: center[1], 
