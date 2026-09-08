@@ -93,19 +93,23 @@ const DraggableMarker = ({ marker, temporalNdvi, onLocationSelect }: { marker: {
 
   const fillColor = getNdviColor(temporalNdvi);
 
+  const hasBoundary = marker.boundary && marker.boundary.flat().length > 2;
+
   return (
     <>
-      <Marker 
-        position={[marker.lat, marker.lng]} 
-        icon={iconDefault}
-        draggable={true}
-        eventHandlers={eventHandlers}
-        ref={markerRef}
-      >
-        <Popup>{marker.title} (Drag me!)</Popup>
-      </Marker>
+      {!hasBoundary && (
+        <Marker 
+          position={[marker.lat, marker.lng]} 
+          icon={iconDefault}
+          draggable={true}
+          eventHandlers={eventHandlers}
+          ref={markerRef}
+        >
+          <Popup>{marker.title} (Drag me!)</Popup>
+        </Marker>
+      )}
       {/* Dynamic Field Boundary for Temporal Simulation */}
-      {marker.boundary && marker.boundary.flat().length > 2 ? (
+      {hasBoundary && marker.boundary ? (
         Array.isArray(marker.boundary[0]) && Array.isArray(marker.boundary[0][0]) ? (
           (marker.boundary as any[]).map((poly, idx) => (
             poly.length > 2 ? <Polygon key={idx} positions={poly} pathOptions={{ color: '#10b981', weight: 3, dashArray: '5, 5', fillColor: fillColor, fillOpacity: 0.45, lineCap: 'round', lineJoin: 'round' }} /> : null
@@ -175,15 +179,17 @@ export default function Map({ center, zoom = 13, markers = [], activeMarker, onL
         <MapClickHandler onLocationSelect={onLocationSelect} />
         {markers.map((marker, idx) => (
           <Fragment key={marker.id || idx}>
-            <Marker 
-              position={[marker.lat, marker.lng]} 
-              icon={iconDefault}
-              eventHandlers={{
-                click: () => onLocationSelect && onLocationSelect(marker.lat, marker.lng)
-              }}
-            >
-              <Popup>{marker.title}</Popup>
-            </Marker>
+            {(!marker.boundary || marker.boundary.flat().length <= 2) && (
+              <Marker 
+                position={[marker.lat, marker.lng]} 
+                icon={iconDefault}
+                eventHandlers={{
+                  click: () => onLocationSelect && onLocationSelect(marker.lat, marker.lng)
+                }}
+              >
+                <Popup>{marker.title}</Popup>
+              </Marker>
+            )}
             {marker.boundary && marker.boundary.flat().length > 2 && (
               Array.isArray(marker.boundary[0]) && Array.isArray(marker.boundary[0][0]) ? (
                 (marker.boundary as any[]).map((poly, idx) => (
