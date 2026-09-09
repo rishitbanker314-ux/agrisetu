@@ -33,7 +33,13 @@ Deno.serve(async (req) => {
       You are conducting a highly curated, deeply researched diagnosis based on this crop image.
       Today's date is ${currentDate}.
       
-      Identify any diseases, pests, nutrient deficiencies, or confirm if it is healthy.
+      CRITICAL INSTRUCTION: First, analyze the image to determine if it is related to agriculture, plants, crops, soil, or farming. 
+      If the image is NOT related to agriculture or plants (e.g., a person, a car, an animal, a generic object, a random screenshot), you MUST return:
+      - "disease_label": "Invalid Image"
+      - "confidence": 1.0
+      - "treatment_advice": "The uploaded image does not appear to be a plant, crop, or agricultural subject. Please upload a clear image of a plant leaf, crop field, or agricultural pest for diagnosis."
+
+      If the image IS related to agriculture, identify any diseases, pests, nutrient deficiencies, or confirm if it is healthy.
       Respond strictly in JSON format with the following keys:
       - "disease_label": A short, scientifically accurate name of the issue (e.g., "Tomato Early Blight (Alternaria solani)", "Healthy").
       - "confidence": A float between 0.0 and 1.0 representing your diagnostic confidence.
