@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy_key');
-
 export async function POST(request: Request) {
+  const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy_key');
   try {
     const { email, pdfBase64, reportId, reportType } = await request.json();
 
@@ -17,7 +16,7 @@ export async function POST(request: Request) {
 
     // Send the email
     const { data, error } = await resend.emails.send({
-      from: 'AgriSetu Reports <reports@agrisetu.com>', // Or a verified domain you own
+      from: 'AgriSetu Reports <onboarding@resend.dev>', // Resend default testing email
       to: [email],
       subject: `Your AgriSetu Field Report: ${reportType}`,
       html: `
