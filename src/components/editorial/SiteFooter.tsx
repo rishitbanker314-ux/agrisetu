@@ -25,7 +25,7 @@ export default function SiteFooter() {
 
         {/* Meta */}
         <div className="flex flex-wrap items-center gap-6 text-xs font-sans text-ink/50 w-full md:w-auto mt-8 md:mt-0 justify-between md:justify-start">
-          <Link href="#" className="hover:text-moss transition-colors">Privacy</Link>
+          <Link href="/en/privacy" className="hover:text-moss transition-colors">Privacy</Link>
           <Link href="/en/terms" className="hover:text-moss transition-colors">Terms</Link>
           <span>&copy; {new Date().getFullYear()} AgriSetu</span>
           <div className="flex items-center gap-1 border-l border-soft-line pl-6">
