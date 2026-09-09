@@ -267,7 +267,7 @@ export default function ReportViewPage() {
                 {/* Visual Indicator Bar */}
                 <div className="w-full h-2 bg-soft-line rounded-full overflow-hidden mt-2">
                   <div 
-                    className={`h-full ${report.metadata.ndvi > 0.7 ? 'bg-moss' : report.metadata.ndvi > 0.4 ? 'bg-yellow-500' : 'bg-terracotta'}`}
+                    className={`h-full ${report.metadata.ndvi > 0.7 ? 'bg-moss' : report.metadata.ndvi > 0.4 ? 'bg-marigold' : 'bg-terracotta'}`}
                     style={{ width: `${Math.max(0, Math.min(100, report.metadata.ndvi * 100))}%` }}
                   />
                 </div>
@@ -302,12 +302,12 @@ export default function ReportViewPage() {
               </div>
 
               {/* Disease Risk */}
-              <div className={`p-6 rounded-xl border ${report.metadata.diseaseRisk === 'CRITICAL' ? 'bg-terracotta/5 border-terracotta/20' : report.metadata.diseaseRisk === 'High' ? 'bg-yellow-500/5 border-yellow-500/20' : 'bg-paper-ivory border-soft-line'}`}>
+              <div className={`p-6 rounded-xl border ${report.metadata.diseaseRisk === 'CRITICAL' ? 'bg-terracotta/5 border-terracotta/20' : report.metadata.diseaseRisk === 'High' ? 'bg-marigold/10 border-marigold/20' : 'bg-paper-ivory border-soft-line'}`}>
                 <div className="flex items-center justify-between mb-2">
                   <div className="text-xs text-ink/60 uppercase tracking-widest font-medium">16-Day Pest Risk</div>
-                  <AlertTriangle className={`w-4 h-4 ${report.metadata.diseaseRisk === 'CRITICAL' ? 'text-terracotta' : report.metadata.diseaseRisk === 'High' ? 'text-yellow-600' : 'text-moss'}`} />
+                  <AlertTriangle className={`w-4 h-4 ${report.metadata.diseaseRisk === 'CRITICAL' ? 'text-terracotta' : report.metadata.diseaseRisk === 'High' ? 'text-marigold' : 'text-moss'}`} />
                 </div>
-                <div className={`text-2xl font-medium ${report.metadata.diseaseRisk === 'CRITICAL' ? 'text-terracotta' : report.metadata.diseaseRisk === 'High' ? 'text-yellow-600' : 'text-deep-forest'}`}>
+                <div className={`text-2xl font-medium ${report.metadata.diseaseRisk === 'CRITICAL' ? 'text-terracotta' : report.metadata.diseaseRisk === 'High' ? 'text-marigold' : 'text-deep-forest'}`}>
                   {report.metadata.diseaseRisk}
                 </div>
                 <div className="text-sm text-ink/60 mt-1">Forecasted fungal & blight conditions</div>
@@ -414,7 +414,7 @@ export default function ReportViewPage() {
                         <td className="p-4 text-deep-forest">{maxT ? `${maxT.toFixed(1)}°C` : '--'}</td>
                         <td className="p-4 text-ink/70">{minT ? `${minT.toFixed(1)}°C` : '--'}</td>
                         <td className="p-4">
-                          <span className={precip > 0 ? 'text-blue-600 font-medium' : 'text-ink/50'}>
+                          <span className={precip > 0 ? 'text-[#2563eb] font-medium' : 'text-ink/50'}>
                             {precip !== undefined ? `${precip.toFixed(1)} mm` : '--'}
                           </span>
                         </td>
@@ -422,7 +422,7 @@ export default function ReportViewPage() {
                         <td className="p-4">
                           <span className={`px-2 py-1 rounded-sm text-xs font-medium uppercase tracking-wider ${
                             risk === 'CRITICAL' ? 'bg-terracotta/20 text-terracotta' :
-                            risk === 'High' ? 'bg-yellow-500/20 text-yellow-700' :
+                            risk === 'High' ? 'bg-marigold/20 text-marigold' :
                             'bg-moss/10 text-moss'
                           }`}>
                             {risk || 'Low'}
