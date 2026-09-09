@@ -128,28 +128,7 @@ const DraggableMarker = ({ marker, temporalNdvi, onLocationSelect }: { marker: {
             pathOptions={{ color: '#10b981', weight: 3, dashArray: '5, 5', fillColor: fillColor, fillOpacity: 0.45, lineCap: 'round', lineJoin: 'round' }}
           />
         )
-      ) : (
-        <>
-          <Polygon 
-            positions={[
-              [marker.lat + 0.005, marker.lng - 0.005],
-              [marker.lat + 0.005, marker.lng + 0.005],
-              [marker.lat - 0.005, marker.lng + 0.005],
-              [marker.lat - 0.005, marker.lng - 0.005]
-            ]}
-            pathOptions={{ color: 'transparent', fillColor: fillColor, fillOpacity: 0.4 }}
-          />
-          <Polygon 
-            positions={[
-              [marker.lat + 0.002, marker.lng - 0.002],
-              [marker.lat + 0.002, marker.lng + 0.002],
-              [marker.lat - 0.002, marker.lng + 0.002],
-              [marker.lat - 0.002, marker.lng - 0.002]
-            ]}
-            pathOptions={{ color: 'transparent', fillColor: getNdviColor(temporalNdvi - 0.1), fillOpacity: 0.5 }}
-          />
-        </>
-      )}
+      ) : null}
     </>
   );
 };
