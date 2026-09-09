@@ -45,8 +45,8 @@ export function useCropValidation(crop: string, location: [number, number] | nul
         const currentTemp = weatherData.current_weather?.temperature;
         const elevation = weatherData.elevation;
 
-        let countryCode = undefined;
-        let region = undefined;
+        let countryCode: string | undefined = undefined;
+        let region: string | undefined = undefined;
 
         if (geocodeRes && geocodeRes.ok) {
           const geocodeData = await geocodeRes.json();
