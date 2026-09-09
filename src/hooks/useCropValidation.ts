@@ -27,22 +27,38 @@ export function useCropValidation(crop: string, location: [number, number] | nul
         const lng = location[1];
         
         // Fetch current temperature and elevation from Open-Meteo
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true&hourly=temperature_2m&timezone=auto`;
-        const res = await fetch(url);
+        const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true&hourly=temperature_2m&timezone=auto`;
         
-        if (!res.ok) {
+        // Fetch reverse geocoding from BigDataCloud (free, no key needed)
+        const geocodeUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`;
+
+        const [weatherRes, geocodeRes] = await Promise.all([
+          fetch(weatherUrl),
+          fetch(geocodeUrl).catch(() => null) // Ignore geocode errors if it fails
+        ]);
+        
+        if (!weatherRes.ok) {
           throw new Error('Failed to fetch weather data');
         }
 
-        const data = await res.json();
-        const currentTemp = data.current_weather?.temperature;
-        const elevation = data.elevation;
+        const weatherData = await weatherRes.json();
+        const currentTemp = weatherData.current_weather?.temperature;
+        const elevation = weatherData.elevation;
+
+        let countryCode = undefined;
+        let region = undefined;
+
+        if (geocodeRes && geocodeRes.ok) {
+          const geocodeData = await geocodeRes.json();
+          countryCode = geocodeData.countryCode;
+          region = geocodeData.principalSubdivision;
+        }
 
         if (currentTemp === undefined) {
           throw new Error('Temperature data unavailable');
         }
 
-        const report = evaluateCropSuitability(crop, currentTemp, elevation);
+        const report = evaluateCropSuitability(crop, currentTemp, elevation, countryCode, region);
 
         setValidation({
           status: report.type,

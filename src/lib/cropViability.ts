@@ -9,8 +9,20 @@ export interface ViabilityReport {
 export function evaluateCropSuitability(
   cropName: string,
   temperature: number,
-  elevation?: number
+  elevation?: number,
+  countryCode?: string,
+  region?: string
 ): ViabilityReport {
+  // 1. Ocean Check First (if we have geocoding data but no country, it's an ocean/water body)
+  // We strictly require countryCode if it was fetched. If it's explicitly an empty string, it's water.
+  if (countryCode === "") {
+    return {
+      isViable: false,
+      reason: "The selected location appears to be a body of water (Ocean/Sea/Lake). Cultivation is biologically impossible.",
+      type: 'error'
+    };
+  }
+
   const profile = findCropProfile(cropName);
 
   if (!profile) {
@@ -50,6 +62,25 @@ export function evaluateCropSuitability(
     } else if (profile.altitudeMin && elevation < profile.altitudeMin) {
       isError = true;
       reasons.push(`Elevation (${Math.round(elevation)}m) is below the minimum required altitude (${profile.altitudeMin}m) for ${profile.name}.`);
+    }
+  }
+
+  // Region Strictness Checks
+  if (region) {
+    if (profile.suitableRegions && profile.suitableRegions.length > 0) {
+      const isSuitable = profile.suitableRegions.some(r => region.toLowerCase().includes(r.toLowerCase()));
+      if (!isSuitable) {
+        isError = true;
+        reasons.push(`${profile.name} is strictly cultivated in specific regions (${profile.suitableRegions.join(', ')}). ${region} is considered highly unsuitable or non-traditional.`);
+      }
+    }
+    
+    if (profile.unsuitableRegions && profile.unsuitableRegions.length > 0) {
+      const isUnsuitable = profile.unsuitableRegions.some(r => region.toLowerCase().includes(r.toLowerCase()));
+      if (isUnsuitable) {
+        isError = true;
+        reasons.push(`Commercial cultivation of ${profile.name} is biologically or economically non-viable in ${region}.`);
+      }
     }
   }
 

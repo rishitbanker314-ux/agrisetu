@@ -8,6 +8,8 @@ export interface CropProfile {
   tempOptimalMax: number;
   altitudeMin?: number;
   altitudeMax?: number;
+  suitableRegions?: string[];
+  unsuitableRegions?: string[];
   description: string;
 }
 
@@ -22,6 +24,7 @@ export const CROP_DATABASE: CropProfile[] = [
     tempOptimalMax: 24,
     altitudeMin: 1200,
     altitudeMax: 3000,
+    suitableRegions: ['Himachal Pradesh', 'Jammu and Kashmir', 'Uttarakhand', 'Sikkim', 'Arunachal Pradesh'],
     description: 'Apples require temperate climates with significant chilling hours during winter. They cannot thrive in hot plains or low altitudes.'
   },
   {
@@ -32,6 +35,7 @@ export const CROP_DATABASE: CropProfile[] = [
     tempMax: 35,
     tempOptimalMin: 15,
     tempOptimalMax: 25,
+    unsuitableRegions: ['Kerala', 'Tamil Nadu', 'Goa', 'Andaman and Nicobar', 'Lakshadweep', 'Puducherry'],
     description: 'Wheat is a temperate crop that requires cool conditions for vegetative growth. Sustained high temperatures above 35°C severely inhibit tillering and grain filling.'
   },
   {
@@ -43,6 +47,7 @@ export const CROP_DATABASE: CropProfile[] = [
     tempOptimalMin: 22,
     tempOptimalMax: 32,
     altitudeMax: 2500,
+    unsuitableRegions: ['Rajasthan'],
     description: 'Rice requires a warm and highly humid climate with abundant water availability. Temperatures below 15°C severely affect germination and yield.'
   },
   {
@@ -97,6 +102,7 @@ export const CROP_DATABASE: CropProfile[] = [
     tempOptimalMax: 25,
     altitudeMin: 500,
     altitudeMax: 2500,
+    suitableRegions: ['Assam', 'West Bengal', 'Kerala', 'Karnataka', 'Tamil Nadu', 'Himachal Pradesh', 'Uttarakhand', 'Sikkim', 'Tripura', 'Arunachal Pradesh'],
     description: 'Tea requires highly specific hilly terrains with high rainfall and moderate temperatures. The extreme heat of plains is prohibitive.'
   },
   {
@@ -109,6 +115,7 @@ export const CROP_DATABASE: CropProfile[] = [
     tempOptimalMax: 24,
     altitudeMin: 600,
     altitudeMax: 2000,
+    suitableRegions: ['Karnataka', 'Kerala', 'Tamil Nadu', 'Andhra Pradesh', 'Odisha'],
     description: 'Coffee requires a specific climate with distinct wet and dry seasons, grown at high altitudes to ensure bean quality.'
   },
   {
