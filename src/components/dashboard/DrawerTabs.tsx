@@ -3,12 +3,12 @@
 import { useState } from 'react';
 import AdvisoryPanel from './AdvisoryPanel';
 import ForecastChart from '../ForecastChart';
-import ClimateAlerts from '../ClimateAlerts';
+
 import MarketScenarios from '../MarketScenarios';
 import DiagnosisUpload from '../DiagnosisUpload';
 import AcousticBiosphere from '../AcousticBiosphere';
 import NDVIChart from '../NDVIChart';
-import { Sprout, CloudRain, Bell, LineChart, Stethoscope, AudioWaveform, Globe, Activity, AlertOctagon } from 'lucide-react';
+import { Sprout, CloudRain, LineChart, Stethoscope, AudioWaveform, Globe, Activity, AlertOctagon } from 'lucide-react';
 import { checkCropViability } from '@/lib/cropViability';
 
 interface DrawerTabsProps {
@@ -26,7 +26,7 @@ export default function DrawerTabs({ fieldData, crop, advisory, advisoryLoading,
   const tabs = [
     { id: 'advisory', label: 'Advisory', icon: Sprout },
     { id: 'forecast', label: 'Forecast', icon: CloudRain },
-    { id: 'alerts', label: 'Alerts', icon: Bell },
+
     { id: 'market', label: 'Market futures', icon: LineChart },
     { id: 'ndvi', label: 'NDVI Trends', icon: Activity },
     { id: 'diagnostics', label: 'Diagnostics', icon: Stethoscope },
@@ -94,14 +94,7 @@ export default function DrawerTabs({ fieldData, crop, advisory, advisoryLoading,
               </div>
             </div>
           )}
-          {activeTab === 'alerts' && (
-            <div className="h-full">
-              <h3 className="font-serif text-sm text-ink/50 uppercase tracking-widest mb-4">Climate Shock Alerts</h3>
-              <div className="bg-white rounded-lg border border-soft-line p-4">
-                <ClimateAlerts fieldData={fieldData} />
-              </div>
-            </div>
-          )}
+
           {activeTab === 'market' && (
             <div className="h-full">
               <h3 className="font-serif text-sm text-ink/50 uppercase tracking-widest mb-4">Real-time Market Data</h3>

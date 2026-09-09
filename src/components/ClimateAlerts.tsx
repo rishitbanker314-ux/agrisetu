@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { BellRing, Smartphone, CheckCircle, AlertTriangle } from 'lucide-react';
 import { LiveFieldData } from '@/hooks/useFieldData';
+import { supabase } from '@/lib/supabase';
 
 export default function ClimateAlerts({ fieldData }: { fieldData?: LiveFieldData | null }) {
   const [isSubscribed, setIsSubscribed] = useState(false);
@@ -47,14 +48,21 @@ export default function ClimateAlerts({ fieldData }: { fieldData?: LiveFieldData
   const handleSubscribe = () => {
     setIsLoading(true);
     // Simulate SMS subscription network request
-    setTimeout(() => {
+    setTimeout(async () => {
       setIsLoading(false);
       setIsSubscribed(true);
       
       // If there is a real alert for this location, trigger the global notification
       if (activeAlert) {
-        setTimeout(() => {
-          window.dispatchEvent(new CustomEvent('add-notification', { detail: activeAlert }));
+        setTimeout(async () => {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            await supabase.from('notifications').insert({
+              user_id: user.id,
+              title: activeAlert.title,
+              message: activeAlert.message
+            });
+          }
         }, 1500);
       }
       

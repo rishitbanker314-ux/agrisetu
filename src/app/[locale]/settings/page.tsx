@@ -24,6 +24,7 @@ export default function SettingsPage() {
     country: '',
     whatsappAlerts: false,
     emailSummary: false,
+    appNotifications: true,
   });
 
   useEffect(() => {
@@ -49,6 +50,7 @@ export default function SettingsPage() {
               country: profile.country || '',
               whatsappAlerts: profile.whatsapp_alerts || false,
               emailSummary: profile.email_summary || false,
+              appNotifications: profile.app_notifications ?? true,
             }));
           }
         }
@@ -71,7 +73,8 @@ export default function SettingsPage() {
         phone: settings.phone,
         country: settings.country,
         whatsapp_alerts: settings.whatsappAlerts,
-        email_summary: settings.emailSummary
+        email_summary: settings.emailSummary,
+        app_notifications: settings.appNotifications
       });
 
     setIsSaving(false);
@@ -191,53 +194,7 @@ export default function SettingsPage() {
               </div>
             </section>
 
-            {/* Notifications Section */}
-            <section className="bg-white border border-soft-line rounded-xl p-6 shadow-sm">
-              <div className="flex items-center gap-3 mb-6 border-b border-soft-line pb-4">
-                <Bell className="w-5 h-5 text-moss" />
-                <h2 className="text-lg font-serif text-deep-forest font-medium">Alerts & Notifications</h2>
-              </div>
-              
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-paper-ivory rounded-lg border border-soft-line">
-                  <div className="flex items-center gap-3">
-                    <Smartphone className="w-5 h-5 text-terracotta" />
-                    <div>
-                      <div className="text-sm font-bold text-deep-forest">WhatsApp Alerts</div>
-                      <div className="text-xs text-ink/60">Receive critical weather and crop health alerts instantly</div>
-                    </div>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      checked={settings.whatsappAlerts}
-                      onChange={(e) => setSettings({ ...settings, whatsappAlerts: e.target.checked })} 
-                      className="sr-only peer" 
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-moss"></div>
-                  </label>
-                </div>
 
-                <div className="flex items-center justify-between p-4 bg-paper-ivory rounded-lg border border-soft-line">
-                  <div className="flex items-center gap-3">
-                    <Bell className="w-5 h-5 text-moss" />
-                    <div>
-                      <div className="text-sm font-bold text-deep-forest">Weekly Email Summary</div>
-                      <div className="text-xs text-ink/60">Receive a weekly digest of your fields' performance</div>
-                    </div>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      checked={settings.emailSummary}
-                      onChange={(e) => setSettings({ ...settings, emailSummary: e.target.checked })} 
-                      className="sr-only peer" 
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-moss"></div>
-                  </label>
-                </div>
-              </div>
-            </section>
 
             {/* Security */}
             <section className="bg-white border border-soft-line rounded-xl p-6 shadow-sm">

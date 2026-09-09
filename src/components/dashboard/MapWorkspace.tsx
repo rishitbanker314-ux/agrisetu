@@ -116,7 +116,13 @@ export default function MapWorkspace({
           activeMarker={{ 
             lat: center[0], 
             lng: center[1], 
-            boundary: drawnBoundary.flat().length > 2 ? drawnBoundary : savedFields.find(f => f.id && f.id.toString() === fieldId)?.boundary 
+            boundary: drawnBoundary.flat().length > 2 ? drawnBoundary : (() => {
+              const currentField = savedFields.find(f => f.id && f.id.toString() === fieldId);
+              if (currentField && currentField.lat != null && Math.abs(currentField.lat - center[0]) < 0.0001 && Math.abs(currentField.lng - center[1]) < 0.0001) {
+                return currentField.boundary;
+              }
+              return undefined;
+            })()
           }}
           onLocationSelect={(lat, lng) => {
             if (isDrawing) {

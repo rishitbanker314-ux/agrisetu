@@ -118,45 +118,8 @@ export default function Dashboard() {
   useEffect(() => {
     if (!fieldData || !fieldData.weather || !fieldData.soil || !fieldData.forecast) return;
     
-    // We only want to alert once per field load/change to avoid spamming the user.
-    // However, since we don't have a persistence layer for "seen" alerts in this demo,
-    // we use a slight delay so it feels organic when a user switches fields.
-    const timer = setTimeout(() => {
-      const triggerNotification = (title: string, message: string) => {
-        window.dispatchEvent(new CustomEvent('add-notification', { detail: { title, message } }));
-      };
-
-      // 1. Soil Moisture Checks
-      if (fieldData.soil.moisture < 25) {
-        triggerNotification('🚨 Critical Soil Moisture', `Moisture level for ${crop} is at a dangerously low ${fieldData.soil.moisture}%. Immediate irrigation is required.`);
-      } else if (fieldData.soil.moisture > 75) {
-        triggerNotification('💧 Waterlogging Risk', `Soil moisture is very high (${fieldData.soil.moisture}%). Hold off on irrigation to prevent root rot.`);
-      }
-      
-      // 2. Temperature Extremes
-      if (fieldData.weather.temperature > 35) {
-        triggerNotification('🔥 Heat Stress Warning', `Current temperature is ${fieldData.weather.temperature}°C. Monitor ${crop} for heat stress.`);
-      } else if (fieldData.weather.temperature < 5) {
-        triggerNotification('❄️ Frost Warning', `Temperature is dangerously low (${fieldData.weather.temperature}°C). Protective measures advised.`);
-      }
-      
-      // 3. Flood Risk from Forecast
-      if (fieldData.forecast.precipitation && fieldData.forecast.precipitation.length > 0) {
-        const maxPrecip = Math.max(...fieldData.forecast.precipitation);
-        if (maxPrecip > 50) {
-          triggerNotification('🌧️ Flood Risk Detected', `Heavy rainfall (${maxPrecip.toFixed(1)}mm) forecasted in the coming days. Ensure proper drainage.`);
-        }
-      }
-      
-      // 4. Market / Crop Specific Real-Time Note
-      // Just to give it that "real" feel, we can add a crop-specific generic alert if no critical weather alerts fired.
-      if (fieldData.soil.moisture >= 25 && fieldData.weather.temperature <= 35 && fieldData.weather.temperature >= 5) {
-        triggerNotification('✅ Optimal Conditions', `Current weather and soil conditions are optimal for ${crop} growth. NDVI is strong at ${fieldData.ndvi}.`);
-      }
-
-    }, 2500); // Wait 2.5 seconds after data loads to trigger notifications
-
-    return () => clearTimeout(timer);
+    // We now use real notifications handled by ClimateAlerts and the Supabase DB.
+    // The legacy local window.dispatchEvent mock notifications have been removed.
   }, [fieldData?.coordinates?.lat, fieldData?.coordinates?.lng, crop]); // Only re-run when location or crop changes
 
   const handleFieldChange = (newFieldIdStr: string) => {

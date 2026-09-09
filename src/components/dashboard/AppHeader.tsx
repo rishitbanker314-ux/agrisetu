@@ -1,6 +1,8 @@
+'use client';
+
 import Link from 'next/link';
 import { User } from '@supabase/supabase-js';
-import { Sprout, LogOut, User as UserIcon, Bell, Menu } from 'lucide-react';
+import { Sprout, LogOut, User as UserIcon, Bell, Menu, X, Settings } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
@@ -16,6 +18,7 @@ interface AppHeaderProps {
   fieldId?: number | string | null;
   onFieldChange?: (id: string) => void;
 }
+
 
 export default function AppHeader({ user, crop, setCrop, savedFields = [], fieldId, onFieldChange }: AppHeaderProps) {
   const t = useTranslations('Index');
@@ -39,24 +42,7 @@ export default function AppHeader({ user, crop, setCrop, savedFields = [], field
       router.replace(`${pathname}${newQuery ? `?${newQuery}` : ''}`);
     }
   }, [searchParams, pathname, router]);
-  const [isNotifOpen, setIsNotifOpen] = useState(false);
-  const [notifications, setNotifications] = useState<{title: string, message: string, time: Date}[]>([
-    { title: 'System Online', message: 'AgriSetu dashboard initialized. Monitoring real-time field data.', time: new Date() }
-  ]);
-  const [unread, setUnread] = useState(false);
 
-  useEffect(() => {
-    const handleNewNotification = (e: Event) => {
-      const customEvent = e as CustomEvent;
-      setNotifications(prev => [{...customEvent.detail, time: new Date()}, ...prev]);
-      setUnread(true);
-      setIsNotifOpen(true);
-      // Auto close after 5 seconds if we just popped it open
-      setTimeout(() => setIsNotifOpen(false), 5000);
-    };
-    window.addEventListener('add-notification', handleNewNotification);
-    return () => window.removeEventListener('add-notification', handleNewNotification);
-  }, []);
 
   return (
     <header className="bg-paper-ivory border-b border-soft-line z-[9999] flex items-center justify-between px-4 h-16 shrink-0 relative shadow-sm">
@@ -91,55 +77,7 @@ export default function AppHeader({ user, crop, setCrop, savedFields = [], field
           <span className="text-[10px] text-ink/50 uppercase tracking-widest">Updated 5m ago</span>
         </div>
         
-        <div className="relative">
-          <button 
-            onClick={() => {
-              setIsNotifOpen(!isNotifOpen);
-              setUnread(false);
-            }}
-            className="p-2 text-ink hover:bg-moss/10 rounded-full transition-colors relative"
-          >
-            <Bell className="w-5 h-5" />
-            {unread && (
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-terracotta rounded-full border border-paper-ivory"></span>
-            )}
-          </button>
 
-          <AnimatePresence>
-            {isNotifOpen && (
-              <motion.div 
-                initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                className="absolute top-full right-0 mt-2 w-80 bg-white border border-soft-line shadow-xl rounded-lg overflow-hidden z-50"
-              >
-                <div className="bg-paper-ivory p-3 border-b border-soft-line flex justify-between items-center">
-                  <span className="font-sans font-medium text-sm text-deep-forest">Notifications</span>
-                  {notifications.length > 0 && (
-                    <button onClick={() => setNotifications([])} className="text-xs text-ink/50 hover:text-ink">Clear All</button>
-                  )}
-                </div>
-                <div className="max-h-80 overflow-y-auto custom-scrollbar">
-                  {notifications.length === 0 ? (
-                    <div className="p-4 text-center text-sm text-ink/50">No new notifications</div>
-                  ) : (
-                    notifications.map((n, idx) => (
-                      <div key={idx} className="p-3 border-b border-soft-line/50 hover:bg-moss/5 transition-colors">
-                        <div className="flex justify-between items-start mb-1">
-                          <span className="text-xs font-bold text-deep-forest uppercase tracking-widest">{n.title}</span>
-                          <span className="text-[10px] text-ink/50">
-                            {n.time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                          </span>
-                        </div>
-                        <p className="text-sm text-ink/80 leading-snug">{n.message}</p>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
 
         {user ? (
           <div className="flex items-center gap-2">
