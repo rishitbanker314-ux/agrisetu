@@ -131,10 +131,10 @@ export default function ReportViewPage() {
       const element = document.getElementById('printable-report');
       if (!element) return;
 
-      // Generate high-quality PNG
-      const dataUrl = await htmlToImage.toPng(element, {
-        quality: 1.0,
-        pixelRatio: 2,
+      // Generate high-quality JPEG to keep payload size within Vercel's 4.5MB limit
+      const dataUrl = await htmlToImage.toJpeg(element, {
+        quality: 0.8,
+        pixelRatio: 1.5,
         backgroundColor: '#ffffff'
       });
 
@@ -152,13 +152,13 @@ export default function ReportViewPage() {
       let heightLeft = pdfHeight;
       let position = 0;
       
-      pdf.addImage(dataUrl, 'PNG', 0, position, pdfWidth, pdfHeight);
+      pdf.addImage(dataUrl, 'JPEG', 0, position, pdfWidth, pdfHeight);
       heightLeft -= pageHeight;
 
       while (heightLeft >= 0) {
         position = heightLeft - pdfHeight; // Negative position to shift the image up for the new page
         pdf.addPage();
-        pdf.addImage(dataUrl, 'PNG', 0, position, pdfWidth, pdfHeight);
+        pdf.addImage(dataUrl, 'JPEG', 0, position, pdfWidth, pdfHeight);
         heightLeft -= pageHeight;
       }
 
@@ -180,8 +180,18 @@ export default function ReportViewPage() {
       });
 
       if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.error || 'Failed to send email');
+        if (response.status === 413) {
+          throw new Error('Report is too large to send via email currently.');
+        }
+        let errorMessage = 'Failed to send email';
+        try {
+          const err = await response.json();
+          errorMessage = err.error || errorMessage;
+        } catch (parseErr) {
+          // If response isn't JSON (like a Vercel 500 HTML page)
+          errorMessage = `Server error (${response.status})`;
+        }
+        throw new Error(errorMessage);
       }
 
       alert(`Report successfully sent to ${user.email}!`);
