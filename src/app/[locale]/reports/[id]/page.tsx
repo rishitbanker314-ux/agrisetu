@@ -124,22 +124,46 @@ export default function ReportViewPage() {
         return;
       }
 
-      // Dynamically import to prevent SSR issues
-      const html2pdf = (await import('html2pdf.js')).default;
+      // Use html-to-image and jspdf to bypass html2canvas CSS parsing bugs
+      const htmlToImage = await import('html-to-image');
+      const { jsPDF } = await import('jspdf');
       
       const element = document.getElementById('printable-report');
       if (!element) return;
 
-      const opt = {
-        margin:       0.5,
-        filename:     `AgriSetu-Report-${report.id.split('-')[0]}.pdf`,
-        image:        { type: 'jpeg' as const, quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'in' as const, format: 'letter' as const, orientation: 'portrait' as const }
-      };
+      // Generate high-quality PNG
+      const dataUrl = await htmlToImage.toPng(element, {
+        quality: 1.0,
+        pixelRatio: 2,
+        backgroundColor: '#ffffff'
+      });
+
+      // Create PDF and paginate the image
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'in',
+        format: 'letter'
+      });
+
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const pdfHeight = (element.offsetHeight * pdfWidth) / element.offsetWidth;
+      
+      let heightLeft = pdfHeight;
+      let position = 0;
+      
+      pdf.addImage(dataUrl, 'PNG', 0, position, pdfWidth, pdfHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft >= 0) {
+        position = heightLeft - pdfHeight; // Negative position to shift the image up for the new page
+        pdf.addPage();
+        pdf.addImage(dataUrl, 'PNG', 0, position, pdfWidth, pdfHeight);
+        heightLeft -= pageHeight;
+      }
 
       // Generate base64 PDF
-      const pdfBase64 = await html2pdf().set(opt).from(element).outputPdf('datauristring');
+      const pdfBase64 = pdf.output('datauristring');
 
       // Send to backend
       const response = await fetch('/api/send-report', {
