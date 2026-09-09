@@ -195,7 +195,7 @@ export default function Map({ center, zoom = 13, markers = [], activeMarker, onL
                   position={[marker.lat, marker.lng]} 
                   icon={isActive ? transparentIcon : iconDefault}
                   eventHandlers={{
-                    click: () => onLocationSelect && onLocationSelect(marker.lat, marker.lng)
+                    click: (e) => { if (e.originalEvent) { e.originalEvent.stopPropagation(); } if (onLocationSelect) onLocationSelect(marker.lat, marker.lng); }
                   }}
                 >
                   <Popup>{marker.title}</Popup>
@@ -204,14 +204,14 @@ export default function Map({ center, zoom = 13, markers = [], activeMarker, onL
               {marker.boundary && marker.boundary.flat().length > 2 && (
               Array.isArray(marker.boundary[0]) && Array.isArray(marker.boundary[0][0]) ? (
                 (marker.boundary as any[]).map((poly, idx) => (
-                  poly.length > 2 ? <Polygon key={idx} positions={poly} pathOptions={{ color: '#10b981', weight: 2, dashArray: '4, 4', fillColor: '#10b981', fillOpacity: 0.2 }} eventHandlers={{ click: () => onLocationSelect && onLocationSelect(marker.lat, marker.lng) }} /> : null
+                  poly.length > 2 ? <Polygon key={idx} positions={poly} pathOptions={{ color: '#10b981', weight: 2, dashArray: '4, 4', fillColor: '#10b981', fillOpacity: 0.2 }} eventHandlers={{ click: (e) => { if (e.originalEvent) { e.originalEvent.stopPropagation(); } if (onLocationSelect) onLocationSelect(marker.lat, marker.lng); } }} /> : null
                 ))
               ) : (
                 <Polygon 
                   positions={marker.boundary as [number, number][]}
                   pathOptions={{ color: '#10b981', weight: 2, dashArray: '4, 4', fillColor: '#10b981', fillOpacity: 0.2 }}
                   eventHandlers={{
-                    click: () => onLocationSelect && onLocationSelect(marker.lat, marker.lng)
+                    click: (e) => { if (e.originalEvent) { e.originalEvent.stopPropagation(); } if (onLocationSelect) onLocationSelect(marker.lat, marker.lng); }
                   }}
                 />
               )
