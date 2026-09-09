@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { toast } from 'sonner';
 import { FileText, Download, ArrowLeft, Loader2, Sprout, MapPin, Activity, Droplets, TrendingUp, AlertTriangle, Thermometer, Trash2, Mail } from 'lucide-react';
 import Link from 'next/link';
 
@@ -105,10 +106,11 @@ export default function ReportViewPage() {
         router.push('/en/reports');
       } else {
         console.error("Failed to delete report:", error);
-        alert("Could not delete the report. Please try again.");
+        toast.error("Could not delete the report. Please try again.");
       }
     } catch (err) {
       console.error("Failed to delete report:", err);
+      toast.error("An unexpected error occurred.");
     }
   };
 
@@ -119,7 +121,7 @@ export default function ReportViewPage() {
       
       const { data: { user } } = await supabase.auth.getUser();
       if (!user || !user.email) {
-        alert("You must be logged in with an email to use this feature.");
+        toast.error("You must be logged in with an email to use this feature.");
         setIsEmailing(false);
         return;
       }
@@ -213,10 +215,10 @@ export default function ReportViewPage() {
         throw new Error(errorMessage);
       }
 
-      alert(`Report successfully sent to ${user.email}!`);
+      toast.success(`Report successfully sent to ${user.email}!`);
     } catch (err: any) {
       console.error("Failed to email report:", err);
-      alert(`Failed to send email: ${err.message}`);
+      toast.error(`Failed to send email: ${err.message}`);
     } finally {
       setIsEmailing(false);
     }

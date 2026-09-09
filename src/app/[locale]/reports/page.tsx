@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import NavigationSidebar from '@/components/NavigationSidebar';
 import { supabase } from '@/lib/supabase';
 import type { User } from '@supabase/supabase-js';
+import { toast } from 'sonner';
 import { generateFieldIntelligence } from '@/lib/fieldIntelligence';
 
 interface Report {
@@ -168,10 +169,11 @@ export default function ReportsPage() {
         setReportToDelete(null);
       } else {
         console.error("Failed to delete report:", error);
-        alert("Could not delete the report. Please try again.");
+        toast.error("Could not delete the report. Please try again.");
       }
     } catch (err) {
       console.error("Failed to delete report:", err);
+      toast.error("An unexpected error occurred.");
     }
   };
 

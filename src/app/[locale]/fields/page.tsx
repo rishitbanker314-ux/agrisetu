@@ -34,6 +34,7 @@ export default function FieldsPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [editingField, setEditingField] = useState<Field | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<[number, number] | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [drawnBoundary, setDrawnBoundary] = useState<any[]>([]);
@@ -145,8 +146,6 @@ export default function FieldsPage() {
   };
 
   const handleDeleteField = async (fieldId: string) => {
-    if (!confirm('Are you sure you want to delete this field? All associated notes and data will be lost.')) return;
-    
     setIsDeleting(true);
     const { error } = await supabase.from('fields').delete().eq('id', fieldId);
     
@@ -158,6 +157,7 @@ export default function FieldsPage() {
       toast.error(`Error deleting field: ${error.message}`);
     }
     setIsDeleting(false);
+    setDeleteConfirmId(null);
   };
 
   return (
@@ -406,7 +406,7 @@ export default function FieldsPage() {
                 <div className="flex gap-3 mt-6 pt-4 border-t border-soft-line">
                   <button 
                     type="button" 
-                    onClick={() => handleDeleteField(editingField.id)}
+                    onClick={() => setDeleteConfirmId(editingField.id)}
                     disabled={isDeleting || isSaving}
                     className="flex-1 flex items-center justify-center gap-2 bg-white border border-terracotta/30 text-terracotta py-2.5 rounded-md text-sm font-medium hover:bg-terracotta/5 transition-colors disabled:opacity-50"
                   >
@@ -483,6 +483,33 @@ export default function FieldsPage() {
                 isDrawingMode={isDrawing}
                 drawnBoundary={drawnBoundary}
               />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirmId && (
+        <div className="fixed inset-0 bg-ink/40 backdrop-blur-sm z-[10001] flex justify-center items-center p-4">
+          <div className="bg-white rounded-2xl max-w-sm w-full shadow-2xl overflow-hidden flex flex-col">
+            <div className="p-6">
+              <h2 className="text-xl font-serif text-deep-forest font-medium mb-2">Delete Field</h2>
+              <p className="text-sm text-ink/70">Are you sure you want to delete this field? All associated notes and data will be lost. This action cannot be undone.</p>
+            </div>
+            <div className="p-4 border-t border-soft-line flex justify-end gap-3 bg-paper-ivory">
+              <button 
+                onClick={() => setDeleteConfirmId(null)}
+                className="px-4 py-2 text-sm font-medium text-ink/70 hover:text-ink transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => handleDeleteField(deleteConfirmId)}
+                className="bg-terracotta text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-terracotta/90 transition-colors shadow-sm flex items-center justify-center gap-2"
+                disabled={isDeleting}
+              >
+                {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : null} Delete
+              </button>
             </div>
           </div>
         </div>
