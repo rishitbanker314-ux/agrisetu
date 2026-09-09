@@ -131,12 +131,30 @@ export default function ReportViewPage() {
       const element = document.getElementById('printable-report');
       if (!element) return;
 
+      // Temporarily force desktop width so the layout doesn't squash or crop
+      const originalCssText = element.style.cssText;
+      element.style.width = '1024px';
+      element.style.maxWidth = '1024px';
+      element.style.margin = '0';
+      
+      // Give the browser a tiny moment to reflow the layout
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
       // Generate high-quality JPEG to keep payload size within Vercel's 4.5MB limit
       const dataUrl = await htmlToImage.toJpeg(element, {
         quality: 0.8,
         pixelRatio: 1.5,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        width: 1024,
+        height: element.scrollHeight,
+        style: {
+          transform: 'none',
+          boxShadow: 'none',
+        }
       });
+
+      // Revert styles
+      element.style.cssText = originalCssText;
 
       // Create PDF and paginate the image
       const pdf = new jsPDF({
@@ -147,7 +165,8 @@ export default function ReportViewPage() {
 
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-      const pdfHeight = (element.offsetHeight * pdfWidth) / element.offsetWidth;
+      // Calculate height based on the 1024px forced width
+      const pdfHeight = (element.scrollHeight * pdfWidth) / 1024;
       
       let heightLeft = pdfHeight;
       let position = 0;
