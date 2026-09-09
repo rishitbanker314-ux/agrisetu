@@ -1,73 +1,92 @@
+import { findCropProfile, CropProfile } from './cropKnowledgeBase';
+
 export interface ViabilityReport {
   isViable: boolean;
   reason: string;
+  type: 'success' | 'warning' | 'error';
 }
 
-export function checkCropViability(crop: string, fieldData: any): ViabilityReport {
+export function evaluateCropSuitability(
+  cropName: string,
+  temperature: number,
+  elevation?: number
+): ViabilityReport {
+  const profile = findCropProfile(cropName);
+
+  if (!profile) {
+    // If crop is not in database, we can't be strictly accurate, so we assume it might be fine,
+    // but maybe warn the user that we lack specific data for it.
+    return {
+      isViable: true,
+      reason: `No detailed climatic data found for '${cropName}'. Please ensure local conditions are suitable.`,
+      type: 'warning'
+    };
+  }
+
+  const reasons: string[] = [];
+  let isError = false;
+  let isWarning = false;
+
+  // Temperature Checks
+  if (temperature > profile.tempMax) {
+    isError = true;
+    reasons.push(`The current/average temperature (${temperature}°C) exceeds the absolute maximum threshold (${profile.tempMax}°C) for ${profile.name}.`);
+  } else if (temperature < profile.tempMin) {
+    isError = true;
+    reasons.push(`The current/average temperature (${temperature}°C) is below the minimum survival threshold (${profile.tempMin}°C) for ${profile.name}.`);
+  } else if (temperature > profile.tempOptimalMax) {
+    isWarning = true;
+    reasons.push(`The temperature (${temperature}°C) is above the optimal range (${profile.tempOptimalMin}-${profile.tempOptimalMax}°C), which may reduce yield.`);
+  } else if (temperature < profile.tempOptimalMin) {
+    isWarning = true;
+    reasons.push(`The temperature (${temperature}°C) is below the optimal range (${profile.tempOptimalMin}-${profile.tempOptimalMax}°C), which may slow growth.`);
+  }
+
+  // Elevation Checks
+  if (elevation !== undefined) {
+    if (profile.altitudeMax && elevation > profile.altitudeMax) {
+      isError = true;
+      reasons.push(`Elevation (${Math.round(elevation)}m) exceeds the maximum altitude limit (${profile.altitudeMax}m) for ${profile.name}.`);
+    } else if (profile.altitudeMin && elevation < profile.altitudeMin) {
+      isError = true;
+      reasons.push(`Elevation (${Math.round(elevation)}m) is below the minimum required altitude (${profile.altitudeMin}m) for ${profile.name}.`);
+    }
+  }
+
+  if (isError) {
+    return {
+      isViable: false,
+      reason: reasons.join(' ') + ' ' + profile.description,
+      type: 'error'
+    };
+  }
+
+  if (isWarning) {
+    return {
+      isViable: true,
+      reason: reasons.join(' ') + ' ' + profile.description,
+      type: 'warning'
+    };
+  }
+
+  return {
+    isViable: true,
+    reason: `Optimal conditions. ${profile.description}`,
+    type: 'success'
+  };
+}
+
+// Keep backward compatibility for DrawerTabs
+export function checkCropViability(crop: string, fieldData: any): { isViable: boolean; reason: string } {
   if (!fieldData || !fieldData.coordinates) {
     return { isViable: true, reason: '' };
   }
-
-  const lat = fieldData.coordinates.lat;
   const temp = fieldData.weather?.temperature || 25;
-  const normalizedCrop = crop.toLowerCase();
+  const elevation = fieldData.coordinates.elevation || undefined; // Assuming we might add elevation later
 
-  // Region logic based on latitude (India roughly 8N to 37N)
-  // Apples: require cold climates, typically lat > 30 (Himachal, Kashmir) and lower temperatures.
-  if (normalizedCrop === 'apple') {
-    if (lat < 28 || temp > 30) {
-      return {
-        isViable: false,
-        reason: "Apples require temperate climates with significant chilling hours during winter (typically regions > 30°N latitude). The current geographical location and temperature profile make commercial apple cultivation biologically unviable here."
-      };
-    }
-  }
-
-  // Sugarcane: Requires tropical/subtropical climate, high moisture and warm temp (20-35).
-  if (normalizedCrop === 'sugarcane') {
-    const moisture = fieldData.soil?.moisture || 50;
-    if (temp < 15 || lat > 32 || moisture < 35) {
-      return {
-        isViable: false,
-        reason: "Sugarcane is a highly water-intensive, tropical crop requiring prolonged warm temperatures (20-35°C) and high soil moisture. This region's current arid conditions, low soil moisture, or high latitude makes it unsuited and unsustainable without massive irrigation infrastructure."
-      };
-    }
-  }
-
-  // Coffee/Tea: Requires specific altitudes and rainfall, usually not viable in hot dry plains.
-  if (normalizedCrop === 'coffee' || normalizedCrop === 'tea') {
-    if (lat > 28 || temp > 35) {
-      return {
-        isViable: false,
-        reason: `${crop.charAt(0).toUpperCase() + crop.slice(1)} requires specific hilly terrains, high rainfall, and moderate temperatures. The current region's extreme heat or plains topography makes cultivation highly unsuited and economically prohibitive.`
-      };
-    }
-  }
-
-  // Wheat: Temperate crop, requires cool winters. Usually grown in rabi season. If it's too hot, it's not ideal, but let's say extreme heat > 35C average is unviable.
-  if (normalizedCrop === 'wheat' && temp > 35) {
-    return {
-      isViable: false,
-      reason: "Wheat is a temperate crop that requires cool conditions for vegetative growth. Sustained high temperatures above 35°C severely inhibit tillering and grain filling."
-    };
-  }
-
-  // Rice: Requires high water availability and warm weather. If very cold, not viable.
-  if (normalizedCrop === 'rice' && temp < 15) {
-    return {
-      isViable: false,
-      reason: "Rice requires a warm and humid climate. Temperatures below 15°C severely affect germination, growth, and grain yield."
-    };
-  }
-
-  // Cotton: Needs frost-free days and warmth.
-  if (normalizedCrop === 'cotton' && temp < 18) {
-    return {
-      isViable: false,
-      reason: "Cotton requires a long frost-free period and plenty of sunshine. Cool temperatures below 18°C halt vegetative growth and boll development."
-    };
-  }
-
-  // Default true for adaptable crops or if conditions are marginally okay
-  return { isViable: true, reason: '' };
+  const result = evaluateCropSuitability(crop, temp, elevation);
+  return {
+    isViable: result.isViable,
+    reason: result.reason
+  };
 }

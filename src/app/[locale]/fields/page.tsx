@@ -1,12 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { Sprout, Map as MapIcon, Plus, ChevronRight, Settings, X, Loader2, ArrowLeft, Trash2, Menu } from 'lucide-react';
+import { Sprout, Map as MapIcon, Plus, ChevronRight, Settings, X, Loader2, ArrowLeft, Trash2, Menu, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import dynamic from 'next/dynamic';
 import NavigationSidebar from '@/components/NavigationSidebar';
+import { useCropValidation } from '@/hooks/useCropValidation';
 
 const Map = dynamic(() => import('@/components/Map'), { ssr: false });
 import LocationSearch from '@/components/LocationSearch';
@@ -41,6 +42,9 @@ export default function FieldsPage() {
   const [mapStyle, setMapStyle] = useState<'street' | 'satellite'>('street');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [currentCropInput, setCurrentCropInput] = useState('');
+
+  const cropValidation = useCropValidation(currentCropInput, selectedLocation);
 
   useEffect(() => {
     async function loadFields() {
@@ -192,6 +196,7 @@ export default function FieldsPage() {
               setSelectedLocation(null);
               setDrawnBoundary([]);
               setIsDrawing(false);
+              setCurrentCropInput('');
               setIsModalOpen(true);
             }}
             className="bg-deep-forest text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-moss transition-colors flex items-center gap-2 shadow-lg"
@@ -221,6 +226,7 @@ export default function FieldsPage() {
                       e.stopPropagation();
                       e.preventDefault();
                       setEditingField(field);
+                      setCurrentCropInput(field.crop);
                       setSelectedLocation(field.lat != null && field.lng != null ? [field.lat, field.lng] : null);
                       setDrawnBoundary(field.boundary || []);
                       setIsDrawing(false);
@@ -269,7 +275,7 @@ export default function FieldsPage() {
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2">Crop Type</label>
-                  <input name="crop" required placeholder="e.g., Soybeans" className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" />
+                  <input name="crop" required placeholder="e.g., Soybeans" onChange={(e) => setCurrentCropInput(e.target.value)} value={currentCropInput} className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" />
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2">Area (in Hectares)</label>
@@ -288,6 +294,35 @@ export default function FieldsPage() {
                     className="w-full"
                   />
                 </div>
+                
+                {cropValidation.status !== 'idle' && (
+                  <div className={`mt-4 p-4 rounded-lg border ${
+                    cropValidation.status === 'error' ? 'bg-terracotta/10 border-terracotta/20 text-terracotta' :
+                    cropValidation.status === 'warning' ? 'bg-yellow-50 border-yellow-200 text-yellow-800' :
+                    cropValidation.status === 'success' ? 'bg-moss/10 border-moss/20 text-moss' :
+                    'bg-ink/5 border-ink/10 text-ink/60'
+                  }`}>
+                    <div className="flex items-start gap-2">
+                      {cropValidation.status === 'validating' && <Loader2 className="w-4 h-4 animate-spin mt-0.5 shrink-0" />}
+                      {(cropValidation.status === 'error' || cropValidation.status === 'warning') && <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />}
+                      {cropValidation.status === 'success' && <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" />}
+                      <div className="text-sm">
+                        {cropValidation.status === 'validating' ? (
+                          <span className="font-medium">Validating crop viability...</span>
+                        ) : (
+                          <>
+                            <span className="font-medium block mb-1">
+                              {cropValidation.status === 'error' ? 'Highly Unsuitable Environment' :
+                               cropValidation.status === 'warning' ? 'Suboptimal Environment' : 'Suitable Environment'}
+                            </span>
+                            {cropValidation.message}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <button disabled={isSaving || (!selectedLocation && drawnBoundary.flat().length <= 2)} type="submit" className={`w-full flex items-center justify-center gap-2 py-3 rounded-md text-sm font-medium transition-colors mt-6 ${(!selectedLocation && drawnBoundary.flat().length <= 2) ? 'bg-ink/10 text-ink/40 cursor-not-allowed' : 'bg-deep-forest text-white hover:bg-moss disabled:opacity-50'}`}>
                   {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : null} {(!selectedLocation && drawnBoundary.flat().length <= 2) ? "Select location on map to save" : "Save Field"}
                 </button>
@@ -380,7 +415,7 @@ export default function FieldsPage() {
                 
                 <div>
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2">Crop Type</label>
-                  <input name="crop" defaultValue={editingField.crop} required className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" />
+                  <input name="crop" onChange={(e) => setCurrentCropInput(e.target.value)} value={currentCropInput} required className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" />
                 </div>
                 
                 <div>
@@ -403,6 +438,34 @@ export default function FieldsPage() {
                   />
                 </div>
                 
+                {cropValidation.status !== 'idle' && (
+                  <div className={`mt-4 p-4 rounded-lg border ${
+                    cropValidation.status === 'error' ? 'bg-terracotta/10 border-terracotta/20 text-terracotta' :
+                    cropValidation.status === 'warning' ? 'bg-yellow-50 border-yellow-200 text-yellow-800' :
+                    cropValidation.status === 'success' ? 'bg-moss/10 border-moss/20 text-moss' :
+                    'bg-ink/5 border-ink/10 text-ink/60'
+                  }`}>
+                    <div className="flex items-start gap-2">
+                      {cropValidation.status === 'validating' && <Loader2 className="w-4 h-4 animate-spin mt-0.5 shrink-0" />}
+                      {(cropValidation.status === 'error' || cropValidation.status === 'warning') && <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />}
+                      {cropValidation.status === 'success' && <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" />}
+                      <div className="text-sm">
+                        {cropValidation.status === 'validating' ? (
+                          <span className="font-medium">Validating crop viability...</span>
+                        ) : (
+                          <>
+                            <span className="font-medium block mb-1">
+                              {cropValidation.status === 'error' ? 'Highly Unsuitable Environment' :
+                               cropValidation.status === 'warning' ? 'Suboptimal Environment' : 'Suitable Environment'}
+                            </span>
+                            {cropValidation.message}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <div className="flex gap-3 mt-6 pt-4 border-t border-soft-line">
                   <button 
                     type="button" 
