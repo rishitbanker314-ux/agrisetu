@@ -4,9 +4,11 @@ import { supabase } from '@/lib/supabase';
 import { useState } from 'react';
 import { ShieldCheck, Leaf } from 'lucide-react';
 import { toast } from 'sonner';
+import Link from 'next/link';
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [hasAcceptedTerms, setHasAcceptedTerms] = useState(false);
 
   const handleGoogleLogin = async () => {
     setIsLoading(true);
@@ -44,16 +46,36 @@ export default function LoginPage() {
             <p className="text-ink/60 text-sm mt-2">Sign in to access your farm dashboard</p>
           </div>
 
+          <div className="mb-6 flex items-start gap-3">
+            <div className="flex items-center h-5">
+              <input
+                id="terms"
+                type="checkbox"
+                checked={hasAcceptedTerms}
+                onChange={(e) => setHasAcceptedTerms(e.target.checked)}
+                className="w-4 h-4 border border-soft-line rounded bg-white checked:bg-moss checked:border-moss focus:ring-moss/50 focus:ring-2 transition-all cursor-pointer"
+              />
+            </div>
+            <label htmlFor="terms" className="text-sm text-ink/70 leading-tight cursor-pointer select-none">
+              I have read and agree to the{' '}
+              <Link href="/en/terms" className="text-moss hover:underline font-medium" target="_blank">
+                Terms and Conditions
+              </Link>{' '}
+              and Privacy Policy.
+            </label>
+          </div>
+
           <button
             onClick={handleGoogleLogin}
-            disabled={isLoading}
+            disabled={isLoading || !hasAcceptedTerms}
+            title={!hasAcceptedTerms ? "Please accept the terms to continue" : ""}
             className="w-full flex items-center justify-center gap-3 bg-paper-ivory border border-soft-line hover:border-moss hover:bg-moss/5 text-ink font-medium text-sm uppercase tracking-widest py-3 px-4 rounded-full transition-all disabled:opacity-50 disabled:cursor-not-allowed group"
           >
             {isLoading ? (
               <div className="w-5 h-5 border-2 border-moss border-t-transparent rounded-full animate-spin"></div>
             ) : (
               <>
-                <svg className="w-5 h-5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
+                <svg className={`w-5 h-5 transition-transform ${hasAcceptedTerms ? 'group-hover:scale-110' : ''}`} viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
                   <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
                   <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />

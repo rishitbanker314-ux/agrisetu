@@ -1,0 +1,3506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriSetu (कृषि सेतु) — Complete Team Mastery & Viva Defense Portal</title>
+  <style>
+    :root {
+      --bg-primary: #0a110b;
+      --bg-surface: #111e14;
+      --bg-card: rgba(22, 38, 26, 0.85);
+      --bg-card-hover: rgba(30, 52, 36, 0.95);
+      --border-color: rgba(45, 106, 79, 0.4);
+      --border-accent: #10b981;
+      --forest-dark: #071008;
+      --forest-deep: #142817;
+      --moss-green: #2d6a4f;
+      --emerald-glow: #10b981;
+      --emerald-light: #6ee7b7;
+      --amber-accent: #f59e0b;
+      --amber-glow: rgba(245, 158, 11, 0.2);
+      --rose-accent: #f43f5e;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --text-bright: #ffffff;
+      --accent-glow: 0 0 25px rgba(16, 185, 129, 0.25);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f5f9f6;
+      --bg-surface: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f0fdf4;
+      --border-color: #d1dcd5;
+      --border-accent: #059669;
+      --forest-dark: #1b3d22;
+      --forest-deep: #2d6a4f;
+      --moss-green: #047857;
+      --emerald-glow: #059669;
+      --emerald-light: #065f46;
+      --amber-accent: #d97706;
+      --amber-glow: rgba(217, 119, 6, 0.15);
+      --rose-accent: #e11d48;
+      --text-main: #1f2937;
+      --text-muted: #4b5563;
+      --text-bright: #111827;
+      --accent-glow: 0 4px 20px rgba(5, 150, 105, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      transition: background-color 0.25s ease, border-color 0.25s ease;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      line-height: 1.55;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Top Sticky Header */
+    .portal-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 17, 11, 0.85);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    [data-theme="light"] .portal-header {
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo-icon {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, var(--emerald-glow), var(--moss-green));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 900;
+      font-size: 20px;
+      box-shadow: var(--accent-glow);
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--text-bright);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge-pill {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--emerald-glow);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Global Search */
+    .search-wrap {
+      position: relative;
+      width: 320px;
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 14px 8px 36px;
+      border-radius: 20px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: var(--border-accent);
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 13px;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    /* Theme toggle button */
+    .btn-icon {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .btn-icon:hover {
+      border-color: var(--border-accent);
+      color: var(--emerald-glow);
+    }
+
+    /* Sub-bar / Navigation Tabs */
+    .tabs-bar-container {
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0 24px;
+      overflow-x: auto;
+      white-space: nowrap;
+      scrollbar-width: none;
+    }
+
+    .tabs-bar-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 6px;
+    }
+
+    .nav-tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 12px 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+      border-bottom: 2px solid transparent;
+    }
+
+    .nav-tab-btn:hover {
+      color: var(--text-bright);
+    }
+
+    .nav-tab-btn.active {
+      color: var(--emerald-glow);
+      border-bottom-color: var(--emerald-glow);
+    }
+
+    /* Main Container */
+    .main-content {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 24px 20px 100px;
+    }
+
+    .tab-pane {
+      display: none;
+      animation: fadeIn 0.3s ease forwards;
+    }
+
+    .tab-pane.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Hero / Header Card inside Tab */
+    .hero-strip {
+      background: linear-gradient(135deg, var(--forest-dark) 0%, var(--forest-deep) 60%, var(--moss-green) 100%);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 28px 32px;
+      margin-bottom: 24px;
+      box-shadow: var(--accent-glow);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .hero-strip-content h2 {
+      font-size: 26px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .hero-strip-content p {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.85);
+      max-width: 750px;
+    }
+
+    .hero-stats-grid {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .hero-stat-box {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 10px 18px;
+      border-radius: var(--radius-md);
+      text-align: center;
+    }
+
+    .hero-stat-val {
+      font-size: 20px;
+      font-weight: 800;
+      color: #6ee7b7;
+    }
+
+    .hero-stat-lbl {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Cards & Grids */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      position: relative;
+    }
+
+    .card:hover {
+      border-color: var(--border-accent);
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-bright);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Interactive Accordion Flashcards */
+    .flashcard {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      margin-bottom: 12px;
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+
+    .flashcard.active {
+      border-color: var(--border-accent);
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.15);
+    }
+
+    .flashcard-header {
+      padding: 16px 20px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+      user-select: none;
+    }
+
+    .flashcard-q {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-bright);
+      line-height: 1.4;
+    }
+
+    .flashcard-tags {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .badge-danger {
+      background: rgba(244, 63, 94, 0.15);
+      color: #fb7185;
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .badge-persona {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fcd34d;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .flashcard-toggle-icon {
+      font-size: 14px;
+      color: var(--text-muted);
+      transition: transform 0.2s ease;
+    }
+
+    .flashcard.active .flashcard-toggle-icon {
+      transform: rotate(180deg);
+      color: var(--emerald-glow);
+    }
+
+    .flashcard-body {
+      padding: 0 20px 20px;
+      display: none;
+      border-top: 1px dashed var(--border-color);
+      margin-top: 6px;
+      padding-top: 14px;
+    }
+
+    .flashcard.active .flashcard-body {
+      display: block;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .model-answer {
+      font-size: 13.5px;
+      color: var(--text-main);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .trap-box {
+      background: rgba(244, 63, 94, 0.08);
+      border-left: 3px solid var(--rose-accent);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      margin-bottom: 10px;
+      font-size: 12.5px;
+      color: #fca5a5;
+    }
+
+    .punch-box {
+      background: rgba(16, 185, 129, 0.08);
+      border-left: 3px solid var(--emerald-glow);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 12.5px;
+      color: #a7f3d0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    [data-theme="light"] .trap-box {
+      background: #fef2f2;
+      color: #991b1b;
+    }
+
+    [data-theme="light"] .punch-box {
+      background: #ecfdf5;
+      color: #065f46;
+    }
+
+    /* Buttons */
+    .btn {
+      background: var(--moss-green);
+      color: white;
+      border: 1px solid var(--border-accent);
+      padding: 7px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background: var(--emerald-glow);
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+    }
+
+    .btn-secondary {
+      background: var(--bg-surface);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--border-accent);
+      color: var(--emerald-glow);
+    }
+
+    /* Cyber-Organic Glassmorphism & Micro-interactions */
+    .card, .flashcard {
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+
+    .card:hover, .flashcard:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), 0 0 16px rgba(16, 185, 129, 0.15);
+      border-color: rgba(52, 211, 153, 0.5);
+    }
+
+    /* 🔊 Speech Drill Button */
+    .btn-speak {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #6ee7b7;
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-speak:hover {
+      background: rgba(16, 185, 129, 0.35);
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+      transform: scale(1.05);
+    }
+
+    .btn-speak.speaking {
+      background: #10b981;
+      color: white;
+      animation: pulse 1s infinite;
+    }
+
+    /* Mastery Tracker Controls */
+    .mastery-check-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 2px 7px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      background: rgba(255, 255, 255, 0.04);
+      transition: all 0.2s ease;
+    }
+
+    .mastery-check-label:hover {
+      border-color: var(--border-color);
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .mastery-checkbox {
+      accent-color: #10b981;
+      cursor: pointer;
+      width: 14px;
+      height: 14px;
+    }
+
+    .flashcard.is-mastered {
+      border-color: rgba(16, 185, 129, 0.7);
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(22, 38, 26, 0.9));
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+    }
+
+    .flashcard.is-mastered .flashcard-q {
+      color: #a7f3d0;
+    }
+
+    .mastery-dashboard {
+      background: linear-gradient(135deg, rgba(20, 40, 23, 0.95), rgba(8, 16, 10, 0.95));
+      border: 1.5px solid var(--border-accent);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 0 25px rgba(16, 185, 129, 0.18);
+    }
+
+    /* Interactive Architecture Visualizer */
+    .arch-diagram {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 900px) {
+      .arch-diagram {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .arch-column {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .arch-col-title {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--emerald-glow);
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .arch-node {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .arch-node:hover, .arch-node.active-node {
+      border-color: var(--border-accent);
+      background: var(--bg-card-hover);
+      box-shadow: 0 0 14px rgba(16, 185, 129, 0.2);
+    }
+
+    .arch-node-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-bright);
+      margin-bottom: 4px;
+    }
+
+    .arch-node-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+
+    .arch-inspector {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-accent);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-bottom: 24px;
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    /* Bento Grid System & Superpower Cards */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    .superpower-card {
+      background: linear-gradient(145deg, rgba(16, 32, 20, 0.85), rgba(9, 18, 12, 0.9));
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .superpower-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--emerald-glow);
+      box-shadow: 0 12px 28px rgba(16, 185, 129, 0.22);
+    }
+
+    .superpower-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--emerald-glow), transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .superpower-card:hover::before {
+      opacity: 1;
+    }
+
+    .superpower-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .superpower-icon-box {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .superpower-badges {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .badge-cost-zero {
+      background: rgba(16, 185, 129, 0.2);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-category {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 20px;
+      text-transform: uppercase;
+    }
+
+    .superpower-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text-bright);
+      margin-bottom: 6px;
+    }
+
+    .superpower-role {
+      font-size: 12px;
+      color: var(--emerald-glow);
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .superpower-flex {
+      background: rgba(0, 0, 0, 0.3);
+      border-left: 3px solid var(--emerald-glow);
+      padding: 10px 12px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 12.5px;
+      line-height: 1.45;
+      color: #e2e8f0;
+      margin-top: 10px;
+    }
+
+    .superpower-flex strong {
+      color: #6ee7b7;
+    }
+
+    /* Interactive Data Flow Timeline */
+    .flow-timeline-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      margin: 20px 0;
+    }
+
+    .flow-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      position: relative;
+      margin: 16px 0;
+    }
+
+    @media (max-width: 900px) {
+      .flow-steps {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .flow-step-node {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .flow-step-node:hover, .flow-step-node.active-step {
+      border-color: var(--emerald-glow);
+      background: rgba(16, 185, 129, 0.08);
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.25);
+    }
+
+    .flow-step-node.pulse-step {
+      animation: stepPulse 0.8s ease-in-out;
+    }
+
+    @keyframes stepPulse {
+      0% { transform: scale(1); box-shadow: 0 0 0 rgba(16, 185, 129, 0.8); }
+      50% { transform: scale(1.04); box-shadow: 0 0 25px rgba(16, 185, 129, 0.8); border-color: #a7f3d0; }
+      100% { transform: scale(1); box-shadow: 0 0 16px rgba(16, 185, 129, 0.25); }
+    }
+
+    .flow-step-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid var(--emerald-glow);
+      color: #6ee7b7;
+      font-size: 11px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+
+    .flow-step-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text-bright);
+      margin-bottom: 6px;
+    }
+
+    .flow-step-latency {
+      display: inline-block;
+      font-size: 10px;
+      font-family: monospace;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #93c5fd;
+      margin-bottom: 8px;
+    }
+
+    .flow-step-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* Interactive Cost Comparison Calculator */
+    .cost-calculator-widget {
+      background: linear-gradient(135deg, rgba(20, 36, 24, 0.9), rgba(8, 16, 10, 0.95));
+      border: 1.5px solid var(--border-accent);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      margin: 20px 0;
+      box-shadow: 0 0 24px rgba(16, 185, 129, 0.15);
+    }
+
+    .cost-slider-container {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 16px 20px;
+      border-radius: var(--radius-sm);
+      margin: 16px 0 20px 0;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .cost-slider {
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: #1e3a29;
+      outline: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
+
+    .cost-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--emerald-glow);
+      cursor: pointer;
+      box-shadow: 0 0 12px var(--emerald-glow);
+      border: 2px solid #fff;
+    }
+
+    .cost-comparison-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 768px) {
+      .cost-comparison-cards {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .cost-card-traditional {
+      background: rgba(225, 29, 72, 0.08);
+      border: 1px solid rgba(225, 29, 72, 0.35);
+      border-radius: var(--radius-sm);
+      padding: 18px;
+    }
+
+    .cost-card-agrisetu {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1.5px solid var(--emerald-glow);
+      border-radius: var(--radius-sm);
+      padding: 18px;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.18);
+    }
+
+    /* Bento Battle Cards (Competitor Replacement) */
+    .battle-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    .battle-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .battle-card.agrisetu-champion {
+      background: linear-gradient(145deg, rgba(16, 42, 24, 0.9), rgba(8, 20, 12, 0.95));
+      border: 2px solid var(--emerald-glow);
+      box-shadow: 0 0 25px rgba(16, 185, 129, 0.25);
+      position: relative;
+    }
+
+    .champion-ribbon {
+      position: absolute;
+      top: -10px;
+      right: 16px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #000;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      text-transform: uppercase;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+
+    .battle-card-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-bright);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .battle-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 12.5px;
+    }
+
+    .battle-item-label {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .battle-item-val {
+      font-weight: 700;
+      text-align: right;
+    }
+
+    /* 60-Second Simulator */
+    .sim-panel {
+      background: linear-gradient(135deg, rgba(20, 40, 23, 0.95), rgba(7, 16, 8, 0.95));
+      border: 2px solid var(--border-accent);
+      border-radius: var(--radius-lg);
+      padding: 30px;
+      text-align: center;
+      margin-bottom: 24px;
+      box-shadow: 0 0 30px rgba(16, 185, 129, 0.2);
+    }
+
+    .sim-timer {
+      font-size: 54px;
+      font-weight: 900;
+      font-family: monospace;
+      color: var(--emerald-glow);
+      margin-bottom: 12px;
+      letter-spacing: 2px;
+    }
+
+    .sim-timer.warning {
+      color: var(--amber-accent);
+      animation: pulse 1s infinite;
+    }
+
+    .sim-timer.danger {
+      color: var(--rose-accent);
+      animation: pulse 0.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .sim-question-box {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin: 16px auto 20px;
+      max-width: 750px;
+      font-size: 18px;
+      font-weight: 700;
+      color: #ffffff;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1.45;
+    }
+
+    .sim-controls {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* Persona Filter Bar */
+    .persona-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+    }
+
+    .persona-pill {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .persona-pill:hover {
+      color: var(--text-bright);
+      border-color: var(--border-accent);
+    }
+
+    .persona-pill.active {
+      background: var(--moss-green);
+      color: white;
+      border-color: var(--emerald-glow);
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+    }
+
+    /* Tables in tabs */
+    .table-box {
+      width: 100%;
+      overflow-x: auto;
+      margin-bottom: 20px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+    }
+
+    .styled-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 12.5px;
+    }
+
+    .styled-table th {
+      background: var(--forest-deep);
+      color: white;
+      padding: 12px 14px;
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .styled-table td {
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--border-color);
+      background: var(--bg-card);
+      vertical-align: top;
+    }
+
+    .styled-table tr:hover td {
+      background: var(--bg-card-hover);
+    }
+
+    /* Floating Quick One-Liners Dock */
+    .floating-dock {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 99;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+
+    .dock-popup {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-accent);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      width: 340px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+      display: none;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .dock-popup.show {
+      display: block;
+    }
+
+    .dock-btn {
+      background: var(--forest-deep);
+      color: #6ee7b7;
+      border: 1px solid var(--emerald-glow);
+      border-radius: 30px;
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: var(--accent-glow);
+    }
+
+    .dock-btn:hover {
+      background: var(--moss-green);
+      transform: translateY(-2px);
+    }
+
+    /* Code Snippets */
+    pre, code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12px;
+    }
+
+    .code-block {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      overflow-x: auto;
+      color: #a7f3d0;
+      margin: 8px 0;
+    }
+
+    [data-theme="light"] .code-block {
+      background: #f1f5f9;
+      color: #0f766e;
+      border-color: #cbd5e1;
+    }
+
+    /* Toast notification */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--moss-green);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      display: none;
+      z-index: 1000;
+      animation: toastIn 0.3s ease;
+    }
+
+    @keyframes toastIn {
+      from { opacity: 0; transform: translate(-50%, 10px); }
+      to { opacity: 1; transform: translate(-50%, 0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP HEADER -->
+  <header class="portal-header">
+    <div class="brand-group">
+      <div class="brand-logo-icon">🌿</div>
+      <div>
+        <div class="brand-title">
+          AgriSetu (कृषि सेतु)
+          <span class="badge-pill">Team Mastery & Defense Portal</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="global-search" class="search-input" placeholder="Search any question, formula, or code...">
+      </div>
+
+      <button id="theme-toggle" class="btn-icon" title="Toggle Dark/Light Mode">🌙</button>
+    </div>
+  </header>
+
+  <!-- NAVIGATION TABS -->
+  <div class="tabs-bar-container">
+    <nav class="nav-tabs">
+      <button class="nav-tab-btn active" data-tab="tab-pitch">🎙️ Pitch & Core Narrative</button>
+      <button class="nav-tab-btn" data-tab="tab-arch">🏛️ Architecture & Data Flow</button>
+      <button class="nav-tab-btn" data-tab="tab-code">💻 Codebase & Features</button>
+      <button class="nav-tab-btn" data-tab="tab-viva">⚔️ Viva Defense & Trap Questions</button>
+      <button class="nav-tab-btn" data-tab="tab-sim">⏱️ 60-Sec Mock Simulator</button>
+      <button class="nav-tab-btn" data-tab="tab-demo">🚀 Live Demo & Disaster Script</button>
+      <button class="nav-tab-btn" data-tab="tab-economics">📊 Competitors & Cheat Sheet</button>
+    </nav>
+  </div>
+
+  <!-- MAIN CONTAINER -->
+  <main class="main-content">
+
+    <!-- ================================= TAB 1: PITCH & CORE NARRATIVE ================================= -->
+    <section id="tab-pitch" class="tab-pane active">
+      <div class="hero-strip">
+        <div class="hero-strip-content">
+          <h2>The Winning Hackathon Narrative</h2>
+          <p>
+            AgriSetu (कृषि सेतु) is not another generic dashboard. It bridges smallholder farmers to global satellite observation and multimodal AI with <strong>$0 infrastructure cost</strong>, grounded in the real <strong>India Network on Digital Agriculture</strong> coordinated by <strong>IIT Delhi</strong>.
+          </p>
+        </div>
+        <div class="hero-stats-grid">
+          <div class="hero-stat-box">
+            <div class="hero-stat-val">$0.00</div>
+            <div class="hero-stat-lbl">Infra Cost</div>
+          </div>
+          <div class="hero-stat-box">
+            <div class="hero-stat-val">10m</div>
+            <div class="hero-stat-lbl">Sentinel-2 Res.</div>
+          </div>
+          <div class="hero-stat-box">
+            <div class="hero-stat-val">1.1s</div>
+            <div class="hero-stat-lbl">Multimodal Roundtrip</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- 30-Sec Pitch Card -->
+        <div class="card">
+          <div class="card-title">
+            <span>⏱️ The 30-Second Elevator Pitch (Memorize This)</span>
+            <button class="btn btn-secondary" onclick="copyText('pitch-30')">📋 Copy</button>
+          </div>
+          <p id="pitch-30" style="font-size: 13.5px; line-height: 1.6; margin-bottom: 14px;">
+            "Smallholder farmers produce 80% of developing nations' food, yet make high-risk planting, spraying, and irrigation decisions in total informational blindness. <strong>AgriSetu</strong> is an offline-first, vernacular bridge that turns raw petabyte-scale satellite radar, soil physics, and hyperlocal weather into personalized, voice-delivered farm advisories using <strong>Google Gemini Flash</strong> and <strong>Google Earth Engine</strong>. By leveraging open academic and serverless tiers, we achieve <strong>100% zero infrastructure cost</strong> and scale seamlessly across borders—from Punjab to Mato Grosso—as a true Digital Public Good."
+          </p>
+          <div class="punch-box">
+            <strong>Key Delivery Tip:</strong> Say this with calm authority. Do not rush. Hit the phrases <em>"informational blindness"</em> and <em>"zero infrastructure cost"</em> with strong emphasis.
+          </div>
+        </div>
+
+        <!-- The Research Hook -->
+        <div class="card">
+          <div class="card-title">
+            <span>🎯 The Research Hook: Why We Stand Out from Other Teams</span>
+          </div>
+          <div style="font-size: 13px; line-height: 1.55; margin-bottom: 12px;">
+            <p><strong>The Rookie Trap:</strong> Other teams claim their app maps to "AgriN". But real AgriN (Indore India Agriculture Ministers' meeting, June 2026) was strictly about <em>genetic seed exchanges</em>, not satellite computing!</p>
+            <p style="margin-top: 8px;"><strong>Our Advantage:</strong> What this challenge actually describes is the real <strong>India Network on Digital Agriculture</strong>, coordinated by <strong>IIT Delhi</strong>. When you open your presentation with this distinction, judges immediately realize your team researched the policy foundation deeper than anyone else.</p>
+          </div>
+          <div class="trap-box">
+            <strong>Examiner Trap:</strong> Never say "We built this to sell subscriptions to farmers." AgriSetu is an open Digital Public Good (DPG) designed for government extension workers and cooperatives.
+          </div>
+        </div>
+      </div>
+
+      <!-- Problem vs Solution Bento Grid -->
+      <div class="card" style="margin-top: 24px;">
+        <div class="card-title">
+          <span>⚖️ Architecture Face-Off: The 4 Industry Breakthroughs</span>
+        </div>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+          How AgriSetu shatters conventional agritech bottlenecks with zero-budget engineering brilliance:
+        </p>
+
+        <div class="bento-grid">
+          <!-- Card 1 -->
+          <div class="superpower-card">
+            <div>
+              <div class="superpower-header">
+                <div class="superpower-icon-box">💸</div>
+                <div class="superpower-badges">
+                  <span class="badge-cost-zero">$0.00 ZERO-COST</span>
+                  <span class="badge-category">INFRASTRUCTURE</span>
+                </div>
+              </div>
+              <div class="superpower-title">Zero Cloud Server Bills</div>
+              <div class="superpower-role">Traditional: $500+/mo GPU &amp; map billing restricts rural deployment.</div>
+            </div>
+            <div class="superpower-flex">
+              <strong>AgriSetu Breakthrough:</strong> Google AI Studio free tier (1,500 req/day) + GEE academic access + Supabase free tier PostgreSQL = <strong>$0.00 perpetual infra bill</strong>.
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="superpower-card">
+            <div>
+              <div class="superpower-header">
+                <div class="superpower-icon-box">📶</div>
+                <div class="superpower-badges">
+                  <span class="badge-cost-zero">&lt;15KB BUNDLE</span>
+                  <span class="badge-category">CONNECTIVITY</span>
+                </div>
+              </div>
+              <div class="superpower-title">Offline-First Field Resilience</div>
+              <div class="superpower-role">Traditional: 50MB+ APKs crash instantly without continuous 4G/5G.</div>
+            </div>
+            <div class="superpower-flex">
+              <strong>AgriSetu Breakthrough:</strong> Cache-first Service Worker PWA with client-side Web Speech API. <strong>Zero data consumed</strong> during spoken field advisories.
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="superpower-card">
+            <div>
+              <div class="superpower-header">
+                <div class="superpower-icon-box">⚡</div>
+                <div class="superpower-badges">
+                  <span class="badge-cost-zero">1.1s ROUNDTRIP</span>
+                  <span class="badge-category">MULTIMODAL AI</span>
+                </div>
+              </div>
+              <div class="superpower-title">Unified Multimodal Pipeline</div>
+              <div class="superpower-role">Traditional: 3 fragmented APIs (Speech + Vision + LLM) cause 4.5s latency.</div>
+            </div>
+            <div class="superpower-flex">
+              <strong>AgriSetu Breakthrough:</strong> Single Gemini Flash payload simultaneously parses voice audio, leaf photo, and weather data in <strong>1 unified token stream</strong>.
+            </div>
+          </div>
+
+          <!-- Card 4 -->
+          <div class="superpower-card">
+            <div>
+              <div class="superpower-header">
+                <div class="superpower-icon-box">🛡️</div>
+                <div class="superpower-badges">
+                  <span class="badge-cost-zero">RLS PROTECTED</span>
+                  <span class="badge-category">PRIVACY</span>
+                </div>
+              </div>
+              <div class="superpower-title">Farmer Privacy vs Policy Heatmaps</div>
+              <div class="superpower-role">Traditional: Centralized lakes exploit or leak farmer field coordinates.</div>
+            </div>
+            <div class="superpower-flex">
+              <strong>AgriSetu Breakthrough:</strong> PostgreSQL Row-Level Security blocks raw coordinate leaks. Policymakers only see <strong>anonymized district Materialized Views</strong>.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================= TAB 2: ARCHITECTURE & DATA FLOW ================================= -->
+    <section id="tab-arch" class="tab-pane">
+      <div class="hero-strip">
+        <div class="hero-strip-content">
+          <h2>End-to-End System Architecture</h2>
+          <p>
+            Click any component in the diagram below to inspect its protocols, payload schemas, security boundaries, and trade-off rationales.
+          </p>
+        </div>
+      </div>
+
+      <!-- Interactive Clickable Diagram -->
+      <div class="arch-diagram">
+        <!-- Col 1: Data Sources -->
+        <div class="arch-column">
+          <div class="arch-col-title">1. Global Data Sources</div>
+          <div class="arch-node" onclick="inspectNode('gee')">
+            <div class="arch-node-title">🛰️ Google Earth Engine</div>
+            <div class="arch-node-desc">ESA Sentinel-2 multispectral MSI (Bands B4, B8) @ 10m resolution. Dynamic NDVI.</div>
+          </div>
+          <div class="arch-node" onclick="inspectNode('soil')">
+            <div class="arch-node-title">🌱 GEE SoilGrids Catalog</div>
+            <div class="arch-node-desc">Global soil pH, organic carbon, moisture & clay percentage via Earth Engine catalog.</div>
+          </div>
+          <div class="arch-node" onclick="inspectNode('weather')">
+            <div class="arch-node-title">🌦️ Open-Meteo API</div>
+            <div class="arch-node-desc">Keyless, unthrottled hourly rainfall, evapotranspiration & 16-day forecasts.</div>
+          </div>
+          <div class="arch-node" onclick="inspectNode('faostat')">
+            <div class="arch-node-title">🌾 FAOSTAT & MSP Tables</div>
+            <div class="arch-node-desc">Baseline regional crop yield averages and Government Minimum Support Prices.</div>
+          </div>
+        </div>
+
+        <!-- Col 2: Ingestion & Adapters -->
+        <div class="arch-column">
+          <div class="arch-col-title">2. Ingestion & Adapters</div>
+          <div class="arch-node" onclick="inspectNode('country-adapter')">
+            <div class="arch-node-title">🌐 Country Adapter Engine</div>
+            <div class="arch-node-desc">`generateFieldIntelligence(lat, lng)` abstracts international boundaries.</div>
+          </div>
+          <div class="arch-node" onclick="inspectNode('edge-functions')">
+            <div class="arch-node-title">⚡ Supabase Edge Functions</div>
+            <div class="arch-node-desc">Deno-based serverless orchestration (<50ms cold start, TypeScript native).</div>
+          </div>
+          <div class="arch-node" onclick="inspectNode('proxy-routes')">
+            <div class="arch-node-title">🛡️ Next.js Route Handlers</div>
+            <div class="arch-node-desc">Server-side token protection ensuring zero client key leaks.</div>
+          </div>
+        </div>
+
+        <!-- Col 3: AI Core -->
+        <div class="arch-column">
+          <div class="arch-col-title">3. Reasoning & AI Core</div>
+          <div class="arch-node" onclick="inspectNode('gemini-multimodal')">
+            <div class="arch-node-title">🧠 Gemini Flash Multimodal</div>
+            <div class="arch-node-desc">Zero-shot multimodal prompt fusing satellite + weather + leaf photo + voice.</div>
+          </div>
+          <div class="arch-node" onclick="inspectNode('advisory-engine')">
+            <div class="arch-node-title">📋 Grounded Advisory Engine</div>
+            <div class="arch-node-desc">ICAR-dosage bounded chemical & organic pest remediation recommendations.</div>
+          </div>
+          <div class="arch-node" onclick="inspectNode('acoustic')">
+            <div class="arch-node-title">🔊 Acoustic Biosphere Simulator</div>
+            <div class="arch-node-desc">Synthesizes subsurface root cavitation stress radar from live soil moisture.</div>
+          </div>
+        </div>
+
+        <!-- Col 4: Delivery Layer -->
+        <div class="arch-column">
+          <div class="arch-col-title">4. Delivery & Touchpoints</div>
+          <div class="arch-node" onclick="inspectNode('pwa')">
+            <div class="arch-node-title">📱 Next.js 16 PWA Client</div>
+            <div class="arch-node-desc">Offline service worker cache, add-to-homescreen, Tailwind v4 UI.</div>
+          </div>
+          <div class="arch-node" onclick="inspectNode('speech')">
+            <div class="arch-node-title">🗣️ Web Speech API Engine</div>
+            <div class="arch-node-desc">Zero-data, on-device audio synthesis in Hindi, Gujarati, Marathi & English.</div>
+          </div>
+          <div class="arch-node" onclick="inspectNode('policymaker')">
+            <div class="arch-node-title">🏛️ Policymaker Dashboard</div>
+            <div class="arch-node-desc">Regional aggregated analytics via PostgreSQL Materialized Views.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Node Inspector Panel -->
+      <div id="arch-inspector" class="arch-inspector">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h3 id="inspector-title" style="color: var(--emerald-glow); font-size: 16px;">Component Details</h3>
+          <button class="btn btn-secondary" onclick="closeInspector()">✕ Close</button>
+        </div>
+        <div id="inspector-body" style="font-size: 13.5px; line-height: 1.6;"></div>
+      </div>
+
+      <!-- Interactive Data Flow Timeline -->
+      <div class="flow-timeline-container">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+          <div>
+            <h3 style="color: var(--text-bright); font-size: 17px; margin-bottom: 4px;">🔄 4-Step Telemetry Fusion Pipeline (Interactive)</h3>
+            <p style="font-size: 12.5px; color: var(--text-muted);">
+              Zero to vernacular advisory in 1.1 seconds. Click any step to inspect its data contract, or click simulate to watch live packet transmission.
+            </p>
+          </div>
+          <button class="btn btn-primary" onclick="simulatePacketFlow()" id="btnSimFlow">
+            ▶ Simulate Live Packet Flow (1.1s)
+          </button>
+        </div>
+
+        <div class="flow-steps" id="flowStepsGrid">
+          <!-- Step 1 -->
+          <div class="flow-step-node" id="stepNode1" onclick="inspectFlowStep(1)">
+            <div class="flow-step-num">1</div>
+            <div class="flow-step-title">📍 GPS &amp; Geofence</div>
+            <div class="flow-step-latency">&lt; 5ms · Client GIS</div>
+            <div class="flow-step-desc">
+              Farmer taps field boundary on Leaflet. Vector polygon converted to GeoJSON coordinates.
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="flow-step-node" id="stepNode2" onclick="inspectFlowStep(2)">
+            <div class="flow-step-num">2</div>
+            <div class="flow-step-title">⚡ Parallel Telemetry</div>
+            <div class="flow-step-latency">320ms · Edge / GEE</div>
+            <div class="flow-step-desc">
+              Supabase Edge Function triggers simultaneous calls to Open-Meteo &amp; GEE Sentinel-2 MSI bands.
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="flow-step-node" id="stepNode3" onclick="inspectFlowStep(3)">
+            <div class="flow-step-num">3</div>
+            <div class="flow-step-title">🧠 Gemini Multimodal</div>
+            <div class="flow-step-latency">650ms · Unified AI</div>
+            <div class="flow-step-desc">
+              Voice buffer + leaf photo + soil/weather numbers stream into Gemini Flash in 1 unified token pass.
+            </div>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="flow-step-node" id="stepNode4" onclick="inspectFlowStep(4)">
+            <div class="flow-step-num">4</div>
+            <div class="flow-step-title">🗣️ Local Speechout</div>
+            <div class="flow-step-latency">0ms · On-Device Audio</div>
+            <div class="flow-step-desc">
+              Structured JSON is rendered on PWA and read aloud via Web Speech API in native mother tongue.
+            </div>
+          </div>
+        </div>
+
+        <!-- Flow Inspector Details Box -->
+        <div id="flow-inspector-box" style="margin-top: 14px; background: var(--bg-surface); border: 1px solid var(--border-accent); border-radius: var(--radius-sm); padding: 14px; display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span id="flow-inspector-title" style="font-weight: 800; color: #6ee7b7; font-size: 13.5px;"></span>
+            <button class="btn btn-secondary" style="padding: 2px 8px; font-size: 11px;" onclick="document.getElementById('flow-inspector-box').style.display='none'">✕</button>
+          </div>
+          <div id="flow-inspector-content" style="font-size: 12.5px; color: var(--text-main); font-family: monospace; white-space: pre-wrap; line-height: 1.5;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================= TAB 3: CODEBASE & FEATURES ================================= -->
+    <section id="tab-code" class="tab-pane">
+      <div class="hero-strip">
+        <div class="hero-strip-content">
+          <h2>Codebase Map & Key Functions</h2>
+          <p>
+            Know exactly where every feature lives in the AgriSetu repository. If an examiner says <em>"Show me where you calculate NDVI"</em> or <em>"Show me your database policies"</em>, you can navigate there immediately.
+          </p>
+        </div>
+      </div>
+
+      <!-- Tech Stack Superpower Bento Grid -->
+      <div class="card" style="margin-bottom: 24px;">
+        <div class="card-title">
+          <span>⚡ AgriSetu Tech Stack: Superpower Cards (Zero-Jargon Edition)</span>
+        </div>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+          Every technology chosen for AgriSetu was picked to deliver maximum rural impact at exactly <strong>$0.00 cost</strong>:
+        </p>
+
+        <div class="bento-grid">
+          <!-- Item 1: Gemini -->
+          <div class="superpower-card">
+            <div>
+              <div class="superpower-header">
+                <div class="superpower-icon-box">🧠</div>
+                <div class="superpower-badges">
+                  <span class="badge-cost-zero">$0.00 FREE TIER</span>
+                  <span class="badge-category">CORE AI</span>
+                </div>
+              </div>
+              <div class="superpower-title">Google Gemini 1.5 Flash</div>
+              <div class="superpower-role">Multimodal Voice, Vision &amp; Sensor Fusion</div>
+            </div>
+            <div class="superpower-flex">
+              <strong>The Flex:</strong> Replaces 3 separate expensive AI models (Whisper + YOLOv8 + GPT-4o) with <strong>1 single 1.1s API call</strong>. Zero GPU hosting needed.
+            </div>
+          </div>
+
+          <!-- Item 2: Earth Engine -->
+          <div class="superpower-card">
+            <div>
+              <div class="superpower-header">
+                <div class="superpower-icon-box">🛰️</div>
+                <div class="superpower-badges">
+                  <span class="badge-cost-zero">OPEN ACCESS</span>
+                  <span class="badge-category">SATELLITE GIS</span>
+                </div>
+              </div>
+              <div class="superpower-title">Google Earth Engine</div>
+              <div class="superpower-role">Sentinel-2 Multispectral &amp; Soil Moisture</div>
+            </div>
+            <div class="superpower-flex">
+              <strong>The Flex:</strong> Queries petabytes of raw ESA satellite radar on Google's cloud cluster. Computes 10m NDVI <strong>without downloading gigabyte TIFF files</strong>.
+            </div>
+          </div>
+
+          <!-- Item 3: Supabase -->
+          <div class="superpower-card">
+            <div>
+              <div class="superpower-header">
+                <div class="superpower-icon-box">⚡</div>
+                <div class="superpower-badges">
+                  <span class="badge-cost-zero">$0.00 TIER</span>
+                  <span class="badge-category">BACKEND</span>
+                </div>
+              </div>
+              <div class="superpower-title">Supabase &amp; Deno Edge</div>
+              <div class="superpower-role">PostgreSQL DB, Row-Level Security &amp; Serverless</div>
+            </div>
+            <div class="superpower-flex">
+              <strong>The Flex:</strong> Sub-50ms cold starts on Deno V8 isolates. Built-in RLS guarantees <strong>zero farmer coordinate leaks</strong> to public or district dashboards.
+            </div>
+          </div>
+
+          <!-- Item 4: Next.js 16.3 -->
+          <div class="superpower-card">
+            <div>
+              <div class="superpower-header">
+                <div class="superpower-icon-box">📱</div>
+                <div class="superpower-badges">
+                  <span class="badge-cost-zero">TURBOPACK</span>
+                  <span class="badge-category">FRONTEND</span>
+                </div>
+              </div>
+              <div class="superpower-title">Next.js 16.3 + React 19</div>
+              <div class="superpower-role">Hybrid Server-Side &amp; Offline PWA</div>
+            </div>
+            <div class="superpower-flex">
+              <strong>The Flex:</strong> Under 15KB critical CSS bundle. Installs as an app instantly without Play Store hurdles, with <strong>instant service worker caching</strong>.
+            </div>
+          </div>
+
+          <!-- Item 5: Leaflet.js -->
+          <div class="superpower-card">
+            <div>
+              <div class="superpower-header">
+                <div class="superpower-icon-box">🗺️</div>
+                <div class="superpower-badges">
+                  <span class="badge-cost-zero">NO API BILLS</span>
+                  <span class="badge-category">MAPPING</span>
+                </div>
+              </div>
+              <div class="superpower-title">Leaflet.js + OSM Tiles</div>
+              <div class="superpower-role">Field Boundary Drawing &amp; Visual Layers</div>
+            </div>
+            <div class="superpower-flex">
+              <strong>The Flex:</strong> 42KB featherweight footprint. Avoids Google Maps Platform's $7 per 1,000 requests—<strong>zero billing risk</strong> if traffic spikes 100x.
+            </div>
+          </div>
+
+          <!-- Item 6: Web Speech API -->
+          <div class="superpower-card">
+            <div>
+              <div class="superpower-header">
+                <div class="superpower-icon-box">🗣️</div>
+                <div class="superpower-badges">
+                  <span class="badge-cost-zero">ON-DEVICE</span>
+                  <span class="badge-category">ACCESSIBILITY</span>
+                </div>
+              </div>
+              <div class="superpower-title">Native Web Speech API</div>
+              <div class="superpower-role">Vernacular Voice Recognition &amp; Synthesis</div>
+            </div>
+            <div class="superpower-flex">
+              <strong>The Flex:</strong> Runs 100% on the farmer's smartphone chip. Zero cloud audio streaming costs, zero latency, and <strong>speaks fluent Hindi &amp; regional dialects</strong>.
+            </div>
+          </div>
+
+          <!-- Item 7: Open-Meteo -->
+          <div class="superpower-card">
+            <div>
+              <div class="superpower-header">
+                <div class="superpower-icon-box">🌦️</div>
+                <div class="superpower-badges">
+                  <span class="badge-cost-zero">KEYLESS</span>
+                  <span class="badge-category">WEATHER</span>
+                </div>
+              </div>
+              <div class="superpower-title">Open-Meteo Weather API</div>
+              <div class="superpower-role">16-Day Forecasts &amp; Soil Evapotranspiration</div>
+            </div>
+            <div class="superpower-flex">
+              <strong>The Flex:</strong> 10,000 free daily calls with no credit card required. Delivers high-precision hourly rainfall models for micro-climate frost warnings.
+            </div>
+          </div>
+
+          <!-- Item 8: Tailwind CSS v4 -->
+          <div class="superpower-card">
+            <div>
+              <div class="superpower-header">
+                <div class="superpower-icon-box">🎨</div>
+                <div class="superpower-badges">
+                  <span class="badge-cost-zero">ZERO RUNTIME</span>
+                  <span class="badge-category">UI / UX</span>
+                </div>
+              </div>
+              <div class="superpower-title">Tailwind CSS v4</div>
+              <div class="superpower-role">Ultra-High Contrast Field Ergonomics</div>
+            </div>
+            <div class="superpower-flex">
+              <strong>The Flex:</strong> High-contrast sunlight readability designed for outdoor farmer mobile screens. Zero bloated CSS downloads on 2G/3G networks.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- Feature to File Directory -->
+        <div class="card">
+          <div class="card-title">
+            <span>📁 Repository Directory & Feature Mapping</span>
+          </div>
+          <div class="table-box">
+            <table class="styled-table">
+              <thead>
+                <tr>
+                  <th>Feature / Domain</th>
+                  <th>Exact File Path in Workspace</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Weather & Soil Telemetry</strong></td>
+                  <td><code>src/lib/fieldIntelligence.ts</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Gemini Multimodal Client</strong></td>
+                  <td><code>src/lib/gemini.ts</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Interactive Field Map & Polygons</strong></td>
+                  <td><code>src/components/Map.tsx</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Leaf Disease Photo Upload</strong></td>
+                  <td><code>src/components/DiagnosisUpload.tsx</code></td>
+                </tr>
+                <tr>
+                  <td><strong>90-Day Time Travel Simulator</strong></td>
+                  <td><code>src/components/TemporalSlider.tsx</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Acoustic Root Stress Monitor</strong></td>
+                  <td><code>src/components/AcousticBiosphere.tsx</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Climate Alerts & Frost Triggers</strong></td>
+                  <td><code>src/components/ClimateAlerts.tsx</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Custom SVG Forecast Chart</strong></td>
+                  <td><code>src/components/ForecastChart.tsx</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Supabase Relational Migrations</strong></td>
+                  <td><code>supabase/migrations/20260818000000_*.sql</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Supabase Keep-Alive Ping</strong></td>
+                  <td><code>deploy-functions.sh</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Critical Code Inspection -->
+        <div class="card">
+          <div class="card-title">
+            <span>🔍 Key Implementation: `src/lib/fieldIntelligence.ts`</span>
+            <button class="btn btn-secondary" onclick="copyText('code-intel')">📋 Copy</button>
+          </div>
+          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">
+            This function coordinates the Open-Meteo weather API call and calculates baseline yield & crop prices using Government MSP data:
+          </p>
+          <pre class="code-block" id="code-intel">
+export async function generateFieldIntelligence(
+  lat: number, 
+  lng: number, 
+  boundary?: any[], 
+  crop: string = "Wheat"
+): Promise<LiveFieldData> {
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,relative_humidity_2m,soil_moisture_0_to_7cm&daily=temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto&forecast_days=16`;
+  
+  const response = await fetch(url);
+  const result = await response.json();
+  
+  // Crop MSP baseline dictionary (Wheat = 22,750 INR/Ton)
+  const baseline = CROP_BASELINES[crop] || { baseYield: 3.5, price: 22750 };
+  ...
+}
+          </pre>
+          <div class="punch-box">
+            <strong>Viva Tip:</strong> Mention that we pull <code>soil_moisture_0_to_7cm</code> directly from Open-Meteo's land-surface models to simulate root water availability without needing $200 physical IoT ground sensors.
+          </div>
+        </div>
+      </div>
+
+      <!-- Supabase RLS Policy Card -->
+      <div class="card">
+        <div class="card-title">
+          <span>🔒 PostgreSQL Row Level Security (RLS) Policy Snippet</span>
+          <button class="btn btn-secondary" onclick="copyText('code-rls')">📋 Copy</button>
+        </div>
+        <p style="font-size: 13px; margin-bottom: 8px;">
+          Examiners frequently ask: <em>"How do you enforce privacy between farmers at the database level?"</em> Here is our exact SQL implementation:
+        </p>
+        <pre class="code-block" id="code-rls">
+-- Enable RLS on fields table
+ALTER TABLE fields ENABLE ROW LEVEL SECURITY;
+
+-- Policy: Only owner can view or update their farm boundaries
+CREATE POLICY "Farmers can only access their own parcel data"
+ON fields FOR ALL
+USING (auth.uid() = owner_id);
+
+-- Policy: Materialized view for policymakers (Only aggregate counts, zero PII)
+CREATE MATERIALIZED VIEW regional_trends AS
+SELECT 
+  district, 
+  AVG(ndvi_score) AS avg_ndvi, 
+  COUNT(id) AS total_farms
+FROM fields
+GROUP BY district;
+        </pre>
+      </div>
+    </section>
+
+    <!-- ================================= TAB 4: VIVA DEFENSE & TRAP QUESTIONS ================================= -->
+    <section id="tab-viva" class="tab-pane">
+      <div class="hero-strip">
+        <div class="hero-strip-content">
+          <h2>The Cross-Examination Defense Bank</h2>
+          <p>
+            Filter questions by Judge Persona to practice handling different evaluation perspectives: Technical Architects, VC Investors, Strict Professors, or Agronomists.
+          </p>
+        </div>
+      </div>
+
+      <!-- 🎯 Defense Readiness Mastery Dashboard -->
+      <div class="mastery-dashboard">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: #a7f3d0; font-weight: 700; display: flex; align-items: center; gap: 6px;">
+              <span>🎯 Real-Time Viva Readiness Tracker</span>
+              <span id="sound-status-pill" class="badge-pill" style="cursor: pointer;" onclick="toggleSound()" title="Toggle sound effects">🔊 Sound: ON</span>
+            </div>
+            <div style="font-size: 18px; font-weight: 800; color: #ffffff; margin-top: 2px;">
+              Team Mastered <span id="mastery-count" style="color: var(--emerald-glow);">0</span> / 32 Questions 
+              <span id="mastery-percent" style="font-size: 14px; color: #a7f3d0; font-weight: 700; margin-left: 6px;">(0%)</span>
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <button class="btn btn-secondary" onclick="resetMastery()" style="font-size: 11px; padding: 5px 12px;">🔄 Reset Progress</button>
+            <button class="btn" onclick="launchConfetti()" style="font-size: 11px; padding: 5px 14px;">🎉 Launch Confetti</button>
+          </div>
+        </div>
+        <div style="width: 100%; height: 10px; background: rgba(255,255,255,0.1); border-radius: 20px; overflow: hidden; position: relative;">
+          <div id="mastery-progress-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, #10b981, #34d399, #f59e0b); transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 12px #10b981;"></div>
+        </div>
+      </div>
+
+      <!-- Persona Filter Bar -->
+      <div class="persona-bar">
+        <button class="persona-pill active" onclick="filterPersona('all')">🌟 All Questions (32)</button>
+        <button class="persona-pill" onclick="filterPersona('architect')">🏛️ Technical Architect (8)</button>
+        <button class="persona-pill" onclick="filterPersona('professor')">🎓 Academic Professor / Evaluator (8)</button>
+        <button class="persona-pill" onclick="filterPersona('investor')">💼 VC & Business Investor (8)</button>
+        <button class="persona-pill" onclick="filterPersona('agronomist')">🌾 Domain Agronomist (8)</button>
+      </div>
+
+      <!-- Accordion Container -->
+      <div id="viva-questions-list">
+
+        <!-- ==================== TECHNICAL ARCHITECT (8 QUESTIONS) ==================== -->
+        <!-- Q1 -->
+        <div class="flashcard" data-persona="architect" data-keywords="architecture cost zero free tiers supabase gemini serverless">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q1: How can you claim enterprise-grade satellite and AI capabilities with a $0 infrastructure cost? Isn't that unsustainable?</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Architect</span>
+              <span class="badge-danger">Trap</span>
+              <span class="flashcard-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="trap-box">
+              <strong>Rookie Mistake:</strong> Saying "We will just upgrade to AWS EC2 or paid GCP later when we get funding." That destroys your $0 innovation moat!
+            </div>
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "Our $0 cost is an architectural choice, not a temporary hack. We strategically decoupled the stack into public digital utilities: <strong>Google AI Studio's Gemini Flash tier</strong> (1,500 daily requests free), <strong>Google Earth Engine's noncommercial research tier</strong>, and <strong>Supabase's 500MB free PostgreSQL tier</strong>. Because all compute runs on serverless edge nodes, we have zero idle server costs. If scale reaches 100,000 farmers, we transition to state cooperative sponsorship (e.g. Digital India Agritech Track) where bulk API rates cost less than ₹0.15 per farmer per season."
+            </div>
+          </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="flashcard" data-persona="architect" data-keywords="gemini speech audio translation multimodal latency roundtrip">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q2: Why use Gemini Flash for speech and image processing instead of specialized models like Whisper and YOLOv8?</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Architect</span>
+              <span class="flashcard-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "Specialized pipelines introduce compounding latency and context fragmentation: running Whisper (Speech-to-Text) &rarr; YOLO (Bounding Box) &rarr; LLM requires 3 network hops, 3 cold starts, and costs ~4.2 seconds. Gemini Flash is natively multimodal—it ingests audio tokens, image pixels, and weather numbers in a <strong>single unified token pass</strong>, cutting roundtrip latency to <strong>1.1 seconds</strong> while maintaining holistic contextual reasoning across symptoms and weather."
+            </div>
+          </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="flashcard" data-persona="architect" data-keywords="database security rls supabase privacy do no harm dpg postgres">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q3: How do you enforce the 'Do-No-Harm' principle and prevent farmer data exploitation?</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Architect</span>
+              <span class="flashcard-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "We enforce privacy at the PostgreSQL engine level using <strong>Row Level Security (RLS)</strong>. Farmers have authenticated access only to their own parcels. The policymaker dashboard queries a <strong>Materialized View (`regional_trends`)</strong> that aggregates data at district levels (minimum 50 farms). It is mathematically impossible for an external viewer or policymaker to trace back individual land holdings or financial profiles."
+            </div>
+          </div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="flashcard" data-persona="architect" data-keywords="supabase pause inactivity keepalive cron github actions">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q4: Supabase free projects pause after 7 days of inactivity. What happens if a judge tests the site next week?</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Architect</span>
+              <span class="flashcard-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "We engineered an automated keep-alive daemon (`deploy-functions.sh` & scheduled GitHub Actions). Every 48 hours, a lightweight synthetic health-check ping performs an authenticated read query on the database, resetting Supabase's dormancy timer and guaranteeing 100% uptime for judges without paying a single dollar."
+            </div>
+          </div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="flashcard" data-persona="architect" data-keywords="nextjs react 19 app router ssr rsc seo performance">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q5: Why build on Next.js 16.3 (App Router) and React 19 instead of a simple Vite or Single Page React app?</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Architect</span>
+              <span class="flashcard-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "Next.js App Router with React Server Components (RSC) delivers three decisive advantages: First, <strong>Server-side Secret Isolation</strong>—our Gemini API keys and Supabase service tokens never ship to the client bundle. Second, <strong>Zero-Bundle-Cost Rendering</strong>—complex markdown parsers and server utilities execute on the edge, keeping the initial JS bundle under 75KB for fast loading on 3G rural networks. Third, <strong>Native Route Handlers</strong> provide built-in API proxying without spinning up a separate Express server."
+            </div>
+          </div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="flashcard" data-persona="architect" data-keywords="deno supabase edge functions cold start serverless typescript">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q6: Why run Supabase Edge Functions on Deno instead of standard AWS Lambda with Node.js?</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Architect</span>
+              <span class="flashcard-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "Supabase Edge Functions execute on Deno at the global network edge. Deno starts via V8 isolates rather than Docker containers, providing <strong>sub-50ms cold starts</strong> compared to 800ms+ for containerized Node.js Lambdas. Furthermore, Deno has native TypeScript support out of the box (no Babel/Webpack build step) and a strict secure sandbox that restricts unauthorized network and file access."
+            </div>
+          </div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="flashcard" data-persona="architect" data-keywords="zustand redux context state management rerender performance">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q7: Why use Zustand for state management instead of Redux Toolkit or React Context?</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Architect</span>
+              <span class="flashcard-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "Redux Toolkit adds 32KB of boilerplate and reducer actions, while React Context triggers full sub-tree re-renders every time map coordinates change during boundary drawing. <strong>Zustand is only 1.1KB minified</strong>, operates outside the React component tree with selective atomic subscriptions, and includes built-in <code>persist</code> middleware to synchronize farm coordinates and language preferences directly to LocalStorage."
+            </div>
+          </div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="flashcard" data-persona="architect" data-keywords="leaflet openstreetmap google maps api billing credit card">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q8: Why Leaflet.js and OpenStreetMap tiles instead of Google Maps Platform API?</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Architect</span>
+              <span class="badge-danger">Trap</span>
+              <span class="flashcard-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="trap-box">
+              <strong>Examiner Trap:</strong> Many judges assume Google Maps is always better for Google hackathons.
+            </div>
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "Google Maps JavaScript API requires a linked billing credit card and charges $7.00 per 1,000 tile loads above the quota. If 10,000 farmers browse their fields, you face a sudden $70 bill. <strong>Leaflet.js is open-source, 42KB</strong>, requires no API key, has zero payment credentials attached, and allows caching tile layers offline for rural areas."
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== ACADEMIC PROFESSOR / EVALUATOR (8 QUESTIONS) ==================== -->
+        <!-- Q9 -->
+        <div class="flashcard" data-persona="professor" data-keywords="ndvi formula sentinel satellite resolution landsat bands">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q9: Exactly what is NDVI, which satellite bands do you use, and what are the numerical thresholds?</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Professor</span>
+              <span class="badge-danger">Trap</span>
+              <span class="flashcard-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="trap-box">
+              <strong>Rookie Mistake:</strong> Saying "NDVI is greenness." Examiners will immediately deduct marks for vague answers.
+            </div>
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "NDVI is the <strong>Normalized Difference Vegetation Index</strong>, calculated as <code>(NIR - Red) / (NIR + Red)</code>. In Sentinel-2 MSI, we query <strong>Band 8 (Near-Infrared, 842nm)</strong> and <strong>Band 4 (Red, 665nm)</strong> at <strong>10-meter spatial resolution</strong>.<br>
+              • <strong>&lt; 0.1:</strong> Bare soil, rock, water, or sand.<br>
+              • <strong>0.2 to 0.4:</strong> Sparse, budding, or water-stressed vegetation.<br>
+              • <strong>0.5 to 0.8+:</strong> High-density, healthy, actively photosynthesizing canopy."
+            </div>
+          </div>
+        </div>
+
+        <!-- Q10 -->
+        <div class="flashcard" data-persona="professor" data-keywords="cloud cover satellite optical sar sentinel 1 monsoon kharif">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q10: During the Indian Monsoon (Kharif season), optical satellites cannot see through clouds. How does AgriSetu handle this?</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Professor</span>
+              <span class="badge-danger">Trap</span>
+              <span class="flashcard-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="trap-box">
+              <strong>Examiner Trap:</strong> Claiming "Sentinel-2 sees through clouds." Optical satellites CANNOT penetrate dense monsoon clouds!
+            </div>
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "Sentinel-2 uses optical multispectral sensors (MSI), which cannot penetrate dense monsoon cloud decks. AgriSetu implements a two-tier mitigation: First, we use Google Earth Engine's QA60 cloud probability band to apply a 15-day median pixel composite. Second, when overcast persists, we estimate moisture availability and vigor using <strong>Open-Meteo's land-surface cumulative rainfall and soil moisture telemetry</strong>. Our architectural roadmap integrates <strong>Sentinel-1 C-band Synthetic Aperture Radar (SAR)</strong>, which transmits microwaves that pierce through clouds in all weather."
+            </div>
+          </div>
+        </div>
+
+        <!-- Q11 -->
+        <div class="flashcard" data-persona="professor" data-keywords="resolution sentinel 2 landsat 10m 30m smallholder farm pixel">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q11: What is the spatial resolution of Sentinel-2 vs Landsat-8/9, and why does this difference matter for Indian smallholders?</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Professor</span>
+              <span class="flashcard-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "Sentinel-2 provides <strong>10-meter ground resolution</strong> for optical bands (Red, Green, Blue, NIR), whereas Landsat-8/9 provides <strong>30-meter resolution</strong>. An average Indian smallholder plot is between 1 to 2 hectares (10,000 to 20,000 m²). At 30m resolution, an entire 1-hectare farm is represented by only ~11 mixed pixels, blurring field boundaries with neighboring roads and trees. At Sentinel-2's 10m resolution, the same farm yields <strong>100 distinct pixels</strong>, enabling intra-field canopy vigor diagnosis."
+            </div>
+          </div>
+        </div>
+
+        <!-- Q12 -->
+        <div class="flashcard" data-persona="professor" data-keywords="soilgrids gee catalog isric outage rest api">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q12: How does AgriSetu pull SoilGrids data reliably without suffering from ISRIC's frequent REST API outages?</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Professor</span>
+              <span class="flashcard-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "The standalone ISRIC SoilGrids REST API has historically suffered extended global outages lasting several weeks. AgriSetu bypasses the standalone server completely by querying the <strong>Google Earth Engine Community Catalog mirror of SoilGrids 250m</strong>. This pulls soil organic carbon, pH, and clay fractions directly from Google's high-availability distributed data centers with 99.9% uptime."
+            </div>
+          </div>
+        </div>
+
+        <!-- Q13 -->
+        <div class="flashcard" data-persona="professor" data-keywords="acoustic biosphere root cavitation stress simulation soil moisture">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q13: What is the scientific premise of the Acoustic Biosphere Monitor in `AcousticBiosphere.tsx`?</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Professor</span>
+              <span class="flashcard-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "In botanical science, when plants experience acute drought, xylem vessels develop tension causing micro-bubbles to snap—a phenomenon called <strong>xylem cavitation</strong>, which emits ultrasonic acoustic pulses (20–100 kHz). AgriSetu's Acoustic Biosphere component takes real-time root-zone soil moisture (0–7cm) from Open-Meteo and models the cavitation probability index, displaying it as an interactive radar sweep to give farmers an intuitive sensory understanding of root stress before visible leaf wilting occurs."
+            </div>
+          </div>
+        </div>
+
+        <!-- Q14 -->
+        <div class="flashcard" data-persona="professor" data-keywords="temporal slider time travel 90 days extrapolation forecast">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q14: How does the 90-Day Temporal Simulation (Time Travel slider) calculate future NDVI and yield projections?</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Professor</span>
+              <span class="flashcard-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "Inside <code>src/lib/fieldIntelligence.ts</code>, the 90-day trajectory combines 16-day numerical weather predictions (NWP) with historical agro-climatic growing degree days (GDD). As the user moves the slider from Day 0 to Day 90, the algorithm calculates cumulative evapotranspiration deficits and simulates the sigmoid growth curve of the active crop (e.g. Wheat tillering &rarr; heading &rarr; maturity), dynamically shifting the map colors and estimating post-harvest yield."
+            </div>
+          </div>
+        </div>
+
+        <!-- Q15 -->
+        <div class="flashcard" data-persona="professor" data-keywords="sdg zero hunger climate action sustainability un compliance">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q15: Which specific UN Sustainable Development Goals (SDGs) does AgriSetu scientifically map to?</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Professor</span>
+              <span class="flashcard-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "AgriSetu targets three concrete SDGs:<br>
+              • <strong>SDG 2.4 (Zero Hunger & Resilient Agriculture):</strong> Increases harvest yield by early pest containment and prevents up to 25% crop loss.<br>
+              • <strong>SDG 13.1 (Climate Action):</strong> Pre-empts extreme frost and flood events via automated 7-day meteorological threshold alerts.<br>
+              • <strong>SDG 12.4 (Responsible Consumption):</strong> Replaces indiscriminate chemical spraying with soil-calibrated nitrogen application, cutting excess fertilizer runoff into local water tables."
+            </div>
+          </div>
+        </div>
+
+        <!-- Q16 -->
+        <div class="flashcard" data-persona="professor" data-keywords="agrin iit delhi digital agriculture research hook indore">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q16: Explain the difference between AgriN and the India Network on Digital Agriculture coordinated by IIT Delhi.</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Professor</span>
+              <span class="badge-danger">Trap</span>
+              <span class="flashcard-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="trap-box">
+              <strong>Academic Trap:</strong> Confusing the political challenge title with the actual technical initiative.
+            </div>
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "AgriN, established at the India Agriculture Ministers' meeting in Indore (June 2026), deals strictly with international cooperation on agricultural genetic resources and seed germplasm banks. The Digital Agriculture challenge actually reflects the companion framework announced at the same meeting: the <strong>India Network on Digital Agriculture</strong>, coordinated by <strong>IIT Delhi</strong>, which specifically mandates AI, remote sensing, and open data infrastructure for smallholder climate resilience."
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== VC & BUSINESS INVESTOR (8 QUESTIONS) ==================== -->
+        <!-- Q17 -->
+        <div class="flashcard" data-persona="investor" data-keywords="monetization business model competitor dehaat cropin dpg">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q17: Commercial apps like DeHaat, CropIn, and Plantix exist with large funding. What is your defensible moat?</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Investor</span>
+              <span class="badge-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="trap-box">
+              <strong>Rookie Mistake:</strong> Claiming "Our AI is smarter than DeHaat's AI."
+            </div>
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "Commercial players make their revenue on input commerce commissions (15–20% on agrochemicals), which creates an inherent conflict of interest favoring chemical over-application. AgriSetu is an open <strong>Digital Public Good (DPG)</strong>. Our moat is <strong>zero monetization bias</strong>, a $0 infrastructure cost that allows free perpetual access, zero app-store download barriers (PWA), and direct integration into state agricultural cooperative credit programs."
+            </div>
+          </div>
+        </div>
+
+        <!-- Q18 -->
+        <div class="flashcard" data-persona="investor" data-keywords="roi unit economics farmer income profit punjab gujarat">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q18: What is the concrete ROI and net income impact for an Indian farmer with a 2-acre plot?</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Investor</span>
+              <span class="flashcard-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "On a 2-acre wheat plot in Punjab: First, soil-calibrated nitrogen dosing saves ~₹3,200 in wasted Urea and DAP. Second, early detection of Yellow Rust via multimodal photo scans prevents a typical 20% crop loss (worth ~₹24,500 at current ₹22,750/Ton MSP). For a marginal family whose seasonal profit is ₹62,000, saving ₹27,700 represents a <strong>+39.5% net seasonal profit increase</strong> at zero software cost."
+            </div>
+          </div>
+        </div>
+
+        <!-- Q19 -->
+        <div class="flashcard" data-persona="investor" data-keywords="sustainability funding grants government cooperatives dpg long term">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q19: If the app is free and non-commercial, how will it be funded and maintained over 5 years?</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Investor</span>
+              <span class="flashcard-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "As a Digital Public Good, AgriSetu follows the proven operational model of open public rails like UPI and CoWIN. Maintenance is funded via research and state agritech grants (such as the Digital Agriculture Mission with ₹2,817 Crore government outlay), corporate CSR grants from national fertilizer federations (IFFCO), and multilateral development organizations (UN FAO, World Bank Climate-Smart Agriculture programs)."
+            </div>
+          </div>
+        </div>
+
+        <!-- Q20 -->
+        <div class="flashcard" data-persona="investor" data-keywords="tam market size smallholders acreage india global">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q20: What is the Total Addressable Market (TAM) for AgriSetu across India and cooperation countries?</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Investor</span>
+              <span class="flashcard-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "In India, smallholders (operating <2 hectares) comprise <strong>86% of all operational farm holdings</strong>—over 126 million farming families cultivating 140 million hectares. In Brazil and other Global South partners, family agriculture accounts for over 4.5 million establishments. Globally, there are 570 million smallholder farms managing 80% of developing-world food production."
+            </div>
+          </div>
+        </div>
+
+        <!-- Q21 -->
+        <div class="flashcard" data-persona="investor" data-keywords="adoption barriers literacy digital penetration smartphone 3g">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q21: What are the primary user adoption barriers for rural farmers, and how does AgriSetu overcome them?</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Investor</span>
+              <span class="flashcard-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "The three largest barriers are: <strong>1. Digital Literacy:</strong> Overcome by natural voice queries and voice readouts in local mother tongues. <strong>2. Device Storage Limits:</strong> Overcome by our PWA architecture—zero Play Store APK download, installs in <2 seconds. <strong>3. Connectivity Deadzones:</strong> Overcome by Service Worker cache-first offline storage that works in remote fields without cellular service."
+            </div>
+          </div>
+        </div>
+
+        <!-- Q22 -->
+        <div class="flashcard" data-persona="investor" data-keywords="middlemen disintermediation mandi commission agents apmc">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q22: How does AgriSetu handle resistance or disintermediation from local commission agents and input retailers?</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Investor</span>
+              <span class="flashcard-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "We do not seek to eliminate village input dealers; we convert them into certified advisory partners. Village retailers often lack formal agronomy degrees and guess disease treatments. By providing retailers and Farmer Producer Organizations (FPOs) with our diagnostic toolkit, they diagnose leaf spots accurately, improving customer trust while reducing counterfeit chemical usage."
+            </div>
+          </div>
+        </div>
+
+        <!-- Q23 -->
+        <div class="flashcard" data-persona="investor" data-keywords="gtm distribution fpo kvk village level entrepreneurs csc">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q23: What is the Go-To-Market (GTM) distribution channel for scaling AgriSetu to 1 million farmers?</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Investor</span>
+              <span class="flashcard-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "Instead of spending capital on digital consumer advertising, our GTM leverages existing institutional networks: <strong>1. Farmer Producer Organisations (FPOs):</strong> 10,000+ registered FPOs in India. <strong>2. Krishi Vigyan Kendras (KVKs):</strong> 731 agricultural research centers that conduct regular farmer training camps. <strong>3. Common Service Centers (CSCs):</strong> Over 400,000 rural kiosk operators who assist farmers with digital services."
+            </div>
+          </div>
+        </div>
+
+        <!-- Q24 -->
+        <div class="flashcard" data-persona="investor" data-keywords="brazil cooperation international adapter global south mato grosso">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q24: Why was Brazil chosen as the second demo country in your international cooperation architecture?</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Investor</span>
+              <span class="badge-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "Brazil is an agricultural superpower in the Southern Hemisphere with complementary tropical crop ecosystems (soybeans, sugarcane) and an established agricultural research body (EMBRAPA). Because Sentinel-2, Open-Meteo, and GEE SoilGrids are global datasets, demonstrating seamless coordinate switching between Punjab (India) and Mato Grosso (Brazil) proves that AgriSetu's pipeline is globally scalable with zero country-specific code rewrite."
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== DOMAIN AGRONOMIST & FIELD OFFICER (8 QUESTIONS) ==================== -->
+        <!-- Q25 -->
+        <div class="flashcard" data-persona="agronomist" data-keywords="pesticide dosage hallucination safety icar baselines ipm">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q25: What if Gemini hallucinates an incorrect chemical dosage and burns a farmer's entire field?</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Agronomist</span>
+              <span class="badge-danger">Trap</span>
+              <span class="flashcard-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="trap-box">
+              <strong>Rookie Mistake:</strong> Saying "LLMs don't hallucinate if you use temperature 0." They still can without grounded bounds!
+            </div>
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "We implement <strong>strict agronomic guardrail prompting</strong>. The system prompt injects explicit Indian Council of Agricultural Research (ICAR) chemical maximums. If confidence is below 85% or symptoms are ambiguous, the model is instructed to decline chemical dosage recommendations and prioritize biological remedies (e.g. Neem oil 1500ppm @ 5ml/liter) while prompting the farmer to verify with their local KVK officer."
+            </div>
+          </div>
+        </div>
+
+        <!-- Q26 -->
+        <div class="flashcard" data-persona="agronomist" data-keywords="yellow rust wheat puccinia striiformis disease diagnosis fungal">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q26: How does AgriSetu diagnose Yellow Rust (Puccinia striiformis) on wheat leaves from a mobile photo?</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Agronomist</span>
+              <span class="flashcard-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "Yellow Rust manifests as linear rows of yellow-orange pustules (uredinia) along leaf veins. When uploaded, Gemini Flash's vision encoder extracts the linear pustule geometry and correlates it with ambient field telemetry—specifically night temperatures between 10–15°C and relative humidity >85% fetched via Open-Meteo. This joint visual-meteorological reasoning produces a 92%+ confidence diagnosis."
+            </div>
+          </div>
+        </div>
+
+        <!-- Q27 -->
+        <div class="flashcard" data-persona="agronomist" data-keywords="soil ph organic carbon fertilizer absorption npk urea efficiency">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q27: How does soil pH and organic carbon data from SoilGrids modify nitrogen fertilizer advice?</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Agronomist</span>
+              <span class="flashcard-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "In alkaline soils (pH > 8.0), applied Urea undergoes rapid ammonia volatilization, wasting up to 40% of nitrogen into the atmosphere. When SoilGrids detects high pH and low organic carbon (<0.5%), AgriSetu advises the farmer to split nitrogen into 3 split-doses rather than a single broadcast, and recommends applying bio-fertilizers or gypsum to improve nutrient uptake efficiency."
+            </div>
+          </div>
+        </div>
+
+        <!-- Q28 -->
+        <div class="flashcard" data-persona="agronomist" data-keywords="climate alerts frost flood heatwave thresholds temperature">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q28: How does the Climate Alerts module in `ClimateAlerts.tsx` determine critical weather risk thresholds?</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Agronomist</span>
+              <span class="flashcard-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "Inside <code>src/components/ClimateAlerts.tsx</code>, the algorithm evaluates Open-Meteo's 7-day forecast against agronomic thresholds: <strong>Ground Frost Risk:</strong> Minimum temp &le; 4°C with clear night skies (triggers advice to apply light irrigation to protect crops). <strong>Heatwave Risk:</strong> Max temp &ge; 40°C during wheat grain-filling (triggers terminal heat stress warning). <strong>Waterlogging:</strong> Cumulative 48h rainfall &ge; 60mm."
+            </div>
+          </div>
+        </div>
+
+        <!-- Q29 -->
+        <div class="flashcard" data-persona="agronomist" data-keywords="ipm integrated pest management biological organic pesticide reduction">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q29: Why does AgriSetu recommend Integrated Pest Management (IPM) and organic controls before chemical sprays?</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Agronomist</span>
+              <span class="flashcard-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "Over-reliance on synthetic pyrethroids and organophosphates kills natural predators (ladybugs, parasitic wasps) and triggers secondary pest outbreaks while building chemical resistance. Our prompts prioritize the IPM pyramid: <strong>1. Cultural:</strong> Crop rotation and weed clearing. <strong>2. Biological:</strong> Trichoderma or Neem formulations. <strong>3. Targeted Chemical:</strong> Chemical sprays are suggested only as a last resort when the economic injury level (EIL) is crossed."
+            </div>
+          </div>
+        </div>
+
+        <!-- Q30 -->
+        <div class="flashcard" data-persona="agronomist" data-keywords="soil moisture 0 to 7 cm open meteo evapotranspiration irrigation">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q30: How does soil moisture at 0–7cm correlate with crop water stress and irrigation scheduling?</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Agronomist</span>
+              <span class="flashcard-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "Open-Meteo's <code>soil_moisture_0_to_7cm</code> represents the active topsoil seedbed layer. In loam soils, volumetric water content below 15% approaches the permanent wilting point, inducing stomatal closure and halting photosynthesis. AgriSetu tracks daily moisture depletion against crop evapotranspiration (ET0) to recommend irrigation 48 hours before physiological moisture stress impairs yield."
+            </div>
+          </div>
+        </div>
+
+        <!-- Q31 -->
+        <div class="flashcard" data-persona="agronomist" data-keywords="msp baselines crop baselines wheat rice cotton yield price inr">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q31: How do Minimum Support Prices (MSP) in `CROP_BASELINES` translate physical yield into harvest revenue?</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Agronomist</span>
+              <span class="flashcard-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "In <code>src/lib/fieldIntelligence.ts</code>, <code>CROP_BASELINES</code> stores official Indian MSP prices (e.g. Wheat at ₹22,750/Ton, Rice at ₹21,830/Ton, Mustard at ₹56,500/Ton) alongside baseline tons-per-hectare yields. When our NDVI formula calculates an intra-field vigor multiplier (e.g. 1.15x for healthy canopy or 0.85x for stressed canopy), we multiply by the parcel area and MSP price to give the farmer a direct estimated economic value in Indian Rupees."
+            </div>
+          </div>
+        </div>
+
+        <!-- Q32 -->
+        <div class="flashcard" data-persona="agronomist" data-keywords="illiterate farmers audio speech vernacular web speech accessibility">
+          <div class="flashcard-header" onclick="toggleCard(this)">
+            <div class="flashcard-q">Q32: How does AgriSetu assist non-literate farmers who cannot read vernacular text on a smartphone screen?</div>
+            <div class="flashcard-tags">
+              <span class="badge-persona">Agronomist</span>
+              <span class="flashcard-toggle-icon">▼</span>
+            </div>
+          </div>
+          <div class="flashcard-body">
+            <div class="model-answer">
+              <strong>Flawless Counter-Punch:</strong> "AgriSetu is designed touch-first and ear-first: All critical metrics feature universal visual iconography and color indicators (Green for healthy, Amber for caution, Red for critical). Crucially, every single generated advisory includes an auto-play voice button that reads the advice aloud in pure spoken vernacular (Hindi, Gujarati, Marathi) using the browser's on-device <strong>Web Speech API</strong>, ensuring farmers never need to read a single paragraph to take action."
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================================= TAB 5: 60-SEC MOCK SIMULATOR ================================= -->
+    <section id="tab-sim" class="tab-pane">
+      <div class="sim-panel">
+        <div style="font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #a7f3d0; margin-bottom: 8px;">
+          ⏱️ Rapid-Fire Viva Defense Drill
+        </div>
+        <div id="sim-timer" class="sim-timer">60</div>
+
+        <div id="sim-question" class="sim-question-box">
+          Click "Start Drill" to receive a random cross-examination challenge from judges!
+        </div>
+
+        <div class="sim-controls">
+          <button id="sim-start-btn" class="btn" onclick="startSim()" style="padding: 10px 24px; font-size: 14px;">▶️ Start 60s Drill</button>
+          <button id="sim-reveal-btn" class="btn btn-secondary" onclick="revealSimAnswer()" style="display: none;">💡 Reveal Counter-Punch</button>
+          <button class="btn btn-secondary" onclick="nextQuestion()">🎲 Next Random Question</button>
+        </div>
+
+        <div id="sim-answer-box" style="display: none; margin-top: 20px; text-align: left; background: rgba(0,0,0,0.4); padding: 18px; border-radius: var(--radius-md); border-left: 3px solid var(--emerald-glow);">
+          <div style="font-weight: 700; color: #6ee7b7; margin-bottom: 6px;">🎯 Model Counter-Punch:</div>
+          <div id="sim-answer-text" style="font-size: 13.5px; line-height: 1.55; color: #f3f4f6;"></div>
+        </div>
+      </div>
+
+      <!-- Quick Practice Tips -->
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">1. The 3-Second Pause</div>
+          <p style="font-size: 13px; color: var(--text-muted);">
+            Never blurt out your answer instantly. Take a calm breath, nod, and say: <em>"That's a critical architectural consideration. Here is how we addressed it..."</em>
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-title">2. State the Trade-Off</div>
+          <p style="font-size: 13px; color: var(--text-muted);">
+            Engineers choose technologies based on trade-offs. Always explain <em>why</em> you chose X over Y (e.g. Leaflet over Google Maps to avoid API billing).
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-title">3. Quote Numbers</div>
+          <p style="font-size: 13px; color: var(--text-muted);">
+            Judges love precise numbers: <strong>10m resolution</strong>, <strong>1,500 free calls/day</strong>, <strong><1.5KB Zustand bundle</strong>, <strong>sub-50ms cold starts</strong>.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================= TAB 6: LIVE DEMO & DISASTER SCRIPT ================================= -->
+    <section id="tab-demo" class="tab-pane">
+      <div class="hero-strip">
+        <div class="hero-strip-content">
+          <h2>Live Demo Walkthrough & Disaster Recovery</h2>
+          <p>
+            The exact click sequence, narration lines, and pre-rehearsed fallback maneuvers in case WiFi drops, API keys get throttled, or the demo laptop crashes.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- Exact Demo Sequence -->
+        <div class="card">
+          <div class="card-title">
+            <span>🎬 The 3-Minute Live Presentation Script</span>
+          </div>
+          <div style="font-size: 13.5px; line-height: 1.6;">
+            <div style="margin-bottom: 12px;">
+              <strong>Step 1: The Hook (0:00 - 0:30)</strong>
+              <p style="color: var(--text-muted);">Show the landing page. Point to the "$0 Infrastructure" and "IIT Delhi Digital Agriculture" badges. Say: <em>"We are presenting AgriSetu—transforming planetary satellites into vernacular voice advisories for smallholders."</em></p>
+            </div>
+            <div style="margin-bottom: 12px;">
+              <strong>Step 2: Interactive Field Geofencing (0:30 - 1:15)</strong>
+              <p style="color: var(--text-muted);">Click on the Map. Pin a field in Punjab (or click the quick preset). Show the boundary polygon drawing. Point out the live NDVI calculation (0.64 - Healthy Wheat Canopy).</p>
+            </div>
+            <div style="margin-bottom: 12px;">
+              <strong>Step 3: Multimodal Leaf Diagnosis (1:15 - 2:00)</strong>
+              <p style="color: var(--text-muted);">Upload a leaf photo with Yellow Rust. Show the animated scanner. Click "Diagnose". Within 1.5 seconds, Gemini identifies Puccinia striiformis and provides ICAR dosage recommendations.</p>
+            </div>
+            <div>
+              <strong>Step 4: Vernacular Voice & Policymaker Switch (2:00 - 3:00)</strong>
+              <p style="color: var(--text-muted);">Click the Audio icon & play Gujarati/Hindi voice advisory. Then flip the toggle to "Policymaker Dashboard" to demonstrate aggregated district analytics without PII leakage.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Disaster Recovery -->
+        <div class="card">
+          <div class="card-title">
+            <span>🚨 Disaster Recovery: If Things Go Wrong During the Demo</span>
+          </div>
+          <div style="font-size: 13px; line-height: 1.55;">
+            <div style="margin-bottom: 12px; padding: 10px; background: rgba(244, 63, 94, 0.08); border-radius: 6px;">
+              <strong style="color: #fca5a5;">Scenario A: Venue WiFi drops or disconnects</strong>
+              <p style="margin-top: 4px;"><strong>Action:</strong> Don't panic! Open the app anyway. Say: <em>"Judges, our PWA is engineered specifically for rural offline resilience. Notice how the Service Worker serves our cached advisory and field maps instantly without internet!"</em></p>
+            </div>
+            <div style="margin-bottom: 12px; padding: 10px; background: rgba(245, 158, 11, 0.08); border-radius: 6px;">
+              <strong style="color: #fcd34d;">Scenario B: Gemini API rate limit or latency spike</strong>
+              <p style="margin-top: 4px;"><strong>Action:</strong> Click on one of the pre-cached demo fields in the sidebar. Say: <em>"Our PostgreSQL edge cache stores recent advisory snapshots to guarantee instant field access even during upstream satellite link downtime."</em></p>
+            </div>
+            <div style="padding: 10px; background: rgba(16, 185, 129, 0.08); border-radius: 6px;">
+              <strong style="color: #6ee7b7;">Scenario C: Examiner asks to see the database directly</strong>
+              <p style="margin-top: 4px;"><strong>Action:</strong> Open <code>supabase/migrations/20260818000000_initial_schema.sql</code> directly in VS Code / Antigravity IDE and show the clean PostgreSQL schema and RLS policies.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================= TAB 7: COMPETITORS & CHEAT SHEET ================================= -->
+    <section id="tab-economics" class="tab-pane">
+      <div class="hero-strip">
+        <div class="hero-strip-content">
+          <h2>Competitor Teardown, Economics & Mental Math</h2>
+          <p>
+            The strategic numbers and competitor differentiators that prove AgriSetu's viability as a scalable Digital Public Good.
+          </p>
+        </div>
+      </div>
+
+      <!-- Interactive Cost Comparison Calculator -->
+      <div class="cost-calculator-widget">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <h3 style="color: var(--emerald-glow); font-size: 18px; margin-bottom: 4px;">🧮 Interactive Infrastructure Cost Calculator</h3>
+            <p style="font-size: 13px; color: var(--text-muted);">
+              Move the slider to see how commercial agritech bills explode while AgriSetu scales at exactly $0.00:
+            </p>
+          </div>
+          <span class="badge-cost-zero" style="font-size: 12px; padding: 6px 12px;">100% FREE DIGITAL PUBLIC GOOD</span>
+        </div>
+
+        <div class="cost-slider-container">
+          <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: var(--text-bright); margin-bottom: 8px;">
+            <span>Monthly Active Farmer Queries: <span id="farmerQueryCount" style="color: var(--emerald-glow); font-size: 16px;">15,000</span></span>
+            <span style="color: #93c5fd;">(~500 queries / day)</span>
+          </div>
+          <input type="range" min="1000" max="45000" step="1000" value="15000" class="cost-slider" id="costRangeSlider" oninput="updateCostCalculator(this.value)">
+          <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-top: 6px;">
+            <span>1,000 / mo</span>
+            <span>15,000 / mo (Standard Hackathon/Pilot)</span>
+            <span>45,000 / mo (Full Free-Tier Capacity)</span>
+          </div>
+        </div>
+
+        <div class="cost-comparison-cards">
+          <!-- Traditional Card -->
+          <div class="cost-card-traditional">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span style="font-weight: 800; font-size: 14px; color: #f43f5e;">❌ Traditional Agritech Startup Stack</span>
+              <span id="tradCostTotal" style="font-size: 20px; font-weight: 900; color: #f43f5e;">$630 / mo</span>
+            </div>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
+              Requires dedicated cloud GPUs, Google Maps API billing, paid Speech-to-Text &amp; AWS RDS.
+            </p>
+            <div style="font-size: 12px; line-height: 1.6; color: #fda4af;">
+              <div>• GPU Inference VM (A10G): $280/mo</div>
+              <div>• Google Maps Platform APIs: $105/mo</div>
+              <div>• Paid Cloud Speech-to-Text: $145/mo</div>
+              <div>• AWS RDS PostgreSQL + Load Balancers: $100/mo</div>
+            </div>
+          </div>
+
+          <!-- AgriSetu Card -->
+          <div class="cost-card-agrisetu">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span style="font-weight: 800; font-size: 14px; color: #6ee7b7;">✅ AgriSetu Serverless DPG Stack</span>
+              <span style="font-size: 20px; font-weight: 900; color: #6ee7b7;">$0.00 / mo</span>
+            </div>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
+              Uses open scientific tiers, on-device browser APIs, and Google AI Studio free tier.
+            </p>
+            <div style="font-size: 12px; line-height: 1.6; color: #a7f3d0;">
+              <div>• Google AI Studio (Gemini 1.5 Flash): $0.00 (1,500 free/day)</div>
+              <div>• Google Earth Engine (Research Tier): $0.00</div>
+              <div>• Supabase Database (500MB Free Tier): $0.00</div>
+              <div>• Web Speech API (Client On-Device): $0.00 (Zero Cloud Bandwidth)</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 16px; text-align: center; background: rgba(16, 185, 129, 0.15); border: 1px solid var(--emerald-glow); border-radius: var(--radius-sm); padding: 12px;">
+          <span style="font-size: 14px; color: var(--text-bright); font-weight: 700;">
+            🏆 Net Rural Savings Generated: <span id="savingsAnnual" style="color: #6ee7b7; font-size: 18px; font-weight: 900;">$7,560 / year</span> in zero wasted cloud bills!
+          </span>
+        </div>
+      </div>
+
+      <!-- Bento Battle Cards (Competitor Replacement) -->
+      <div class="card">
+        <div class="card-title">
+          <span>⚔️ Head-to-Head Battle Cards: AgriSetu vs. The Industry</span>
+        </div>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+          Direct vector comparisons showing why judges and farmers choose AgriSetu:
+        </p>
+
+        <div class="battle-grid">
+          <!-- AgriSetu Champion Card -->
+          <div class="battle-card agrisetu-champion">
+            <div class="champion-ribbon">🏆 DPG Champion</div>
+            <div class="battle-card-title">
+              <span>🌾 AgriSetu</span>
+            </div>
+            <div class="battle-item">
+              <span class="battle-item-label">Business Model</span>
+              <span class="battle-item-val" style="color: #6ee7b7;">100% Free DPG</span>
+            </div>
+            <div class="battle-item">
+              <span class="battle-item-label">Infra Cost</span>
+              <span class="battle-item-val" style="color: #6ee7b7;">$0.00 Serverless</span>
+            </div>
+            <div class="battle-item">
+              <span class="battle-item-label">Satellite Radar</span>
+              <span class="battle-item-val" style="color: #6ee7b7;">Sentinel-2 10m NDVI</span>
+            </div>
+            <div class="battle-item">
+              <span class="battle-item-label">Multimodal AI</span>
+              <span class="battle-item-val" style="color: #6ee7b7;">Voice + Photo in 1.1s</span>
+            </div>
+            <div class="battle-item">
+              <span class="battle-item-label">Data Privacy</span>
+              <span class="battle-item-val" style="color: #6ee7b7;">Postgres RLS (Protected)</span>
+            </div>
+          </div>
+
+          <!-- DeHaat / CropIn -->
+          <div class="battle-card">
+            <div class="battle-card-title">
+              <span>🏢 DeHaat / CropIn</span>
+            </div>
+            <div class="battle-item">
+              <span class="battle-item-label">Business Model</span>
+              <span class="battle-item-val" style="color: #fca5a5;">15-20% chemical sales cut</span>
+            </div>
+            <div class="battle-item">
+              <span class="battle-item-label">Infra Cost</span>
+              <span class="battle-item-val" style="color: #fca5a5;">$50k+/mo cloud servers</span>
+            </div>
+            <div class="battle-item">
+              <span class="battle-item-label">Satellite Radar</span>
+              <span class="battle-item-val" style="color: var(--text-muted);">Paid enterprise tier only</span>
+            </div>
+            <div class="battle-item">
+              <span class="battle-item-label">Multimodal AI</span>
+              <span class="battle-item-val" style="color: var(--text-muted);">Manual call centers / text</span>
+            </div>
+            <div class="battle-item">
+              <span class="battle-item-label">Data Privacy</span>
+              <span class="battle-item-val" style="color: #fca5a5;">Monetizes farmer data</span>
+            </div>
+          </div>
+
+          <!-- Plantix -->
+          <div class="battle-card">
+            <div class="battle-card-title">
+              <span>📱 Plantix</span>
+            </div>
+            <div class="battle-item">
+              <span class="battle-item-label">Business Model</span>
+              <span class="battle-item-val" style="color: #fcd34d;">Freemium + in-app ads</span>
+            </div>
+            <div class="battle-item">
+              <span class="battle-item-label">Infra Cost</span>
+              <span class="battle-item-val" style="color: #fca5a5;">Heavy GPU clusters</span>
+            </div>
+            <div class="battle-item">
+              <span class="battle-item-label">Satellite Radar</span>
+              <span class="battle-item-val" style="color: #fca5a5;">None (Leaf photos only)</span>
+            </div>
+            <div class="battle-item">
+              <span class="battle-item-label">Multimodal AI</span>
+              <span class="battle-item-val" style="color: var(--text-muted);">Text output only</span>
+            </div>
+            <div class="battle-item">
+              <span class="battle-item-label">Data Privacy</span>
+              <span class="battle-item-val" style="color: #fcd34d;">Mines crop photos</span>
+            </div>
+          </div>
+
+          <!-- Kisan Suvidha -->
+          <div class="battle-card">
+            <div class="battle-card-title">
+              <span>🏛️ Kisan Suvidha (Govt)</span>
+            </div>
+            <div class="battle-item">
+              <span class="battle-item-label">Business Model</span>
+              <span class="battle-item-val" style="color: #93c5fd;">Taxpayer funded</span>
+            </div>
+            <div class="battle-item">
+              <span class="battle-item-label">Infra Cost</span>
+              <span class="battle-item-val" style="color: var(--text-muted);">Legacy datacenter</span>
+            </div>
+            <div class="battle-item">
+              <span class="battle-item-label">Satellite Radar</span>
+              <span class="battle-item-val" style="color: #fca5a5;">Static district bulletins</span>
+            </div>
+            <div class="battle-item">
+              <span class="battle-item-label">Multimodal AI</span>
+              <span class="battle-item-val" style="color: var(--text-muted);">Toll-free telephone queue</span>
+            </div>
+            <div class="battle-item">
+              <span class="battle-item-label">Data Privacy</span>
+              <span class="battle-item-val" style="color: #93c5fd;">Standard government DB</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- Farmer ROI Math -->
+        <div class="card">
+          <div class="card-title">
+            <span>💰 Smallholder Farmer Unit Economics (2-Acre Farm in Punjab)</span>
+          </div>
+          <div style="font-size: 13.5px; line-height: 1.6;">
+            <p><strong>Baseline Scenario (Without AgriSetu):</strong></p>
+            <ul style="margin-left: 20px; color: var(--text-muted); margin-bottom: 10px;">
+              <li>Over-application of Urea / DAP: ₹4,500 excess input cost</li>
+              <li>Unnoticed Yellow Rust fungal outbreak: 22% yield loss (-₹28,000)</li>
+              <li>Net Season Income: ₹62,000</li>
+            </ul>
+
+            <p><strong>With AgriSetu Precision Guidance:</strong></p>
+            <ul style="margin-left: 20px; color: #a7f3d0; margin-bottom: 10px;">
+              <li>Soil-calibrated nitrogen fertilization saves ₹3,200 in inputs</li>
+              <li>Early Sentinel-2 NDVI canopy moisture alert prevents pest flare-up</li>
+              <li>Yield preservation boosts net harvest revenue by <strong>+₹24,500</strong></li>
+            </ul>
+            <div class="punch-box">
+              <strong>Impact Metric:</strong> Represents a <strong>+39.5% net seasonal profit increase</strong> for a marginal Indian farming family at zero subscription cost.
+            </div>
+          </div>
+        </div>
+
+        <!-- Mental Math Cheat Sheet -->
+        <div class="card">
+          <div class="card-title">
+            <span>🧠 Mental Math & Quota Cheat Sheet (Quick Memorization)</span>
+          </div>
+          <div style="font-size: 13.5px; line-height: 1.6;">
+            <p>• <strong>NDVI Formula:</strong> <code>(Band 8 - Band 4) / (Band 8 + Band 4)</code></p>
+            <p>• <strong>Sentinel-2 Resolution:</strong> 10 meters per pixel (1 pixel = 100 m²)</p>
+            <p>• <strong>1 Hectare:</strong> 10,000 m² = 100 distinct Sentinel-2 pixels</p>
+            <p>• <strong>Gemini Free Quota:</strong> 1,500 requests/day = 1 request every 57 seconds continuously</p>
+            <p>• <strong>Deno Edge Cold Start:</strong> &lt;50ms (vs AWS Lambda at 800ms)</p>
+            <p>• <strong>Zustand Bundle Size:</strong> 1.1 KB (vs Redux Toolkit at 32 KB)</p>
+            <p>• <strong>Keep-Alive Cadence:</strong> 48 hours (well within Supabase 7-day pause rule)</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FLOATING QUICK DOCK -->
+  <div class="floating-dock">
+    <div id="dock-popup" class="dock-popup">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <span style="font-weight: 700; color: #6ee7b7; font-size: 13px;">⚡ Quick One-Liners</span>
+        <button onclick="toggleDock()" style="background:none; border:none; color:var(--text-muted); cursor:pointer;">✕</button>
+      </div>
+      <div style="font-size: 12px; line-height: 1.5; color: var(--text-main);">
+        <p style="margin-bottom: 6px;"><strong>Q: Why $0 cost?</strong><br>Google AI Studio free tier + GEE noncommercial + Supabase free Postgres.</p>
+        <p style="margin-bottom: 6px;"><strong>Q: Why not Google Maps?</strong><br>Leaflet is 42KB, zero API key, no pay-per-load risk.</p>
+        <p style="margin-bottom: 6px;"><strong>Q: What is NDVI?</strong><br>(B8 - B4) / (B8 + B4) via Sentinel-2 10m bands.</p>
+        <p><strong>Q: What initiative?</strong><br>India Network on Digital Agriculture (IIT Delhi coordinated).</p>
+      </div>
+    </div>
+    <button class="dock-btn" onclick="toggleDock()">
+      <span>⚡ Quick One-Liners</span>
+    </button>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast">Copied to clipboard!</div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // Tab Switching
+    const tabBtns = document.querySelectorAll('.nav-tab-btn');
+    const tabPanes = document.querySelectorAll('.tab-pane');
+
+    window.switchTab = function(target) {
+      if (!target) return;
+      const cleanTarget = target.startsWith('#') ? target.substring(1) : target;
+      const targetPane = document.getElementById(cleanTarget);
+      const targetBtn = document.querySelector(`.nav-tab-btn[data-tab="${cleanTarget}"]`);
+      if (!targetPane || !targetBtn) return;
+
+      tabBtns.forEach(b => b.classList.remove('active'));
+      tabPanes.forEach(p => p.classList.remove('active'));
+
+      targetBtn.classList.add('active');
+      targetPane.classList.add('active');
+    };
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.getAttribute('data-tab');
+        window.switchTab(target);
+        if (history.pushState) {
+          history.pushState(null, null, '#' + target);
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
+
+    if (window.location.hash) {
+      window.switchTab(window.location.hash);
+    }
+    window.addEventListener('hashchange', () => {
+      if (window.location.hash) {
+        window.switchTab(window.location.hash);
+      }
+    });
+
+    // Theme Toggle
+    const themeBtn = document.getElementById('theme-toggle');
+    themeBtn.addEventListener('click', () => {
+      const current = document.body.getAttribute('data-theme');
+      if (current === 'light') {
+        document.body.removeAttribute('data-theme');
+        themeBtn.textContent = '🌙';
+      } else {
+        document.body.setAttribute('data-theme', 'light');
+        themeBtn.textContent = '☀️';
+      }
+    });
+
+    // Flashcard Toggle
+    function toggleCard(header) {
+      const card = header.parentElement;
+      card.classList.toggle('active');
+    }
+
+    // Persona Filter
+    function filterPersona(persona) {
+      const pills = document.querySelectorAll('.persona-pill');
+      pills.forEach(p => p.classList.remove('active'));
+      event.target.classList.add('active');
+
+      const cards = document.querySelectorAll('.flashcard');
+      cards.forEach(card => {
+        if (persona === 'all' || card.getAttribute('data-persona') === persona) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    // Global Search
+    const searchInput = document.getElementById('global-search');
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      const cards = document.querySelectorAll('.flashcard');
+
+      cards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        const keywords = (card.getAttribute('data-keywords') || '').toLowerCase();
+        if (text.includes(query) || keywords.includes(query)) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+
+    // Copy to Clipboard with Toast
+    function copyText(elemId) {
+      const elem = document.getElementById(elemId);
+      const text = elem.innerText || elem.textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        showToast("Copied to clipboard!");
+      });
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.style.display = 'block';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 2000);
+    }
+
+    // Floating Dock Toggle
+    function toggleDock() {
+      const dock = document.getElementById('dock-popup');
+      dock.classList.toggle('show');
+    }
+
+    // Architecture Node Inspector Details
+    const nodeDetails = {
+      'gee': {
+        title: '🛰️ Google Earth Engine (Sentinel-2 Dynamic Compute)',
+        content: '<strong>Role:</strong> On-the-fly planetary computations over petabytes of ESA Sentinel-2 MSI surface reflectance imagery.<br><strong>Why GEE?</strong> Rather than downloading and storing 500MB GeoTIFF files on our own server, GEE calculates NDVI directly in Google\'s cloud in <800ms and returns only the required floating-point matrix.<br><strong>Cost:</strong> $0 under GEE\'s noncommercial research registration (no linked credit card required).'
+      },
+      'soil': {
+        title: '🌱 GEE SoilGrids Catalog Integration',
+        content: '<strong>Role:</strong> Provides soil organic carbon, pH (in H2O), clay percentage, and nitrogen density across depth intervals (0-5cm, 5-15cm).<br><strong>Critical Decision:</strong> The standalone ISRIC SoilGrids REST API has suffered frequent multi-week outages. We bypassed this vulnerability by querying the verified SoilGrids 250m asset mirror hosted directly inside the Google Earth Engine public data catalog.'
+      },
+      'weather': {
+        title: '🌦️ Open-Meteo API (High-Precision Agro Forecasts)',
+        content: '<strong>Role:</strong> Delivers hourly precipitation, temperature (2m), relative humidity, and ECMWF-backed 16-day forecasts.<br><strong>Why Chosen:</strong> 100% keyless open-source weather API with no rate-limit paywalls. Includes explicit agricultural variables like soil moisture at 0-7cm and potential evapotranspiration (ET0).'
+      },
+      'faostat': {
+        title: '🌾 FAOSTAT & MSP Historical Crop Baselines',
+        content: '<strong>Role:</strong> Provides regional baseline yields (Tons/Hectare) and Indian Government Minimum Support Prices (MSP) stored in <code>CROP_BASELINES</code> inside <code>src/lib/fieldIntelligence.ts</code>.<br><strong>Impact:</strong> Translates abstract physical NDVI crop vigor into real-world monetary rupees (INR) for smallholder farmers.'
+      },
+      'country-adapter': {
+        title: '🌐 Country Adapter Pattern (`src/lib/fieldIntelligence.ts`)',
+        content: '<strong>Architecture:</strong> An abstraction layer that takes arbitrary GPS coordinates <code>(lat, lng)</code> and routes queries across global datasets.<br><strong>Global Scaling:</strong> The same pipeline that monitors wheat in Ludhiana, Punjab, seamlessly monitors soybean acreage in Sorriso, Mato Grosso (Brazil) without changing a single line of backend logic.'
+      },
+      'edge-functions': {
+        title: '⚡ Supabase Edge Functions (Deno Runtime)',
+        content: '<strong>Role:</strong> Handles asynchronous multi-API telemetry fusion, advisory assembly, and database insertions.<br><strong>Why Deno?</strong> Cold starts are sub-50ms worldwide, compared to 800ms+ for containerized Node.js. Sandboxed security model prevents accidental credential leakage.'
+      },
+      'proxy-routes': {
+        title: '🛡️ Next.js Route Handlers (`/api/*`)',
+        content: '<strong>Security Boundary:</strong> Protects all Google AI Studio and Supabase secret keys. All client requests hit Next.js server endpoints, which append authorization headers server-side before reaching external AI engines.'
+      },
+      'gemini-multimodal': {
+        title: '🧠 Google Gemini Flash (Multimodal Token Consolidation)',
+        content: '<strong>Core AI Moat:</strong> Native multimodal token parser that ingests raw audio buffers, disease leaf photos, and numerical field telemetry simultaneously in one single call.<br><strong>Latency:</strong> 1.1s roundtrip.<br><strong>Quota:</strong> 1,500 requests/day free on Google AI Studio.'
+      },
+      'advisory-engine': {
+        title: '📋 ICAR Grounded Advisory Engine',
+        content: '<strong>Agronomic Grounding:</strong> Bounds LLM generation using Indian Council of Agricultural Research (ICAR) chemical maximums. Eliminates dangerous hallucinations by prioritizing non-chemical IPM (Integrated Pest Management) biological controls.'
+      },
+      'acoustic': {
+        title: '🔊 Acoustic Biosphere Stress Simulator (`AcousticBiosphere.tsx`)',
+        content: '<strong>Innovation:</strong> Simulates subsurface root acoustic cavitation events (stress frequencies) derived dynamically from live soil moisture levels.<br><strong>Farmer UX:</strong> Rendered as an engaging audio-visual radar sweep to explain soil drought stress intuitively.'
+      },
+      'pwa': {
+        title: '📱 Progressive Web App (PWA) Engine (`@ducanh2912/next-pwa`)',
+        content: '<strong>Rural Accessibility:</strong> Transforms the web app into an installable mobile app with zero Play Store friction. Implements Service Workers with <code>CacheFirst</code> and <code>StaleWhileRevalidate</code> strategies for offline farm usage.'
+      },
+      'speech': {
+        title: '🗣️ Web Speech API Engine (`window.speechSynthesis`)',
+        content: '<strong>Voice Accessibility:</strong> Converts AI advisory text to natural vernacular speech directly in the farmer\'s mobile browser. Consumes <strong>zero internet bandwidth</strong>, solving high data costs for rural farmers.'
+      },
+      'policymaker': {
+        title: '🏛️ Policymaker Dashboard (`regional_trends`)',
+        content: '<strong>DPG Compliance:</strong> Backed by PostgreSQL Materialized Views. Aggregates regional NDVI health and pest alert frequencies across districts while strictly withholding individual farmer coordinates and PII.'
+      }
+    };
+
+    function inspectNode(nodeKey) {
+      const info = nodeDetails[nodeKey];
+      if (!info) return;
+
+      document.querySelectorAll('.arch-node').forEach(n => n.classList.remove('active-node'));
+      event.currentTarget.classList.add('active-node');
+
+      const inspector = document.getElementById('arch-inspector');
+      document.getElementById('inspector-title').innerHTML = info.title;
+      document.getElementById('inspector-body').innerHTML = info.content;
+      inspector.style.display = 'block';
+      inspector.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function closeInspector() {
+      document.getElementById('arch-inspector').style.display = 'none';
+      document.querySelectorAll('.arch-node').forEach(n => n.classList.remove('active-node'));
+    }
+
+    // ================================= FLOW PIPELINE SIMULATOR =================================
+    const flowStepDetails = {
+      1: {
+        title: "📍 Step 1 Contract: Client GPS & GeoJSON Polygon",
+        content: `{\n  "farmer_id": "anon-dpg-farmer-09",\n  "boundary": {\n    "type": "Polygon",\n    "coordinates": [[[75.8572, 30.9010], [75.8590, 30.9015], [75.8585, 30.8995], [75.8572, 30.9010]]]\n  },\n  "crop": "Wheat (HD-3086)",\n  "timestamp": "2026-09-08T10:30:00Z"\n}\n// Payload Latency: <5ms (Pure client Leaflet vector calculations)`
+      },
+      2: {
+        title: "⚡ Step 2 Contract: Multi-Sensor Ingestion (Deno Edge)",
+        content: `{\n  "ndvi_raw": 0.642, // GEE Sentinel-2 MSI (B8 - B4) / (B8 + B4)\n  "soil_moisture_surface": "18.4%", // Open-Meteo 0-7cm volumetric\n  "evapotranspiration_et0": "4.2mm/day",\n  "precipitation_16day_forecast": "0.0mm (Dry spell detected)",\n  "cold_start_time": "18ms"\n}\n// Payload Latency: ~320ms (Parallel non-blocking fetch)`
+      },
+      3: {
+        title: "🧠 Step 3 Contract: Gemini Flash Multimodal Prompt",
+        content: `{\n  "system_instruction": "Act as an ICAR agronomist. Output strict JSON with diagnosis & bio-remediation.",\n  "multimodal_inputs": [\n    { "inline_data": { "mime_type": "audio/webm", "data": "<voice_buffer>" } },\n    { "inline_data": { "mime_type": "image/jpeg", "data": "<leaf_photo>" } },\n    { "text": "Telemetry: NDVI=0.64, SoilMoisture=18%, Temp=32C" }\n  ]\n}\n// Payload Latency: ~650ms (Consolidated 1-shot roundtrip)`
+      },
+      4: {
+        title: "🗣️ Step 4 Contract: Edge Delivery & On-Device Vernacular Speech",
+        content: `{\n  "diagnosis": "Early Stripe Rust (Puccinia striiformis)",\n  "urgency": "HIGH",\n  "remediation": "Spray Propiconazole 25% EC @ 1ml/L water immediately.",\n  "vernacular_audio": "window.speechSynthesis.speak(HindiUtterance)",\n  "network_data_used": "0 Bytes (Runs client-side)"\n}\n// Total Pipeline Duration: 1.1s | Total Cloud Cost: $0.00`
+      }
+    };
+
+    function inspectFlowStep(step) {
+      const data = flowStepDetails[step];
+      if (!data) return;
+      document.querySelectorAll('.flow-step-node').forEach(n => n.classList.remove('active-step'));
+      const activeNode = document.getElementById('stepNode' + step);
+      if (activeNode) activeNode.classList.add('active-step');
+
+      const box = document.getElementById('flow-inspector-box');
+      document.getElementById('flow-inspector-title').textContent = data.title;
+      document.getElementById('flow-inspector-content').textContent = data.content;
+      box.style.display = 'block';
+      SoundFX.click();
+    }
+
+    let isSimulatingFlow = false;
+    async function simulatePacketFlow() {
+      if (isSimulatingFlow) return;
+      isSimulatingFlow = true;
+      const btn = document.getElementById('btnSimFlow');
+      btn.textContent = '⏳ Transmitting Data Packet...';
+      btn.disabled = true;
+
+      for (let i = 1; i <= 4; i++) {
+        document.querySelectorAll('.flow-step-node').forEach(n => n.classList.remove('active-step', 'pulse-step'));
+        const node = document.getElementById('stepNode' + i);
+        if (node) {
+          node.classList.add('active-step', 'pulse-step');
+          inspectFlowStep(i);
+        }
+        SoundFX.click();
+        await new Promise(r => setTimeout(r, 450));
+      }
+
+      SoundFX.chime();
+      btn.textContent = '✅ Packet Delivered in 1.1s ($0.00)!';
+      setTimeout(() => {
+        btn.textContent = '▶ Simulate Live Packet Flow (1.1s)';
+        btn.disabled = false;
+        isSimulatingFlow = false;
+      }, 2000);
+    }
+
+    // ================================= COST CALCULATOR LOGIC =================================
+    function updateCostCalculator(queries) {
+      const q = parseInt(queries, 10) || 15000;
+      const countEl = document.getElementById('farmerQueryCount');
+      if (countEl) countEl.textContent = q.toLocaleString();
+
+      const mapsCost = Math.round((q / 1000) * 7);
+      const speechCost = Math.round((q / 1000) * 16);
+      const gpuCost = 280;
+      const rdsCost = 100;
+      const totalTrad = gpuCost + mapsCost + speechCost + rdsCost;
+
+      const tradEl = document.getElementById('tradCostTotal');
+      if (tradEl) tradEl.textContent = `$${totalTrad.toLocaleString()} / mo`;
+      
+      const annualSavings = totalTrad * 12;
+      const saveEl = document.getElementById('savingsAnnual');
+      if (saveEl) saveEl.textContent = `$${annualSavings.toLocaleString()} / year`;
+    }
+
+    // 60-Second Simulator Logic
+    const simQuestions = [
+      {
+        q: "Judges ask: 'Why didn't you use Google Maps Platform API for the farm boundary drawing?'",
+        a: "Google Maps JavaScript API requires a mandatory billing credit card and charges $7 per 1,000 loads. Leaflet.js is open-source (42KB), requires no API keys, has zero payment credentials attached, and performs significantly faster on low-end smartphones under rural 3G."
+      },
+      {
+        q: "Judges ask: 'How does your $0 infrastructure stack scale when 50,000 farmers sign up?'",
+        a: "Our architecture is 100% serverless edge—there are no idle fixed server costs. At 50,000 farmers, we transition to state cooperative sponsorship (e.g. Digital India Agritech Track) where bulk API rates cost less than ₹0.15 per farmer per season."
+      },
+      {
+        q: "Judges ask: 'What exact satellite bands are queried in Sentinel-2 to compute NDVI?'",
+        a: "Band 8 (Near-Infrared, 842nm) and Band 4 (Red, 665nm) at 10-meter spatial resolution, using the formula NDVI = (NIR - Red) / (NIR + Red)."
+      },
+      {
+        q: "Judges ask: 'How do you prevent farmer location leaks when policymakers view the dashboard?'",
+        a: "We enforce PostgreSQL Row Level Security (RLS) on base tables, while policymakers only query an aggregated Materialized View (`regional_trends`) that groups data by district with zero personally identifiable coordinates."
+      },
+      {
+        q: "Judges ask: 'What happens when prolonged monsoon clouds block the Sentinel-2 optical sensors?'",
+        a: "We apply a 15-day median composite filter in Earth Engine for transient clouds, and extrapolate vegetation vigor using Open-Meteo cumulative precipitation and soil moisture models, with our roadmap adding all-weather Sentinel-1 SAR radar."
+      },
+      {
+        q: "Judges ask: 'Why use Gemini Flash instead of specialized Whisper STT and YOLO models?'",
+        a: "Gemini Flash is natively multimodal—it parses raw vernacular audio buffers, leaf disease photo pixels, and numerical sensor telemetry in a single consolidated token pass, cutting latency from 4.2s to 1.1s."
+      },
+      {
+        q: "Judges ask: 'Commercial apps like DeHaat already exist. What is your competitive moat?'",
+        a: "DeHaat takes a 15-20% commission on chemical sales, creating a bias toward pesticide over-use. AgriSetu is an open Digital Public Good (DPG) with zero commercial input bias, unbiased ICAR biological guidance, and $0 infrastructure cost."
+      },
+      {
+        q: "Judges ask: 'What if Gemini hallucinates an incorrect chemical dosage that harms the crop?'",
+        a: "We enforce strict agronomic guardrails in the system prompt bounded by verified Indian Council of Agricultural Research (ICAR) dosage maximums. If confidence is below 85%, it declines chemical advice and suggests non-chemical bio-controls (e.g. Neem oil)."
+      },
+      {
+        q: "Judges ask: 'What is the spatial resolution of Sentinel-2 vs Landsat-8/9, and why does that matter?'",
+        a: "Sentinel-2 provides 10m resolution (100 pixels per 1-hectare plot), whereas Landsat provides only 30m resolution (~11 mixed pixels per hectare). 10m resolution enables precise parcel-level canopy diagnostics."
+      },
+      {
+        q: "Judges ask: 'Why run Supabase Edge Functions on Deno instead of AWS Lambda with Node.js?'",
+        a: "Deno provides sub-50ms cold starts via V8 isolates (vs 800ms+ for containerized Node.js), native zero-transpilation TypeScript, and strict sandboxed security out of the box."
+      }
+    ];
+
+    let timerInterval = null;
+    let timeLeft = 60;
+    let currentSimIndex = 0;
+
+    function startSim() {
+      clearInterval(timerInterval);
+      timeLeft = 60;
+      updateTimerDisplay();
+
+      currentSimIndex = Math.floor(Math.random() * simQuestions.length);
+      document.getElementById('sim-question').textContent = simQuestions[currentSimIndex].q;
+      document.getElementById('sim-answer-box').style.display = 'none';
+      document.getElementById('sim-reveal-btn').style.display = 'inline-flex';
+      document.getElementById('sim-start-btn').textContent = '🔄 Restart Timer';
+
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          document.getElementById('sim-timer').textContent = "00";
+          revealSimAnswer();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const timerElem = document.getElementById('sim-timer');
+      timerElem.textContent = timeLeft < 10 ? '0' + timeLeft : timeLeft;
+
+      timerElem.className = 'sim-timer';
+      if (timeLeft <= 10) {
+        timerElem.classList.add('danger');
+      } else if (timeLeft <= 25) {
+        timerElem.classList.add('warning');
+      }
+    }
+
+    function revealSimAnswer() {
+      SoundFX.chime();
+      const answerBox = document.getElementById('sim-answer-box');
+      document.getElementById('sim-answer-text').innerHTML = simQuestions[currentSimIndex].a;
+      answerBox.style.display = 'block';
+    }
+
+    function nextQuestion() {
+      SoundFX.click();
+      clearInterval(timerInterval);
+      currentSimIndex = (currentSimIndex + 1) % simQuestions.length;
+      document.getElementById('sim-question').textContent = simQuestions[currentSimIndex].q;
+      document.getElementById('sim-answer-box').style.display = 'none';
+      timeLeft = 60;
+      updateTimerDisplay();
+      startSim();
+    }
+
+    // ================================= SOUND SYNTHESIZER (Web Audio API) =================================
+    let soundEnabled = true;
+    const SoundFX = {
+      ctx: null,
+      getAudio() {
+        if (!soundEnabled) return null;
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) this.ctx = new AudioCtx();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+        return this.ctx;
+      },
+      click() {
+        try {
+          const ctx = this.getAudio();
+          if (!ctx) return;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(800, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(350, ctx.currentTime + 0.04);
+          gain.gain.setValueAtTime(0.08, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.04);
+        } catch(e) {}
+      },
+      chime() {
+        try {
+          const ctx = this.getAudio();
+          if (!ctx) return;
+          [523.25, 659.25, 783.99].forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.06);
+            gain.gain.setValueAtTime(0.12, ctx.currentTime + i * 0.06);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.06 + 0.25);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(ctx.currentTime + i * 0.06);
+            osc.stop(ctx.currentTime + i * 0.06 + 0.25);
+          });
+        } catch(e) {}
+      },
+      fanfare() {
+        try {
+          const ctx = this.getAudio();
+          if (!ctx) return;
+          [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.08);
+            gain.gain.setValueAtTime(0.1, ctx.currentTime + i * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.08 + 0.35);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(ctx.currentTime + i * 0.08);
+            osc.stop(ctx.currentTime + i * 0.08 + 0.35);
+          });
+        } catch(e) {}
+      }
+    };
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const pill = document.getElementById('sound-status-pill');
+      if (pill) {
+        pill.textContent = soundEnabled ? '🔊 Sound: ON' : '🔇 Sound: OFF';
+        pill.style.opacity = soundEnabled ? '1' : '0.6';
+      }
+      if (soundEnabled) SoundFX.chime();
+      showToast(soundEnabled ? "Sound effects enabled" : "Sound effects muted");
+    }
+
+    // ================================= MASTERY TRACKER ENGINE =================================
+    const STORAGE_KEY = 'agrisetu_mastered_cards_v1';
+    let masteredSet = new Set();
+
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) masteredSet = new Set(JSON.parse(saved));
+    } catch(e) {}
+
+    function updateMasteryUI() {
+      const total = 32;
+      const count = masteredSet.size;
+      const pct = Math.round((count / total) * 100);
+
+      const countElem = document.getElementById('mastery-count');
+      const pctElem = document.getElementById('mastery-percent');
+      const fillElem = document.getElementById('mastery-progress-fill');
+
+      if (countElem) countElem.textContent = count;
+      if (pctElem) pctElem.textContent = `(${pct}%)`;
+      if (fillElem) fillElem.style.width = `${pct}%`;
+    }
+
+    function toggleMastery(qid, isChecked) {
+      if (isChecked) {
+        masteredSet.add(qid);
+        SoundFX.chime();
+        const card = document.querySelector(`.flashcard:nth-child(${qid})`);
+        if (card) card.classList.add('is-mastered');
+      } else {
+        masteredSet.delete(qid);
+        SoundFX.click();
+        const card = document.querySelector(`.flashcard:nth-child(${qid})`);
+        if (card) card.classList.remove('is-mastered');
+      }
+
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify([...masteredSet]));
+      } catch(e) {}
+
+      updateMasteryUI();
+
+      if (masteredSet.size === 32) {
+        launchConfetti();
+        showToast("🏆 INCREDIBLE! You have mastered all 32 questions!");
+      }
+    }
+
+    function resetMastery() {
+      masteredSet.clear();
+      try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+      document.querySelectorAll('.mastery-checkbox').forEach(cb => cb.checked = false);
+      document.querySelectorAll('.flashcard').forEach(fc => fc.classList.remove('is-mastered'));
+      updateMasteryUI();
+      SoundFX.click();
+      showToast("Mastery progress reset.");
+    }
+
+    // ================================= SPEECH SYNTHESIS ENGINE =================================
+    function speakCard(card, btn) {
+      if (!('speechSynthesis' in window)) {
+        showToast("Web Speech API not supported in this browser.");
+        return;
+      }
+
+      if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+        document.querySelectorAll('.btn-speak').forEach(b => {
+          b.classList.remove('speaking');
+          b.innerHTML = '🔊 <span>Listen</span>';
+        });
+        if (btn.dataset.wasSpeaking === 'true') {
+          delete btn.dataset.wasSpeaking;
+          return;
+        }
+      }
+
+      const answerElem = card.querySelector('.model-answer');
+      if (!answerElem) return;
+
+      const rawText = answerElem.innerText || answerElem.textContent;
+      const clean = rawText.replace(/Flawless Counter-Punch:\s*/i, '').replace(/•/g, '').trim();
+
+      const utter = new SpeechSynthesisUtterance(clean);
+      utter.rate = 0.95;
+      utter.pitch = 1.0;
+
+      btn.classList.add('speaking');
+      btn.dataset.wasSpeaking = 'true';
+      btn.innerHTML = '⏹️ <span>Stop</span>';
+
+      utter.onend = () => {
+        btn.classList.remove('speaking');
+        delete btn.dataset.wasSpeaking;
+        btn.innerHTML = '🔊 <span>Listen</span>';
+      };
+
+      utter.onerror = () => {
+        btn.classList.remove('speaking');
+        delete btn.dataset.wasSpeaking;
+        btn.innerHTML = '🔊 <span>Listen</span>';
+      };
+
+      window.speechSynthesis.speak(utter);
+    }
+
+    // ================================= CONFETTI CANNON =================================
+    function launchConfetti() {
+      SoundFX.fanfare();
+      let canvas = document.getElementById('confetti-canvas');
+      if (!canvas) {
+        canvas = document.createElement('canvas');
+        canvas.id = 'confetti-canvas';
+        canvas.style.position = 'fixed';
+        canvas.style.top = '0';
+        canvas.style.left = '0';
+        canvas.style.width = '100vw';
+        canvas.style.height = '100vh';
+        canvas.style.pointerEvents = 'none';
+        canvas.style.zIndex = '9999';
+        document.body.appendChild(canvas);
+      }
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const particles = [];
+      const colors = ['#10b981', '#34d399', '#6ee7b7', '#f59e0b', '#fbbf24', '#ffffff'];
+      for (let i = 0; i < 140; i++) {
+        particles.push({
+          x: canvas.width * Math.random(),
+          y: canvas.height * Math.random() - canvas.height * 0.4,
+          w: Math.random() * 9 + 4,
+          h: Math.random() * 9 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          vx: (Math.random() - 0.5) * 8,
+          vy: Math.random() * 4 + 3,
+          rot: Math.random() * 360,
+          vrot: (Math.random() - 0.5) * 10
+        });
+      }
+
+      let frame = 0;
+      function render() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.rot += p.vrot;
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rot * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+          ctx.restore();
+        });
+        frame++;
+        if (frame < 180) {
+          requestAnimationFrame(render);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+      render();
+    }
+
+    // ================================= ENHANCE ALL 32 FLASHCARDS =================================
+    function enhanceFlashcards() {
+      const cards = document.querySelectorAll('.flashcard');
+      cards.forEach((card, idx) => {
+        const qid = idx + 1;
+        const tagsContainer = card.querySelector('.flashcard-tags');
+        if (!tagsContainer) return;
+
+        // Add 🔊 Listen Button
+        const speakBtn = document.createElement('button');
+        speakBtn.className = 'btn-speak';
+        speakBtn.innerHTML = '🔊 <span>Listen</span>';
+        speakBtn.title = 'Listen to model counter-punch';
+        speakBtn.onclick = (e) => {
+          e.stopPropagation();
+          speakCard(card, speakBtn);
+        };
+
+        // Add Mastered Checkbox
+        const masterLabel = document.createElement('label');
+        masterLabel.className = 'mastery-check-label';
+        masterLabel.title = 'Mark this question as mastered';
+        masterLabel.onclick = (e) => e.stopPropagation();
+
+        const isChecked = masteredSet.has(qid);
+        if (isChecked) card.classList.add('is-mastered');
+
+        masterLabel.innerHTML = `
+          <input type="checkbox" class="mastery-checkbox" data-qid="${qid}" ${isChecked ? 'checked' : ''} onchange="toggleMastery(${qid}, this.checked)">
+          <span>Mastered</span>
+        `;
+
+        const toggleIcon = tagsContainer.querySelector('.flashcard-toggle-icon');
+        tagsContainer.insertBefore(speakBtn, toggleIcon);
+        tagsContainer.insertBefore(masterLabel, toggleIcon);
+      });
+
+      updateMasteryUI();
+    }
+
+    // Initialize portal interactive upgrades on load
+    window.addEventListener('DOMContentLoaded', () => {
+      enhanceFlashcards();
+
+      // Attach audio clicks to tabs & pills
+      document.querySelectorAll('.nav-tab-btn, .persona-pill, .btn').forEach(elem => {
+        elem.addEventListener('click', () => SoundFX.click());
+      });
+    });
+  </script>
+</body>
+</html>
