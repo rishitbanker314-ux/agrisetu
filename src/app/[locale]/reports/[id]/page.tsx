@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { FileText, Download, ArrowLeft, Loader2, Sprout, MapPin, Activity, Droplets, TrendingUp, AlertTriangle, Thermometer, Trash2 } from 'lucide-react';
+import { FileText, Download, ArrowLeft, Loader2, Sprout, MapPin, Activity, Droplets, TrendingUp, AlertTriangle, Thermometer, Trash2, Mail } from 'lucide-react';
 import Link from 'next/link';
 
 interface ReportData {
@@ -42,6 +42,7 @@ export default function ReportViewPage() {
   const [report, setReport] = useState<ReportData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isEmailing, setIsEmailing] = useState(false);
 
   useEffect(() => {
     async function fetchReport() {
@@ -111,6 +112,63 @@ export default function ReportViewPage() {
     }
   };
 
+  const handleEmailReport = async () => {
+    if (!report) return;
+    try {
+      setIsEmailing(true);
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || !user.email) {
+        alert("You must be logged in with an email to use this feature.");
+        setIsEmailing(false);
+        return;
+      }
+
+      // Dynamically import to prevent SSR issues
+      const html2pdf = (await import('html2pdf.js')).default;
+      
+      const element = document.getElementById('printable-report');
+      if (!element) return;
+
+      const opt = {
+        margin:       0.5,
+        filename:     `AgriSetu-Report-${report.id.split('-')[0]}.pdf`,
+        image:        { type: 'jpeg' as const, quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'in' as const, format: 'letter' as const, orientation: 'portrait' as const }
+      };
+
+      // Generate base64 PDF
+      const pdfBase64 = await html2pdf().set(opt).from(element).outputPdf('datauristring');
+
+      // Send to backend
+      const response = await fetch('/api/send-report', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: user.email,
+          pdfBase64,
+          reportId: report.id.split('-')[0],
+          reportType: report.type
+        }),
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Failed to send email');
+      }
+
+      alert(`Report successfully sent to ${user.email}!`);
+    } catch (err: any) {
+      console.error("Failed to email report:", err);
+      alert(`Failed to send email: ${err.message}`);
+    } finally {
+      setIsEmailing(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white md:bg-paper-ivory font-sans selection:bg-moss/30 selection:text-deep-forest">
       {/* Non-printable Header & Controls */}
@@ -129,6 +187,14 @@ export default function ReportViewPage() {
             <Trash2 className="w-4 h-4" /> <span className="hidden sm:inline">Delete</span>
           </button>
           <button 
+            onClick={handleEmailReport}
+            disabled={isEmailing}
+            className="text-deep-forest hover:text-white bg-white border border-deep-forest hover:bg-deep-forest px-4 py-2 rounded-full text-sm font-medium transition-colors flex items-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isEmailing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />} 
+            <span className="hidden sm:inline">{isEmailing ? 'Sending...' : 'Send to Email'}</span>
+          </button>
+          <button 
             onClick={() => window.print()}
             className="bg-deep-forest text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-moss transition-colors flex items-center gap-2 shadow-sm"
           >
@@ -138,7 +204,7 @@ export default function ReportViewPage() {
       </div>
 
       {/* Printable Report Document */}
-      <main className="max-w-4xl mx-auto md:my-12 bg-white md:border border-soft-line md:shadow-lg print:border-none print:shadow-none print:m-0 print:p-0 p-8 md:p-16">
+      <main id="printable-report" className="max-w-4xl mx-auto md:my-12 bg-white md:border border-soft-line md:shadow-lg print:border-none print:shadow-none print:m-0 print:p-0 p-8 md:p-16">
         
         {/* Document Header */}
         <header className="flex justify-between items-start border-b-2 border-deep-forest/20 pb-8 mb-8">
