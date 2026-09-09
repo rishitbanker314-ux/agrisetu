@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 
 export async function POST(request: Request) {
-  const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy_key');
   try {
     const { email, pdfBase64, reportId, reportType } = await request.json();
 
@@ -10,14 +9,28 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.warn("EMAIL_USER or EMAIL_PASS not set. Email won't be sent.");
+      return NextResponse.json({ error: 'Email server is not configured correctly on the backend.' }, { status: 500 });
+    }
+
     // Convert base64 data URI to buffer
     const base64Data = pdfBase64.split('base64,')[1] || pdfBase64;
     const pdfBuffer = Buffer.from(base64Data, 'base64');
 
+    // Create reusable transporter object using the default SMTP transport
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
     // Send the email
-    const { data, error } = await resend.emails.send({
-      from: 'AgriSetu Reports <onboarding@resend.dev>', // Resend default testing email
-      to: [email],
+    const info = await transporter.sendMail({
+      from: `"AgriSetu Reports" <${process.env.EMAIL_USER}>`,
+      to: email,
       subject: `Your AgriSetu Field Report: ${reportType}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
@@ -35,16 +48,12 @@ export async function POST(request: Request) {
         {
           filename: `AgriSetu-Report-${reportId}.pdf`,
           content: pdfBuffer,
+          contentType: 'application/pdf',
         },
       ],
     });
 
-    if (error) {
-      console.error('Resend API Error:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-
-    return NextResponse.json({ success: true, data });
+    return NextResponse.json({ success: true, messageId: info.messageId });
   } catch (error: any) {
     console.error('Server Error:', error);
     return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
