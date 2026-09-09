@@ -17,16 +17,16 @@ export default function SiteFooter() {
 
         {/* Links */}
         <nav className="flex flex-wrap items-center gap-6 md:gap-8 text-sm font-sans text-ink/80">
-          <Link href="#" className="hover:text-moss transition-colors">Platform</Link>
-          <Link href="#" className="hover:text-moss transition-colors">Solutions</Link>
-          <Link href="#" className="hover:text-moss transition-colors">Field notes</Link>
-          <Link href="#" className="hover:text-moss transition-colors">About</Link>
+          <Link href="/en/platform" className="hover:text-moss transition-colors">Platform</Link>
+          <Link href="/en/solution" className="hover:text-moss transition-colors">Solutions</Link>
+          <Link href="/en/field-notes" className="hover:text-moss transition-colors">Field notes</Link>
+          <Link href="/en/about" className="hover:text-moss transition-colors">About</Link>
         </nav>
 
         {/* Meta */}
         <div className="flex flex-wrap items-center gap-6 text-xs font-sans text-ink/50 w-full md:w-auto mt-8 md:mt-0 justify-between md:justify-start">
           <Link href="#" className="hover:text-moss transition-colors">Privacy</Link>
-          <Link href="#" className="hover:text-moss transition-colors">Terms</Link>
+          <Link href="/en/terms" className="hover:text-moss transition-colors">Terms</Link>
           <span>&copy; {new Date().getFullYear()} AgriSetu</span>
           <div className="flex items-center gap-1 border-l border-soft-line pl-6">
             <span className="uppercase tracking-wider">EN</span>

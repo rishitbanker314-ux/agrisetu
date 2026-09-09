@@ -36,10 +36,10 @@ export default function SiteHeader() {
   });
 
   const navItems = [
-    { label: 'Platform', href: '#' },
-    { label: 'Solutions', href: '#' },
-    { label: 'Field notes', href: '#' },
-    { label: 'About', href: '#' },
+    { label: 'Platform', href: '/en/platform' },
+    { label: 'Solutions', href: '/en/solution' },
+    { label: 'Field notes', href: '/en/field-notes' },
+    { label: 'About', href: '/en/about' },
   ];
 
   return (
