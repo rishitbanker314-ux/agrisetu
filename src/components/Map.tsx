@@ -135,27 +135,30 @@ const DraggableMarker = ({ marker, temporalNdvi, onLocationSelect }: { marker: {
 };
 
 const DraggableDrawPoint = ({ 
-  position, polyIdx, ptIdx, onDrag, onMove 
+  position, polyIdx, ptIdx, onMove 
 }: { 
   position: [number, number], 
   polyIdx: number, 
   ptIdx: number, 
-  onDrag?: (polyIdx: number, ptIdx: number, lat: number, lng: number) => void,
   onMove?: (polyIdx: number, ptIdx: number, lat: number, lng: number) => void 
 }) => {
   const markerRef = useRef<any>(null);
+  const isDragging = useRef(false);
+  const [localPos, setLocalPos] = useState(position);
+
+  // Only accept upstream position changes if we are not actively dragging
+  useEffect(() => {
+    if (!isDragging.current) {
+      setLocalPos(position);
+    }
+  }, [position[0], position[1]]);
+
   const eventHandlers = useMemo(
     () => ({
-      drag() {
-        const marker = markerRef.current;
-        if (marker != null) {
-          const newPos = marker.getLatLng();
-          if (onDrag) {
-            onDrag(polyIdx, ptIdx, newPos.lat, newPos.lng);
-          }
-        }
+      dragstart() {
+        isDragging.current = true;
       },
-      dragend() {
+      drag() {
         const marker = markerRef.current;
         if (marker != null) {
           const newPos = marker.getLatLng();
@@ -164,13 +167,24 @@ const DraggableDrawPoint = ({
           }
         }
       },
+      dragend() {
+        isDragging.current = false;
+        const marker = markerRef.current;
+        if (marker != null) {
+          const newPos = marker.getLatLng();
+          if (onMove) {
+            onMove(polyIdx, ptIdx, newPos.lat, newPos.lng);
+          }
+          setLocalPos([newPos.lat, newPos.lng]);
+        }
+      },
     }),
-    [polyIdx, ptIdx, onDrag, onMove]
+    [polyIdx, ptIdx, onMove]
   );
 
   return (
     <Marker 
-      position={position} 
+      position={localPos} 
       icon={drawPointIcon} 
       draggable={true} 
       eventHandlers={eventHandlers} 
@@ -181,7 +195,6 @@ const DraggableDrawPoint = ({
 
 export default function Map({ center, zoom = 13, markers = [], activeMarker, onLocationSelect, temporalNdvi = 0.5, mapStyle = 'street', isDrawingMode = false, drawnBoundary = [], onBoundaryPointMove }: MapProps) {
   const [isLegendOpen, setIsLegendOpen] = useState(false);
-  const polygonRefs = useRef<{[key: number]: any}>({});
 
   return (
     <div className="h-full w-full bg-gray-50 relative">
@@ -257,7 +270,6 @@ export default function Map({ center, zoom = 13, markers = [], activeMarker, onL
                 <Fragment key={idx}>
                   {poly.length === 2 && (
                     <Polyline 
-                      ref={(el) => { polygonRefs.current[idx] = el; }}
                       key={`line-${idx}`} 
                       positions={poly} 
                       pathOptions={{ color: '#10b981', weight: 3, dashArray: '6, 6', lineCap: 'round', lineJoin: 'round' }} 
@@ -265,7 +277,6 @@ export default function Map({ center, zoom = 13, markers = [], activeMarker, onL
                   )}
                   {poly.length > 2 && (
                     <Polygon 
-                      ref={(el) => { polygonRefs.current[idx] = el; }}
                       key={`poly-${idx}`} 
                       positions={poly} 
                       pathOptions={{ color: '#10b981', weight: 3, dashArray: '6, 6', fillColor: '#10b981', fillOpacity: 0.3, lineCap: 'round', lineJoin: 'round' }} 
@@ -277,14 +288,6 @@ export default function Map({ center, zoom = 13, markers = [], activeMarker, onL
                       position={pt} 
                       polyIdx={idx}
                       ptIdx={ptIdx}
-                      onDrag={(pIdx, ptI, lat, lng) => {
-                        const layer = polygonRefs.current[pIdx];
-                        if (layer && drawnBoundary[pIdx]) {
-                          const newPoly = [...drawnBoundary[pIdx]];
-                          newPoly[ptI] = [lat, lng];
-                          layer.setLatLngs(newPoly);
-                        }
-                      }}
                       onMove={onBoundaryPointMove}
                     />
                   ))}
