@@ -134,7 +134,15 @@ const DraggableMarker = ({ marker, temporalNdvi, onLocationSelect }: { marker: {
   );
 };
 
-const DraggableDrawPoint = ({ position, polyIdx, ptIdx, onMove }: { position: [number, number], polyIdx: number, ptIdx: number, onMove?: (polyIdx: number, ptIdx: number, lat: number, lng: number) => void }) => {
+const DraggableDrawPoint = ({ 
+  position, polyIdx, ptIdx, onDrag, onMove 
+}: { 
+  position: [number, number], 
+  polyIdx: number, 
+  ptIdx: number, 
+  onDrag?: (polyIdx: number, ptIdx: number, lat: number, lng: number) => void,
+  onMove?: (polyIdx: number, ptIdx: number, lat: number, lng: number) => void 
+}) => {
   const markerRef = useRef<any>(null);
   const eventHandlers = useMemo(
     () => ({
@@ -142,8 +150,8 @@ const DraggableDrawPoint = ({ position, polyIdx, ptIdx, onMove }: { position: [n
         const marker = markerRef.current;
         if (marker != null) {
           const newPos = marker.getLatLng();
-          if (onMove) {
-            onMove(polyIdx, ptIdx, newPos.lat, newPos.lng);
+          if (onDrag) {
+            onDrag(polyIdx, ptIdx, newPos.lat, newPos.lng);
           }
         }
       },
@@ -157,7 +165,7 @@ const DraggableDrawPoint = ({ position, polyIdx, ptIdx, onMove }: { position: [n
         }
       },
     }),
-    [polyIdx, ptIdx, onMove]
+    [polyIdx, ptIdx, onDrag, onMove]
   );
 
   return (
@@ -173,6 +181,7 @@ const DraggableDrawPoint = ({ position, polyIdx, ptIdx, onMove }: { position: [n
 
 export default function Map({ center, zoom = 13, markers = [], activeMarker, onLocationSelect, temporalNdvi = 0.5, mapStyle = 'street', isDrawingMode = false, drawnBoundary = [], onBoundaryPointMove }: MapProps) {
   const [isLegendOpen, setIsLegendOpen] = useState(false);
+  const polygonRefs = useRef<{[key: number]: any}>({});
 
   return (
     <div className="h-full w-full bg-gray-50 relative">
@@ -247,10 +256,20 @@ export default function Map({ center, zoom = 13, markers = [], activeMarker, onL
               return (
                 <Fragment key={idx}>
                   {poly.length === 2 && (
-                    <Polyline key={`line-${idx}`} positions={poly} pathOptions={{ color: '#10b981', weight: 3, dashArray: '6, 6', lineCap: 'round', lineJoin: 'round' }} />
+                    <Polyline 
+                      ref={(el) => { polygonRefs.current[idx] = el; }}
+                      key={`line-${idx}`} 
+                      positions={poly} 
+                      pathOptions={{ color: '#10b981', weight: 3, dashArray: '6, 6', lineCap: 'round', lineJoin: 'round' }} 
+                    />
                   )}
                   {poly.length > 2 && (
-                    <Polygon key={`poly-${idx}`} positions={poly} pathOptions={{ color: '#10b981', weight: 3, dashArray: '6, 6', fillColor: '#10b981', fillOpacity: 0.3, lineCap: 'round', lineJoin: 'round' }} />
+                    <Polygon 
+                      ref={(el) => { polygonRefs.current[idx] = el; }}
+                      key={`poly-${idx}`} 
+                      positions={poly} 
+                      pathOptions={{ color: '#10b981', weight: 3, dashArray: '6, 6', fillColor: '#10b981', fillOpacity: 0.3, lineCap: 'round', lineJoin: 'round' }} 
+                    />
                   )}
                   {poly.map((pt: any, ptIdx: number) => (
                     <DraggableDrawPoint 
@@ -258,6 +277,14 @@ export default function Map({ center, zoom = 13, markers = [], activeMarker, onL
                       position={pt} 
                       polyIdx={idx}
                       ptIdx={ptIdx}
+                      onDrag={(pIdx, ptI, lat, lng) => {
+                        const layer = polygonRefs.current[pIdx];
+                        if (layer && drawnBoundary[pIdx]) {
+                          const newPoly = [...drawnBoundary[pIdx]];
+                          newPoly[ptI] = [lat, lng];
+                          layer.setLatLngs(newPoly);
+                        }
+                      }}
                       onMove={onBoundaryPointMove}
                     />
                   ))}
