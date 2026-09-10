@@ -193,24 +193,52 @@ const DraggableDrawPoint = ({
   );
 };
 
-const DrawingPolygon = ({ positions, pathOptions }: { positions: [number, number][], pathOptions: any }) => {
+const NativeDrawingPolygon = ({ positions, pathOptions }: { positions: [number, number][], pathOptions: any }) => {
+  const map = useMap();
   const polyRef = useRef<any>(null);
+
   useEffect(() => {
-    if (polyRef.current) {
-      polyRef.current.setLatLngs(positions);
+    if (!polyRef.current) {
+      polyRef.current = L.polygon(positions as any, pathOptions).addTo(map);
+    } else {
+      polyRef.current.setLatLngs(positions as any);
+      polyRef.current.setStyle(pathOptions);
     }
-  }, [positions]);
-  return <Polygon ref={polyRef} positions={positions} pathOptions={pathOptions} />;
+  }, [positions, map, pathOptions]);
+
+  useEffect(() => {
+    return () => {
+      if (polyRef.current) {
+        map.removeLayer(polyRef.current);
+      }
+    };
+  }, [map]);
+
+  return null;
 };
 
-const DrawingPolyline = ({ positions, pathOptions }: { positions: [number, number][], pathOptions: any }) => {
+const NativeDrawingPolyline = ({ positions, pathOptions }: { positions: [number, number][], pathOptions: any }) => {
+  const map = useMap();
   const lineRef = useRef<any>(null);
+
   useEffect(() => {
-    if (lineRef.current) {
-      lineRef.current.setLatLngs(positions);
+    if (!lineRef.current) {
+      lineRef.current = L.polyline(positions as any, pathOptions).addTo(map);
+    } else {
+      lineRef.current.setLatLngs(positions as any);
+      lineRef.current.setStyle(pathOptions);
     }
-  }, [positions]);
-  return <Polyline ref={lineRef} positions={positions} pathOptions={pathOptions} />;
+  }, [positions, map, pathOptions]);
+
+  useEffect(() => {
+    return () => {
+      if (lineRef.current) {
+        map.removeLayer(lineRef.current);
+      }
+    };
+  }, [map]);
+
+  return null;
 };
 
 export default function Map({ center, zoom = 13, markers = [], activeMarker, onLocationSelect, temporalNdvi = 0.5, mapStyle = 'street', isDrawingMode = false, drawnBoundary = [], onBoundaryPointMove }: MapProps) {
@@ -289,13 +317,13 @@ export default function Map({ center, zoom = 13, markers = [], activeMarker, onL
               return (
                 <Fragment key={idx}>
                   {poly.length === 2 && (
-                    <DrawingPolyline 
+                    <NativeDrawingPolyline 
                       positions={poly} 
                       pathOptions={{ color: '#10b981', weight: 3, dashArray: '6, 6', lineCap: 'round', lineJoin: 'round' }} 
                     />
                   )}
                   {poly.length > 2 && (
-                    <DrawingPolygon 
+                    <NativeDrawingPolygon 
                       positions={poly} 
                       pathOptions={{ color: '#10b981', weight: 3, dashArray: '6, 6', fillColor: '#10b981', fillOpacity: 0.3, lineCap: 'round', lineJoin: 'round' }} 
                     />
