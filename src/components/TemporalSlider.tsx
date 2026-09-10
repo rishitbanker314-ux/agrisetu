@@ -30,7 +30,7 @@ export default function TemporalSlider({ dateOffset, setDateOffset, maxDays = 90
   const targetRisk = fieldData?.temporal?.diseaseRisk?.[dateOffset];
 
   return (
-    <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-[50] flex flex-col items-center w-full max-w-2xl px-4 pointer-events-none">
+    <div className="absolute bottom-[140px] sm:bottom-20 left-1/2 -translate-x-1/2 z-[50] flex flex-col items-center w-full max-w-[95vw] sm:max-w-2xl px-2 sm:px-4 pointer-events-none">
       
       <AnimatePresence>
         {isOpen && (
