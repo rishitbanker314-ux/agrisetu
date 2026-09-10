@@ -202,7 +202,11 @@ export async function generateFieldIntelligence(lat: number, lng: number, bounda
     if (mandiRes.ok) {
       const mandiData = await mandiRes.json();
       if (mandiData && mandiData.records && mandiData.records.length > 0) {
-        currentMarketPrice = mandiData.records[0].modal_price || currentMarketPrice;
+        // Modal price is in INR/Quintal. We need INR/Ton, so multiply by 10.
+        const quintalPrice = mandiData.records[0].modal_price;
+        if (quintalPrice) {
+          currentMarketPrice = quintalPrice * 10;
+        }
       }
     }
   } catch (err) {
