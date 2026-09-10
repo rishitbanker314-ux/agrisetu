@@ -27,13 +27,13 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "AgriSetu",
+  title: "AgriCrate",
   description: "AI-powered agricultural advisory platform",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "AgriSetu",
+    title: "AgriCrate",
   },
 };
 

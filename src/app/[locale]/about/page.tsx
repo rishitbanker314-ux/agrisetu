@@ -9,7 +9,7 @@ export default function AboutPage() {
       <header className="bg-transparent absolute top-0 left-0 right-0 z-50 flex items-center justify-between px-6 h-24">
         <Link href="/" className="flex items-center gap-2">
           <Sprout className="w-8 h-8 text-deep-forest" />
-          <span className="font-serif text-2xl tracking-tight text-deep-forest font-bold">AgriSetu</span>
+          <span className="font-serif text-2xl tracking-tight text-deep-forest font-bold">AgriCrate</span>
         </Link>
         <Link href="/" className="text-sm font-medium text-deep-forest flex items-center gap-2 hover:text-moss transition-colors">
           <ArrowLeft className="w-4 h-4" /> Back to Home
@@ -26,7 +26,7 @@ export default function AboutPage() {
               By 2050, the global population will reach 9.7 billion. To feed this growing population, global food production must increase by 70%. At the same time, climate change is making agricultural yields more volatile and unpredictable than ever before.
             </p>
             <p>
-              <strong className="text-deep-forest font-bold">AgriSetu</strong> was founded on the belief that the solution to this crisis lies in data. By combining satellite imagery, hyper-local climate models, and artificial intelligence, we are building an intelligence layer for the physical world.
+              <strong className="text-deep-forest font-bold">AgriCrate</strong> was founded on the belief that the solution to this crisis lies in data. By combining satellite imagery, hyper-local climate models, and artificial intelligence, we are building an intelligence layer for the physical world.
             </p>
             <p>
               We empower farmers, cooperatives, and agribusinesses to make proactive, data-driven decisions. Because when you can predict the future of a field, you can secure the future of food.

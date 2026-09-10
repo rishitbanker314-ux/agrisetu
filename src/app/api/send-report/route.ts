@@ -29,24 +29,24 @@ export async function POST(request: Request) {
 
     // Send the email
     const info = await transporter.sendMail({
-      from: `"AgriSetu Reports" <${process.env.EMAIL_USER}>`,
+      from: `"AgriCrate Reports" <${process.env.EMAIL_USER}>`,
       to: email,
-      subject: `Your AgriSetu Field Report: ${reportType}`,
+      subject: `Your AgriCrate Field Report: ${reportType}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #10b981;">AgriSetu Intelligence</h2>
+          <h2 style="color: #10b981;">AgriCrate Intelligence</h2>
           <p>Hello,</p>
           <p>Your requested <strong>${reportType}</strong> field report is attached to this email as a PDF.</p>
           <p>Report ID: ${reportId}</p>
           <hr style="border: 1px solid #eee; margin: 20px 0;" />
           <p style="font-size: 12px; color: #666;">
-            Thank you for using AgriSetu. If you have any questions, please reply to this email.
+            Thank you for using AgriCrate. If you have any questions, please reply to this email.
           </p>
         </div>
       `,
       attachments: [
         {
-          filename: `AgriSetu-Report-${reportId}.pdf`,
+          filename: `AgriCrate-Report-${reportId}.pdf`,
           content: pdfBuffer,
           contentType: 'application/pdf',
         },

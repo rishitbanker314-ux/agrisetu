@@ -62,7 +62,7 @@ export default function SiteHeader() {
               <path d="M12 8c-3 0-6-3-6-6s3 6 6 6z" />
               <path d="M12 12c3 0 6-3 6-6s-3 6-6 6z" />
             </svg>
-            <span className="font-serif text-xl font-medium tracking-tight text-ink">AgriSetu</span>
+            <span className="font-serif text-xl font-medium tracking-tight text-ink">AgriCrate</span>
           </Link>
 
           {/* Desktop Nav */}
@@ -156,7 +156,7 @@ export default function SiteHeader() {
               <path d="M12 8c-3 0-6-3-6-6s3 6 6 6z" />
               <path d="M12 12c3 0 6-3 6-6s-3 6-6 6z" />
             </svg>
-            <span className="font-serif text-xl font-medium tracking-tight text-ink">AgriSetu</span>
+            <span className="font-serif text-xl font-medium tracking-tight text-ink">AgriCrate</span>
           </div>
           <button onClick={() => setMobileMenuOpen(false)}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">

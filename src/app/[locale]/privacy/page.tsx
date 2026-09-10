@@ -14,7 +14,7 @@ export default function PrivacyPage() {
           
           <h2 className="text-2xl font-serif text-deep-forest mb-4">1. Information We Collect</h2>
           <p className="mb-6 leading-relaxed text-ink/90">
-            When you use AgriSetu, we collect personal information you provide to us (such as name, email, and phone number), as well as agricultural data you input or generate (such as farm coordinates, field boundaries, crop types, photos of crops, and field notes). We also collect telemetry data on how you interact with the platform to improve our services.
+            When you use AgriCrate, we collect personal information you provide to us (such as name, email, and phone number), as well as agricultural data you input or generate (such as farm coordinates, field boundaries, crop types, photos of crops, and field notes). We also collect telemetry data on how you interact with the platform to improve our services.
           </p>
 
           <h2 className="text-2xl font-serif text-deep-forest mb-4">2. How We Use Your Data</h2>
@@ -29,7 +29,7 @@ export default function PrivacyPage() {
 
           <h2 className="text-2xl font-serif text-deep-forest mb-4">4. Third-Party Services</h2>
           <p className="mb-6 leading-relaxed text-ink/90">
-            AgriSetu integrates with third-party APIs for satellite imagery (e.g., Google Earth Engine), weather data, and authentication (e.g., Supabase). These third parties have their own privacy policies. We only share the minimum necessary data required to utilize these external services for your benefit.
+            AgriCrate integrates with third-party APIs for satellite imagery (e.g., Google Earth Engine), weather data, and authentication (e.g., Supabase). These third parties have their own privacy policies. We only share the minimum necessary data required to utilize these external services for your benefit.
           </p>
 
           <h2 className="text-2xl font-serif text-deep-forest mb-4">5. Your Rights</h2>
@@ -41,7 +41,7 @@ export default function PrivacyPage() {
             <h3 className="text-xl font-serif text-deep-forest mb-2">Contact Us</h3>
             <p className="text-ink/80 text-sm">
               If you have any questions about this Privacy Policy or your data, please contact our Privacy Officer at: <br/>
-              <strong>privacy@agrisetu.in</strong>
+              <strong>privacy@agricrate.in</strong>
             </p>
           </div>
         </div>

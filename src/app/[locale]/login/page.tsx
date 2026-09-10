@@ -35,7 +35,7 @@ export default function LoginPage() {
           <div className="bg-moss/30 border border-moss w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
             <Leaf className="w-7 h-7 text-paper-ivory" />
           </div>
-          <h1 className="text-3xl font-serif text-paper-ivory tracking-tight font-medium">AgriSetu</h1>
+          <h1 className="text-3xl font-serif text-paper-ivory tracking-tight font-medium">AgriCrate</h1>
           <p className="text-sand/80 text-[10px] mt-2 uppercase tracking-widest font-medium">Bharat Krishi Intelligence</p>
         </div>
 

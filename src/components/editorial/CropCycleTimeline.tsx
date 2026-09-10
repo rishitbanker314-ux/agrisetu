@@ -109,7 +109,7 @@ export default function CropCycleTimeline() {
             transition={{ delay: 0.2 }}
             className="font-sans text-ink/70"
           >
-            AgriSetu keeps the whole season in view &mdash; from sowing to harvest and every decision between them.
+            AgriCrate keeps the whole season in view &mdash; from sowing to harvest and every decision between them.
           </motion.p>
         </div>
 

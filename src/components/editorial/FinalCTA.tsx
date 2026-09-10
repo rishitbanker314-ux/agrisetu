@@ -56,7 +56,7 @@ export default function FinalCTA() {
           transition={{ duration: 0.8, delay: 0.4 }}
         >
           <Link href="/en/dashboard" className="inline-block bg-terracotta text-paper-ivory px-8 py-4 rounded-full text-lg font-sans hover:bg-[#b05c33] hover:-translate-y-1 transition-all shadow-lg shadow-terracotta/20">
-            Open AgriSetu &rarr;
+            Open AgriCrate &rarr;
           </Link>
         </motion.div>
       </div>

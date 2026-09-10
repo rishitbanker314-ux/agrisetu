@@ -14,7 +14,7 @@ export default function PlatformPage() {
           <div className="bg-deep-forest/5 p-2 rounded-lg group-hover:bg-moss/20 transition-colors">
             <Sprout className="w-6 h-6 text-deep-forest" />
           </div>
-          <span className="font-serif text-2xl tracking-tight text-deep-forest font-bold">AgriSetu</span>
+          <span className="font-serif text-2xl tracking-tight text-deep-forest font-bold">AgriCrate</span>
         </Link>
         <Link href="/" className="text-sm font-medium text-deep-forest flex items-center gap-2 hover:text-moss transition-colors bg-white px-4 py-2 rounded-full border border-soft-line shadow-sm hover:shadow-md">
           <ArrowLeft className="w-4 h-4" /> Back to Home
@@ -32,7 +32,7 @@ export default function PlatformPage() {
             The Intelligence <span className="text-transparent bg-clip-text bg-gradient-to-r from-deep-forest to-moss">Engine</span>
           </h1>
           <p className="text-xl md:text-2xl text-ink/70 leading-relaxed font-light mb-12 max-w-3xl mx-auto">
-            AgriSetu combines multi-spectral satellite imagery, hyper-local weather forecasting, and generative AI to create the world's most advanced agricultural operating system.
+            AgriCrate combines multi-spectral satellite imagery, hyper-local weather forecasting, and generative AI to create the world's most advanced agricultural operating system.
           </p>
         </div>
 
@@ -100,7 +100,7 @@ export default function PlatformPage() {
               </div>
               <div className="text-xs font-bold text-moss uppercase tracking-widest mb-2">Layer 03</div>
               <h2 className="text-3xl font-serif text-deep-forest mb-4">Application</h2>
-              <p className="text-ink/60 leading-relaxed">The intuitive interfaces and tools that put the power of AgriSetu in the hands of the farmer.</p>
+              <p className="text-ink/60 leading-relaxed">The intuitive interfaces and tools that put the power of AgriCrate in the hands of the farmer.</p>
             </div>
             <div className="md:w-2/3 p-12 flex flex-col justify-center items-center text-center">
               <h3 className="text-2xl font-serif text-deep-forest mb-6">Ready to see it in action?</h3>

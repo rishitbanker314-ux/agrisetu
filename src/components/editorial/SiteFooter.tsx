@@ -12,7 +12,7 @@ export default function SiteFooter() {
             <path d="M12 8c-3 0-6-3-6-6s3 6 6 6z" />
             <path d="M12 12c3 0 6-3 6-6s-3 6-6 6z" />
           </svg>
-          <span className="font-serif text-xl font-medium tracking-tight text-ink">AgriSetu</span>
+          <span className="font-serif text-xl font-medium tracking-tight text-ink">AgriCrate</span>
         </div>
 
         {/* Links */}
@@ -27,7 +27,7 @@ export default function SiteFooter() {
         <div className="flex flex-wrap items-center gap-6 text-xs font-sans text-ink/50 w-full md:w-auto mt-8 md:mt-0 justify-between md:justify-start">
           <Link href="/en/privacy" className="hover:text-moss transition-colors">Privacy</Link>
           <Link href="/en/terms" className="hover:text-moss transition-colors">Terms</Link>
-          <span>&copy; {new Date().getFullYear()} AgriSetu</span>
+          <span>&copy; {new Date().getFullYear()} AgriCrate</span>
           <div className="flex items-center gap-1 border-l border-soft-line pl-6">
             <span className="uppercase tracking-wider">EN</span>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>

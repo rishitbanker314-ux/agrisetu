@@ -15,7 +15,7 @@ export default function SolutionPage() {
           <div className="bg-white/10 p-2 rounded-lg group-hover:bg-moss/20 transition-colors">
             <Sprout className="w-6 h-6 text-moss" />
           </div>
-          <span className="font-serif text-2xl tracking-tight text-white font-bold">AgriSetu</span>
+          <span className="font-serif text-2xl tracking-tight text-white font-bold">AgriCrate</span>
         </Link>
         <Link href="/" className="text-sm font-medium text-white/70 flex items-center gap-2 hover:text-white transition-colors bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full border border-white/10">
           <ArrowLeft className="w-4 h-4" /> Back to Home
@@ -112,7 +112,7 @@ export default function SolutionPage() {
           <div className="md:w-1/2 relative z-10">
             <h2 className="text-4xl font-serif text-deep-forest font-medium tracking-tight mb-6">Proven results across millions of acres.</h2>
             <p className="text-deep-forest/80 text-lg leading-relaxed">
-              AgriSetu is trusted by commercial farms and agronomists worldwide to make data-driven decisions that impact global food security.
+              AgriCrate is trusted by commercial farms and agronomists worldwide to make data-driven decisions that impact global food security.
             </p>
           </div>
           

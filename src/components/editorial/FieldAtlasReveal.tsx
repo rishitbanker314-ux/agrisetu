@@ -98,7 +98,7 @@ export default function FieldAtlasReveal() {
         <div className="w-full md:w-1/2 h-1/2 md:h-full flex flex-col justify-center px-8 md:px-16 lg:px-24">
           <div className="mb-12">
             <h2 className="font-serif text-4xl md:text-5xl text-deep-forest mb-4">Every field carries a pattern.</h2>
-            <p className="font-sans text-lg text-ink/70">AgriSetu brings the scattered signals together, so growers can see what is changing before it becomes a problem.</p>
+            <p className="font-sans text-lg text-ink/70">AgriCrate brings the scattered signals together, so growers can see what is changing before it becomes a problem.</p>
           </div>
 
           <div className="relative h-64 border-l border-soft-line pl-8">

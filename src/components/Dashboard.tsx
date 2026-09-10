@@ -350,7 +350,7 @@ export default function Dashboard() {
         <div className="fixed inset-0 z-[20000] flex items-center justify-center p-4 bg-ink/70 backdrop-blur-md">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col">
             <div className="p-8 border-b border-soft-line bg-paper-ivory text-center">
-              <h2 className="text-2xl font-serif text-deep-forest font-medium">Welcome to AgriSetu</h2>
+              <h2 className="text-2xl font-serif text-deep-forest font-medium">Welcome to AgriCrate</h2>
               <p className="text-ink/60 text-sm mt-2">Let's set up your profile before we get started.</p>
             </div>
             

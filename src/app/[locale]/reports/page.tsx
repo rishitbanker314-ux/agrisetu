@@ -188,7 +188,7 @@ export default function ReportsPage() {
         </button>
         <Link href="/en" className="flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
           <Sprout className="w-6 h-6 text-deep-forest" />
-          <span className="font-serif text-xl tracking-tight text-ink font-medium hidden sm:block">AgriSetu</span>
+          <span className="font-serif text-xl tracking-tight text-ink font-medium hidden sm:block">AgriCrate</span>
         </Link>
         <div className="text-xs font-medium uppercase tracking-widest text-ink/50">Reports & Insights</div>
         <NavigationSidebar 

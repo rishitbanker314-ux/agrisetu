@@ -35,7 +35,7 @@ export default function NavigationSidebar({ isOpen, setIsOpen, user }: Navigatio
           >
             <div className="p-4 border-b border-soft-line flex items-center gap-2">
               <Sprout className="w-6 h-6 text-moss" />
-              <span className="font-serif text-xl tracking-tight text-deep-forest font-medium">AgriSetu</span>
+              <span className="font-serif text-xl tracking-tight text-deep-forest font-medium">AgriCrate</span>
             </div>
             <div className="p-4 flex-grow flex flex-col gap-2">
               <Link href="/en" className="px-4 py-2 text-ink/70 hover:bg-moss/5 font-medium rounded-md">Home</Link>

@@ -59,7 +59,7 @@ export default function AppHeader({ user, crop, setCrop, savedFields = [], field
             <Sprout className="w-6 h-6" />
           </div>
           <span className="font-serif text-xl tracking-tight text-ink font-medium hidden sm:block">
-            AgriSetu
+            AgriCrate
           </span>
         </Link>
         <span className="hidden lg:block text-xs uppercase tracking-widest text-ink/50 ml-2 pl-4 border-l border-soft-line">
