@@ -193,6 +193,26 @@ const DraggableDrawPoint = ({
   );
 };
 
+const DrawingPolygon = ({ positions, pathOptions }: { positions: [number, number][], pathOptions: any }) => {
+  const polyRef = useRef<any>(null);
+  useEffect(() => {
+    if (polyRef.current) {
+      polyRef.current.setLatLngs(positions);
+    }
+  }, [positions]);
+  return <Polygon ref={polyRef} positions={positions} pathOptions={pathOptions} />;
+};
+
+const DrawingPolyline = ({ positions, pathOptions }: { positions: [number, number][], pathOptions: any }) => {
+  const lineRef = useRef<any>(null);
+  useEffect(() => {
+    if (lineRef.current) {
+      lineRef.current.setLatLngs(positions);
+    }
+  }, [positions]);
+  return <Polyline ref={lineRef} positions={positions} pathOptions={pathOptions} />;
+};
+
 export default function Map({ center, zoom = 13, markers = [], activeMarker, onLocationSelect, temporalNdvi = 0.5, mapStyle = 'street', isDrawingMode = false, drawnBoundary = [], onBoundaryPointMove }: MapProps) {
   const [isLegendOpen, setIsLegendOpen] = useState(false);
 
@@ -240,7 +260,7 @@ export default function Map({ center, zoom = 13, markers = [], activeMarker, onL
                   <Popup>{marker.title}</Popup>
                 </Marker>
               )}
-              {marker.boundary && marker.boundary.flat().length > 2 && (
+              {marker.boundary && marker.boundary.flat().length > 2 && !(isDrawingMode && isActive) && (
               Array.isArray(marker.boundary[0]) && Array.isArray(marker.boundary[0][0]) ? (
                 (marker.boundary as any[]).map((poly, idx) => (
                   poly.length > 2 ? <Polygon key={idx} positions={poly} pathOptions={{ color: '#10b981', weight: 2, dashArray: '4, 4', fillColor: '#10b981', fillOpacity: 0.2 }} eventHandlers={{ click: (e) => { if (e.originalEvent) { e.originalEvent.stopPropagation(); } if (onLocationSelect) onLocationSelect(marker.lat, marker.lng); } }} /> : null
@@ -266,19 +286,16 @@ export default function Map({ center, zoom = 13, markers = [], activeMarker, onL
           <>
             {drawnBoundary.map((poly: any, idx: number) => {
               if (!Array.isArray(poly) || poly.length === 0 || !Array.isArray(poly[0])) return null;
-              const polyKeyHash = poly.map((p:any) => p.join(',')).join('|');
               return (
                 <Fragment key={idx}>
                   {poly.length === 2 && (
-                    <Polyline 
-                      key={`line-${idx}-${polyKeyHash}`} 
+                    <DrawingPolyline 
                       positions={poly} 
                       pathOptions={{ color: '#10b981', weight: 3, dashArray: '6, 6', lineCap: 'round', lineJoin: 'round' }} 
                     />
                   )}
                   {poly.length > 2 && (
-                    <Polygon 
-                      key={`poly-${idx}-${polyKeyHash}`} 
+                    <DrawingPolygon 
                       positions={poly} 
                       pathOptions={{ color: '#10b981', weight: 3, dashArray: '6, 6', fillColor: '#10b981', fillOpacity: 0.3, lineCap: 'round', lineJoin: 'round' }} 
                     />
