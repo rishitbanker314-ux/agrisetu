@@ -132,10 +132,16 @@ Deno.serve(async (req) => {
       const result = await model.generateContent(prompt)
       let jsonString = result.response.text().trim()
       
-      if (jsonString.startsWith('\`\`\`')) {
-        jsonString = jsonString.replace(/^\`\`\`(json)?/, '').replace(/\`\`\`$/, '').trim()
+      if (jsonString.startsWith('```')) {
+        jsonString = jsonString.replace(/^```(json)?/, '').replace(/```$/, '').trim()
       }
       parsedJson = JSON.parse(jsonString)
+      
+      // GUARANTEE EXACT PRICING: Language models often hallucinate or alter numeric values.
+      // We forcefully override whatever Gemini generated with our exact API-fetched price.
+      if (parsedJson && parsedJson.current_market) {
+        parsedJson.current_market.currentPrice = mandiPriceINR;
+      }
     } catch (apiError) {
       console.warn("Gemini API failed, using fallback:", apiError);
       
