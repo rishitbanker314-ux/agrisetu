@@ -138,6 +138,15 @@ const DraggableDrawPoint = ({ position, polyIdx, ptIdx, onMove }: { position: [n
   const markerRef = useRef<any>(null);
   const eventHandlers = useMemo(
     () => ({
+      drag() {
+        const marker = markerRef.current;
+        if (marker != null) {
+          const newPos = marker.getLatLng();
+          if (onMove) {
+            onMove(polyIdx, ptIdx, newPos.lat, newPos.lng);
+          }
+        }
+      },
       dragend() {
         const marker = markerRef.current;
         if (marker != null) {
@@ -235,14 +244,13 @@ export default function Map({ center, zoom = 13, markers = [], activeMarker, onL
           <>
             {drawnBoundary.map((poly: any, idx: number) => {
               if (!Array.isArray(poly) || poly.length === 0 || !Array.isArray(poly[0])) return null;
-              const polyKeyHash = poly.map((p:any) => p.join(',')).join('|');
               return (
                 <Fragment key={idx}>
                   {poly.length === 2 && (
-                    <Polyline key={`line-${idx}-${polyKeyHash}`} positions={poly} pathOptions={{ color: '#10b981', weight: 3, dashArray: '6, 6', lineCap: 'round', lineJoin: 'round' }} />
+                    <Polyline key={`line-${idx}`} positions={poly} pathOptions={{ color: '#10b981', weight: 3, dashArray: '6, 6', lineCap: 'round', lineJoin: 'round' }} />
                   )}
                   {poly.length > 2 && (
-                    <Polygon key={`poly-${idx}-${polyKeyHash}`} positions={poly} pathOptions={{ color: '#10b981', weight: 3, dashArray: '6, 6', fillColor: '#10b981', fillOpacity: 0.3, lineCap: 'round', lineJoin: 'round' }} />
+                    <Polygon key={`poly-${idx}`} positions={poly} pathOptions={{ color: '#10b981', weight: 3, dashArray: '6, 6', fillColor: '#10b981', fillOpacity: 0.3, lineCap: 'round', lineJoin: 'round' }} />
                   )}
                   {poly.map((pt: any, ptIdx: number) => (
                     <DraggableDrawPoint 
