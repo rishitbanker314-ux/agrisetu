@@ -1,6 +1,6 @@
 {
-  "name": "AgriSetu",
-  "short_name": "AgriSetu",
+  "name": "AgriCrate",
+  "short_name": "AgriCrate",
   "description": "AI-powered agricultural advisory platform",
   "start_url": "/",
   "display": "standalone",

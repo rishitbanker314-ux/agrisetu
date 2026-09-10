@@ -134,6 +134,7 @@ export default function SiteHeader() {
           <button 
             className="md:hidden text-ink"
             onClick={() => setMobileMenuOpen(true)}
+            aria-label="Toggle menu"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path d="M4 6h16M4 12h16M4 18h16" />
@@ -148,6 +149,9 @@ export default function SiteHeader() {
         animate={{ opacity: mobileMenuOpen ? 1 : 0, y: mobileMenuOpen ? 0 : '-100%' }}
         transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
         className={`fixed inset-0 z-50 bg-paper-ivory p-6 md:hidden ${mobileMenuOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Mobile Navigation Menu"
       >
         <div className="flex justify-between items-center mb-12">
           <div className="flex items-center gap-3">

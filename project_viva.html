@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AgriSetu — Project Viva & Docs</title>
+  <title>AgriCrate — Project Viva & Docs</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -75,7 +75,7 @@
 </head>
 <body>
   <div class="header">
-    <h1>AgriSetu Documentation & Viva</h1>
+    <h1>AgriCrate Documentation & Viva</h1>
     <p>Read the comprehensive project overview, then test your knowledge with 50 tricky viva questions.</p>
   </div>
   
@@ -97,12 +97,12 @@
     <div class="section">
       <div class="section-header">
         <div class="section-category"><span class="cat-icon">ℹ️</span>Section 1 — About the Project</div>
-        <div class="section-title">Comprehensive AgriSetu Overview</div>
+        <div class="section-title">Comprehensive AgriCrate Overview</div>
       </div>
       <div class="section-body content-body">
         <h3>The Pitch & Grounding</h3>
-        <p><strong>AgriSetu</strong> (meaning "bridge" in Hindi) gives a farmer personalized crop and health advisory — by text or photo, in their own language — built from real satellite, soil, and weather data instead of guesswork. The system adapts dynamically globally, specifically demonstrating cross-border capabilities between India and Brazil.</p>
-        <p><strong>India Context:</strong> The project targets the <em>Build with AI: Digital India Agritech</em> hackathon. While the challenge mentions "inspired by India AgriN", the real AgriN focuses on genetic resources. AgriSetu is genuinely inspired by the <strong>India Network on Digital Agriculture</strong> (coordinated by IIT Delhi) which focuses on AI, geospatial tech, and data-driven solutions.</p>
+        <p><strong>AgriCrate</strong> (meaning "bridge" in Hindi) gives a farmer personalized crop and health advisory — by text or photo, in their own language — built from real satellite, soil, and weather data instead of guesswork. The system adapts dynamically globally, specifically demonstrating cross-border capabilities between India and Brazil.</p>
+        <p><strong>India Context:</strong> The project targets the <em>Build with AI: Digital India Agritech</em> hackathon. While the challenge mentions "inspired by India AgriN", the real AgriN focuses on genetic resources. AgriCrate is genuinely inspired by the <strong>India Network on Digital Agriculture</strong> (coordinated by IIT Delhi) which focuses on AI, geospatial tech, and data-driven solutions.</p>
         
         <h3>System Architecture & Layering</h3>
         <p>The architecture is comprised of four main layers driving the Zero Cost infrastructure:</p>
@@ -120,7 +120,7 @@
         </ul>
 
         <h3>Postgres Data Model & Security</h3>
-        <p>AgriSetu stores profiles, fields, health profiles, advisories, and diagnoses. A critical component is the <strong>Row Level Security (RLS)</strong> policy:</p>
+        <p>AgriCrate stores profiles, fields, health profiles, advisories, and diagnoses. A critical component is the <strong>Row Level Security (RLS)</strong> policy:</p>
         <p><code>create policy "farmers see own fields" on fields for select using (auth.uid() = owner_id);</code></p>
         <p>This ensures complete privacy. For policymakers, we avoid BigQuery by creating a <strong>Postgres materialized view</strong> (`regional_trends`) that aggregates data (NDVI, requests) per country and region. Policymakers only see this aggregated view, acting as our Digital Public Good (DPG) "do-no-harm" privacy layer.</p>
 
@@ -153,7 +153,7 @@
   <script>
     var questions = [
       {
-        q: "Why was Supabase chosen over Firebase for AgriSetu?",
+        q: "Why was Supabase chosen over Firebase for AgriCrate?",
         opts: ["Postgres allows complex relational queries and materialized views for policymakers", "Firebase costs more for basic database operations", "Next.js doesn't support Firebase", "Supabase has better map integration"],
         ans: 0,
         exp: "Supabase Postgres enables materialized views (like regional_trends) which are essential for the policymaker dashboard without needing a separate analytics engine like BigQuery."
@@ -165,7 +165,7 @@
         exp: "The project uses Gemini Flash via Google AI Studio to remain on the truly free tier, avoiding GCP billing account requirements."
       },
       {
-        q: "How does AgriSetu handle translations for different languages?",
+        q: "How does AgriCrate handle translations for different languages?",
         opts: ["Google Cloud Translation API", "i18next library", "In-prompt translation within Gemini Flash", "next-intl handles all dynamic translations"],
         ans: 2,
         exp: "To save costs and reduce API calls, translation is folded directly into the Gemini prompt (e.g., 'respond in Gujarati')."
@@ -183,13 +183,13 @@
         exp: "Supabase Edge Functions use the Deno runtime, enabling lightweight, serverless backend logic."
       },
       {
-        q: "How does AgriSetu ensure that farmers can only access their own data?",
+        q: "How does AgriCrate ensure that farmers can only access their own data?",
         opts: ["Next.js Middleware", "Frontend route guards", "Supabase Row Level Security (RLS)", "JWT token validation in Edge Functions"],
         ans: 2,
         exp: "Supabase Row Level Security (RLS) enforces at the database level that a user can only select rows where owner_id matches their auth.uid()."
       },
       {
-        q: "What data source provides historical crop context for AgriSetu?",
+        q: "What data source provides historical crop context for AgriCrate?",
         opts: ["Open-Meteo", "SoilGrids", "FAOSTAT API", "Google Earth Engine"],
         ans: 2,
         exp: "The FAOSTAT API provides historical crop context data for different regions."
@@ -249,7 +249,7 @@
         exp: "Building it with custom SVG and CSS reduces third-party dependencies, keeps bundle size small, and perfectly matches the bespoke design aesthetic."
       },
       {
-        q: "What defines the 'do-no-harm' principle in AgriSetu?",
+        q: "What defines the 'do-no-harm' principle in AgriCrate?",
         opts: ["Using organic fertilizers", "Ensuring policymakers only see aggregated data via RLS and materialized views", "Not using AI for crop diagnosis", "Using free-tier servers to save energy"],
         ans: 1,
         exp: "By enforcing RLS and only providing aggregated data to policymakers, the system protects individual farmer privacy."
@@ -279,7 +279,7 @@
         exp: "Framer Motion is deeply integrated into the Next.js React stack for smooth spring animations and layout transitions."
       },
       {
-        q: "How does AgriSetu handle client-side state management?",
+        q: "How does AgriCrate handle client-side state management?",
         opts: ["Redux", "Context API only", "Zustand", "MobX"],
         ans: 2,
         exp: "Zustand is used as the lightweight, fast client-side state management library."
@@ -297,10 +297,10 @@
         exp: "Free Supabase projects pause after 7 days of inactivity. A keep-alive ping ensures the project remains active during the judging period."
       },
       {
-        q: "What SDGs (Sustainable Development Goals) does AgriSetu explicitly align with?",
+        q: "What SDGs (Sustainable Development Goals) does AgriCrate explicitly align with?",
         opts: ["SDG 1 and SDG 5", "SDG 4 and SDG 8", "SDG 2 (Zero Hunger) and SDG 13 (Climate Action)", "SDG 7 and SDG 9"],
         ans: 2,
-        exp: "AgriSetu aligns with SDG 2 (Zero Hunger) by improving farming efficiency and SDG 13 (Climate Action) by promoting sustainable practices."
+        exp: "AgriCrate aligns with SDG 2 (Zero Hunger) by improving farming efficiency and SDG 13 (Climate Action) by promoting sustainable practices."
       },
       {
         q: "Why is Google Earth Engine registered as noncommercial/educational for this project?",
@@ -357,7 +357,7 @@
         exp: "The architecture uses custom browser events to trigger notifications across different components seamlessly without heavy state management."
       },
       {
-        q: "What library is used for icons in the AgriSetu frontend?",
+        q: "What library is used for icons in the AgriCrate frontend?",
         opts: ["FontAwesome", "Lucide React", "Heroicons", "Material Icons"],
         ans: 1,
         exp: "Lucide React provides clean, consistent SVG icons that match the modern aesthetic."
@@ -390,7 +390,7 @@
         q: "Which organization coordinates the real India Network on Digital Agriculture?",
         opts: ["MIT", "IIT Delhi", "Oxford University", "Tsinghua University"],
         ans: 1,
-        exp: "IIT Delhi coordinates the real-world initiative that AgriSetu's pitch is based upon."
+        exp: "IIT Delhi coordinates the real-world initiative that AgriCrate's pitch is based upon."
       },
       {
         q: "What is the primary fallback for the Acoustic Biosphere Monitor if soil moisture data API fails?",
@@ -441,16 +441,16 @@
         exp: "Google Cloud Text-to-Speech was replaced by the Browser Web Speech API to eliminate GCP billing requirements."
       },
       {
-        q: "What CSS framework and engine version is used in AgriSetu to achieve a modern, responsive UI with zero runtime overhead?",
+        q: "What CSS framework and engine version is used in AgriCrate to achieve a modern, responsive UI with zero runtime overhead?",
         opts: ["Tailwind CSS v4 with PostCSS", "Bootstrap 5", "Material UI (MUI)", "Chakra UI"],
         ans: 0,
-        exp: "AgriSetu uses Tailwind CSS v4 with PostCSS for high-contrast, zero-runtime utility styling optimized for mobile screens under bright sunlight."
+        exp: "AgriCrate uses Tailwind CSS v4 with PostCSS for high-contrast, zero-runtime utility styling optimized for mobile screens under bright sunlight."
       },
       {
-        q: "How does AgriSetu ensure offline functionality and installability on mobile devices for rural farmers?",
+        q: "How does AgriCrate ensure offline functionality and installability on mobile devices for rural farmers?",
         opts: ["By publishing a native Android APK to Google Play", "Using Progressive Web App (PWA) service workers via @ducanh2912/next-pwa", "By requiring a continuous satellite link", "Through an SMS chatbot gateway only"],
         ans: 1,
-        exp: "AgriSetu uses @ducanh2912/next-pwa to configure offline service worker caching and home-screen installability without app store friction."
+        exp: "AgriCrate uses @ducanh2912/next-pwa to configure offline service worker caching and home-screen installability without app store friction."
       }
     ];
 

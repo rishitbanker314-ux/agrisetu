@@ -1,12 +1,12 @@
-# AgriSetu Frontend Deployment Guide
+# AgriCrate Frontend Deployment Guide
 
-Because AgriSetu is built on Next.js 14, Vercel is the recommended hosting platform for a zero-configuration deployment.
+Because AgriCrate is built on Next.js 14, Vercel is the recommended hosting platform for a zero-configuration deployment.
 
 ## Steps to Deploy on Vercel
 
 1. Push your local repository to GitHub, GitLab, or Bitbucket.
 2. Log into [Vercel](https://vercel.com) and click **Add New Project**.
-3. Import your AgriSetu repository.
+3. Import your AgriCrate repository.
 4. **Environment Variables**: You must add the following variables before clicking deploy:
 
    | Variable Name | Description |

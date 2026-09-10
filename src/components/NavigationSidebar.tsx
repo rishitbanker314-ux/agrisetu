@@ -26,7 +26,7 @@ export default function NavigationSidebar({ isOpen, setIsOpen, user }: Navigatio
             onClick={() => setIsOpen(false)}
             className="fixed inset-0 bg-ink/20 backdrop-blur-sm z-[9998]"
           />
-          <motion.div 
+          <motion.nav 
             initial={{ x: '-100%' }}
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
@@ -56,7 +56,7 @@ export default function NavigationSidebar({ isOpen, setIsOpen, user }: Navigatio
                 </Link>
               )}
             </div>
-          </motion.div>
+          </motion.nav>
         </>
       )}
     </AnimatePresence>

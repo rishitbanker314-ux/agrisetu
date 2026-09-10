@@ -65,6 +65,17 @@ export default function FieldsPage() {
     loadFields();
   }, []);
 
+  useEffect(() => {
+    if (isModalOpen || editingField) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isModalOpen, editingField]);
+
   const handleAddField = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!userId) return;
@@ -260,16 +271,16 @@ export default function FieldsPage() {
 
       {/* Add Field Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-ink/50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-ink/50 backdrop-blur-sm overscroll-contain">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col md:flex-row max-h-[90vh]">
-            <div className="flex-1 border-r border-soft-line flex flex-col">
+            <div className="flex-1 border-b md:border-b-0 md:border-r border-soft-line flex flex-col min-h-0">
               <div className="flex justify-between items-center p-6 border-b border-soft-line">
                 <h2 className="text-2xl font-serif text-deep-forest">Register New Field</h2>
                 <button onClick={() => setIsModalOpen(false)} className="text-ink/40 hover:text-ink md:hidden">
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              <form onSubmit={handleAddField} className="p-6 space-y-4 flex-grow overflow-y-auto">
+              <form onSubmit={handleAddField} className="p-6 space-y-4 flex-grow overflow-y-auto overscroll-contain">
                 <div>
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2">Field Name</label>
                   <input name="name" required placeholder="e.g., East Plot" className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" />
@@ -332,68 +343,70 @@ export default function FieldsPage() {
                 </button>
               </form>
             </div>
-            <div className="flex-1 min-h-[300px] relative">
-              <div className="absolute top-4 left-4 z-[500]">
-                <button 
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (!isDrawing) {
-                      setDrawnBoundary(prev => [...prev, []]);
-                    }
-                    setIsDrawing(!isDrawing);
-                  }}
-                  className={`px-4 py-2 rounded-full shadow-md text-sm font-medium transition-colors ${isDrawing ? 'bg-moss text-white' : 'bg-white text-ink hover:bg-moss/10'}`}
-                >
-                  {isDrawing ? 'Finish Drawing' : 'Draw Custom Boundary'}
-                </button>
-                {drawnBoundary.length > 0 && !isDrawing && (
+            <div className="h-[300px] md:h-auto md:flex-1 shrink-0 relative w-full">
+              <div className="absolute inset-0">
+                <div className="absolute top-4 left-4 z-[500]">
                   <button 
                     type="button"
                     onClick={(e) => {
                       e.preventDefault();
-                      setDrawnBoundary([]);
+                      if (!isDrawing) {
+                        setDrawnBoundary(prev => [...prev, []]);
+                      }
+                      setIsDrawing(!isDrawing);
                     }}
-                    className="ml-2 px-4 py-2 bg-white rounded-full shadow-md text-sm font-medium text-terracotta hover:bg-terracotta/10 transition-colors"
+                    className={`px-4 py-2 rounded-full shadow-md text-sm font-medium transition-colors ${isDrawing ? 'bg-moss text-white' : 'bg-white text-ink hover:bg-moss/10'}`}
                   >
-                    Clear Shape
+                    {isDrawing ? 'Finish Drawing' : 'Draw Custom Boundary'}
                   </button>
-                )}
+                  {drawnBoundary.length > 0 && !isDrawing && (
+                    <button 
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setDrawnBoundary([]);
+                      }}
+                      className="ml-2 px-4 py-2 bg-white rounded-full shadow-md text-sm font-medium text-terracotta hover:bg-terracotta/10 transition-colors"
+                    >
+                      Clear Shape
+                    </button>
+                  )}
+                </div>
+                <div className="absolute top-4 left-4 z-[500] hidden md:block mt-12">
+                  <button 
+                    onClick={(e) => { e.preventDefault(); setMapStyle(s => s === 'street' ? 'satellite' : 'street'); }}
+                    className={`bg-white p-2 rounded-md shadow-md transition-colors ${mapStyle === 'satellite' ? 'bg-moss/10 text-moss' : 'text-ink/60 hover:text-ink'}`}
+                    title="Toggle Map Style"
+                  >
+                    <Layers className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="absolute top-4 right-4 z-[500] hidden md:block">
+                  <button onClick={() => setIsModalOpen(false)} className="bg-white p-2 rounded-full shadow-md text-ink/40 hover:text-ink">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <Map 
+                  center={selectedLocation || [28.6139, 77.2090]} 
+                  zoom={selectedLocation ? 16 : 4} 
+                  mapStyle={mapStyle}
+                  onLocationSelect={(lat, lng) => {
+                    if (isDrawing) {
+                      setDrawnBoundary(prev => { 
+                        if (prev.length === 0) return [[[lat, lng]]]; 
+                        const newArr = [...prev]; 
+                        newArr[newArr.length - 1] = [...newArr[newArr.length - 1], [lat, lng]]; 
+                        return newArr; 
+                      });
+                    } else {
+                      setSelectedLocation([lat, lng]);
+                    }
+                  }}
+                  activeMarker={selectedLocation ? { lat: selectedLocation[0], lng: selectedLocation[1], boundary: drawnBoundary.flat().length > 2 ? drawnBoundary : undefined } : undefined}
+                  isDrawingMode={isDrawing}
+                  drawnBoundary={drawnBoundary}
+                />
               </div>
-              <div className="absolute top-4 left-4 z-[500] hidden md:block">
-                <button 
-                  onClick={(e) => { e.preventDefault(); setMapStyle(s => s === 'street' ? 'satellite' : 'street'); }}
-                  className={`bg-white p-2 rounded-md shadow-md transition-colors ${mapStyle === 'satellite' ? 'bg-moss/10 text-moss' : 'text-ink/60 hover:text-ink'}`}
-                  title="Toggle Map Style"
-                >
-                  <Layers className="w-5 h-5" />
-                </button>
-              </div>
-              <div className="absolute top-4 right-4 z-[500] hidden md:block">
-                <button onClick={() => setIsModalOpen(false)} className="bg-white p-2 rounded-full shadow-md text-ink/40 hover:text-ink">
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-              <Map 
-                center={selectedLocation || [28.6139, 77.2090]} 
-                zoom={selectedLocation ? 16 : 4} 
-                mapStyle={mapStyle}
-                onLocationSelect={(lat, lng) => {
-                  if (isDrawing) {
-                    setDrawnBoundary(prev => { 
-                      if (prev.length === 0) return [[[lat, lng]]]; 
-                      const newArr = [...prev]; 
-                      newArr[newArr.length - 1] = [...newArr[newArr.length - 1], [lat, lng]]; 
-                      return newArr; 
-                    });
-                  } else {
-                    setSelectedLocation([lat, lng]);
-                  }
-                }}
-                activeMarker={selectedLocation ? { lat: selectedLocation[0], lng: selectedLocation[1], boundary: drawnBoundary.flat().length > 2 ? drawnBoundary : undefined } : undefined}
-                isDrawingMode={isDrawing}
-                drawnBoundary={drawnBoundary}
-              />
             </div>
           </div>
         </div>
@@ -401,9 +414,9 @@ export default function FieldsPage() {
 
       {/* Edit Field Modal */}
       {editingField && (
-        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-ink/50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-ink/50 backdrop-blur-sm overscroll-contain">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col md:flex-row max-h-[90vh]">
-            <div className="flex-1 border-r border-soft-line flex flex-col">
+            <div className="flex-1 border-b md:border-b-0 md:border-r border-soft-line flex flex-col min-h-0">
               <div className="flex justify-between items-center p-6 border-b border-soft-line bg-paper-ivory">
                 <h2 className="text-xl font-serif text-deep-forest font-medium">Edit Field</h2>
                 <button onClick={() => setEditingField(null)} className="text-ink/40 hover:text-ink p-1 md:hidden">
@@ -411,7 +424,7 @@ export default function FieldsPage() {
                 </button>
               </div>
               
-              <form onSubmit={handleEditField} className="p-6 space-y-4 flex-grow overflow-y-auto">
+              <form onSubmit={handleEditField} className="p-6 space-y-4 flex-grow overflow-y-auto overscroll-contain">
                 <div>
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2">Field Name</label>
                   <input name="name" defaultValue={editingField.name} required className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" />
@@ -493,66 +506,68 @@ export default function FieldsPage() {
                 </div>
               </form>
             </div>
-            <div className="flex-1 min-h-[300px] relative">
-              <div className="absolute top-4 left-4 z-[500]">
-                <button 
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (!isDrawing) setDrawnBoundary(prev => [...prev, []]); 
-                    setIsDrawing(!isDrawing);
-                  }}
-                  className={`px-4 py-2 rounded-full shadow-md text-sm font-medium transition-colors ${isDrawing ? 'bg-moss text-white' : 'bg-white text-ink hover:bg-moss/10'}`}
-                >
-                  {isDrawing ? 'Finish Drawing' : 'Draw Custom Boundary'}
-                </button>
-                {drawnBoundary.length > 0 && !isDrawing && (
+            <div className="h-[300px] md:h-auto md:flex-1 shrink-0 relative w-full border-t md:border-t-0 md:border-l border-soft-line">
+              <div className="absolute inset-0">
+                <div className="absolute top-4 left-4 z-[500]">
                   <button 
                     type="button"
                     onClick={(e) => {
                       e.preventDefault();
-                      setDrawnBoundary([]);
+                      if (!isDrawing) setDrawnBoundary(prev => [...prev, []]); 
+                      setIsDrawing(!isDrawing);
                     }}
-                    className="ml-2 px-4 py-2 bg-white rounded-full shadow-md text-sm font-medium text-terracotta hover:bg-terracotta/10 transition-colors"
+                    className={`px-4 py-2 rounded-full shadow-md text-sm font-medium transition-colors ${isDrawing ? 'bg-moss text-white' : 'bg-white text-ink hover:bg-moss/10'}`}
                   >
-                    Clear Shape
+                    {isDrawing ? 'Finish Drawing' : 'Draw Custom Boundary'}
                   </button>
-                )}
+                  {drawnBoundary.length > 0 && !isDrawing && (
+                    <button 
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setDrawnBoundary([]);
+                      }}
+                      className="ml-2 px-4 py-2 bg-white rounded-full shadow-md text-sm font-medium text-terracotta hover:bg-terracotta/10 transition-colors"
+                    >
+                      Clear Shape
+                    </button>
+                  )}
+                </div>
+                <div className="absolute top-4 left-4 z-[500] hidden md:block mt-12">
+                  <button 
+                    onClick={(e) => { e.preventDefault(); setMapStyle(s => s === 'street' ? 'satellite' : 'street'); }}
+                    className={`bg-white p-2 rounded-md shadow-md transition-colors ${mapStyle === 'satellite' ? 'bg-moss/10 text-moss' : 'text-ink/60 hover:text-ink'}`}
+                    title="Toggle Map Style"
+                  >
+                    <Layers className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="absolute top-4 right-4 z-[500] hidden md:block">
+                  <button onClick={() => setEditingField(null)} className="bg-white p-2 rounded-full shadow-md text-ink/40 hover:text-ink">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <Map 
+                  center={selectedLocation || [28.6139, 77.2090]} 
+                  zoom={selectedLocation ? 16 : 4} 
+                  mapStyle={mapStyle}
+                  onLocationSelect={(lat, lng) => {
+                    if (isDrawing) {
+                      setDrawnBoundary(prev => { 
+                        if (prev.length === 0) return [[[lat, lng]]]; 
+                        const newArr = [...prev]; 
+                        newArr[newArr.length - 1] = [...newArr[newArr.length - 1], [lat, lng]]; 
+                        return newArr; 
+                      });
+                    } else {
+                      setSelectedLocation([lat, lng]);
+                    }
+                  }}
+                  activeMarker={selectedLocation ? { lat: selectedLocation[0], lng: selectedLocation[1], boundary: drawnBoundary.flat().length > 2 ? drawnBoundary : undefined } : undefined}
+                  isDrawingMode={isDrawing}
+                  drawnBoundary={drawnBoundary}
+                />
               </div>
-              <div className="absolute top-4 left-4 z-[500] hidden md:block">
-                <button 
-                  onClick={(e) => { e.preventDefault(); setMapStyle(s => s === 'street' ? 'satellite' : 'street'); }}
-                  className={`bg-white p-2 rounded-md shadow-md transition-colors ${mapStyle === 'satellite' ? 'bg-moss/10 text-moss' : 'text-ink/60 hover:text-ink'}`}
-                  title="Toggle Map Style"
-                >
-                  <Layers className="w-5 h-5" />
-                </button>
-              </div>
-              <div className="absolute top-4 right-4 z-[500] hidden md:block">
-                <button onClick={() => setEditingField(null)} className="bg-white p-2 rounded-full shadow-md text-ink/40 hover:text-ink">
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-              <Map 
-                center={selectedLocation || [28.6139, 77.2090]} 
-                zoom={selectedLocation ? 16 : 4} 
-                mapStyle={mapStyle}
-                onLocationSelect={(lat, lng) => {
-                  if (isDrawing) {
-                    setDrawnBoundary(prev => { 
-                      if (prev.length === 0) return [[[lat, lng]]]; 
-                      const newArr = [...prev]; 
-                      newArr[newArr.length - 1] = [...newArr[newArr.length - 1], [lat, lng]]; 
-                      return newArr; 
-                    });
-                  } else {
-                    setSelectedLocation([lat, lng]);
-                  }
-                }}
-                activeMarker={selectedLocation ? { lat: selectedLocation[0], lng: selectedLocation[1], boundary: drawnBoundary.flat().length > 2 ? drawnBoundary : undefined } : undefined}
-                isDrawingMode={isDrawing}
-                drawnBoundary={drawnBoundary}
-              />
             </div>
           </div>
         </div>

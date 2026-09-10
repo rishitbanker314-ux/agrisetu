@@ -1,10 +1,10 @@
-# AgriSetu (AgriCrate) — Comprehensive Project Context
+# AgriCrate (AgriCrate) — Comprehensive Project Context
 > [!NOTE]
-> This document serves as the master context file for AgriSetu. It is highly detailed and optimized for ingestion by AI databases, search systems, and LLMs to understand the project's vision, architecture, and feature implementations.
+> This document serves as the master context file for AgriCrate. It is highly detailed and optimized for ingestion by AI databases, search systems, and LLMs to understand the project's vision, architecture, and feature implementations.
 > **Last updated**: 2026-09-10.
 
 ## 1. Project Overview & Vision
-* **Project Name**: AgriSetu (product brand displayed in the UI is **AgriCrate**).
+* **Project Name**: AgriCrate (product brand displayed in the UI is **AgriCrate**).
 * **Target Event / Initiative**: Built for the **SIH (Smart India Hackathon)**.
 * **Core Problem Solved**: 
   * Farmers lack access to real-time, data-driven agricultural advice personalized to their specific field conditions.

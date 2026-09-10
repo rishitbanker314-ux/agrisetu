@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>AgriSetu — Complete Technical Stack & Viva Defense Specification</title>
+  <title>AgriCrate — Complete Technical Stack & Viva Defense Specification</title>
   <style>
     @page {
       size: A4 landscape;
@@ -527,11 +527,11 @@
   <!-- Floating Sticky Navigation on Screen -->
   <div class="screen-control-bar no-print">
     <div style="display: flex; align-items: center; gap: 10px;">
-      <span style="font-weight: 800; font-size: 13.5px; color: #10b981;">🌿 AgriSetu Technical Specification</span>
+      <span style="font-weight: 800; font-size: 13.5px; color: #10b981;">🌿 AgriCrate Technical Specification</span>
       <span style="font-size: 11px; color: #94a3b8;">· High-Legibility Screen Mode</span>
     </div>
     <div style="display: flex; gap: 8px;">
-      <a href="agrisetu_team_mastery_portal.html" class="screen-btn portal-btn">
+      <a href="agricrate_team_mastery_portal.html" class="screen-btn portal-btn">
         🚀 Interactive Team Study Portal (Bento &amp; Audio)
       </a>
       <a href="project_viva.html" class="screen-btn">
@@ -547,7 +547,7 @@
   <div class="header-banner">
     <div class="header-title-block">
       <h1>
-        AgriSetu (कृषि सेतु) 
+        AgriCrate (कृषि सेतु) 
         <span class="badge-tag">Technical Architecture Matrix & Tech Stack</span>
       </h1>
       <div class="header-subtitle">
@@ -597,7 +597,7 @@
           <th style="width: 8%;">Layer</th>
           <th style="width: 14%;">Technology & Version</th>
           <th style="width: 13%;">Category / Role</th>
-          <th style="width: 21%;">Purpose & Role in AgriSetu</th>
+          <th style="width: 21%;">Purpose & Role in AgriCrate</th>
           <th style="width: 20%;">Key Capabilities</th>
           <th style="width: 18%;">Why Chosen Over Alternatives</th>
           <th style="width: 6%; text-align: center;">Tier</th>
@@ -696,7 +696,7 @@
             <span class="tech-version">v10.2.9</span>
           </td>
           <td>Progressive Web App Engine</td>
-          <td>Transforms AgriSetu into an installable mobile app with offline service workers, asset caching, and background sync for rural farms.</td>
+          <td>Transforms AgriCrate into an installable mobile app with offline service workers, asset caching, and background sync for rural farms.</td>
           <td>
             <div class="benefit-item"><span class="benefit-bullet">✓</span> Offline advisory and farm guide availability</div>
             <div class="benefit-item"><span class="benefit-bullet">✓</span> Add-to-homescreen installation on Android/iOS</div>
@@ -747,6 +747,27 @@
           <td>
             <div class="justification-box">
               <strong>vs. react-i18next:</strong> Native Next.js App Router support with seamless static rendering & clean subpath locale routing.
+            </div>
+          </td>
+          <td style="text-align: center;"><span class="cost-free">Free</span></td>
+        </tr>
+
+        <tr>
+          <td><span class="layer-badge layer-frontend">Frontend</span></td>
+          <td>
+            <span class="tech-name">Chart.js</span>
+            <span class="tech-version">v4.5.1 (react-chartjs-2)</span>
+          </td>
+          <td>Analytics & Data Visualization</td>
+          <td>Renders interactive analytics dashboards for policymakers, visualizing regional crop health trends and active anomalies.</td>
+          <td>
+            <div class="benefit-item"><span class="benefit-bullet">✓</span> High-performance HTML5 Canvas rendering</div>
+            <div class="benefit-item"><span class="benefit-bullet">✓</span> Built-in zooming and panning for large datasets</div>
+            <div class="benefit-item"><span class="benefit-bullet">✓</span> Declarative configuration with React bindings</div>
+          </td>
+          <td>
+            <div class="justification-box">
+              <strong>vs. Custom SVGs / Recharts:</strong> Scales to render thousands of data points smoothly with hardware acceleration, unlike heavy DOM-based SVG charts.
             </div>
           </td>
           <td style="text-align: center;"><span class="cost-free">Free</span></td>
@@ -928,7 +949,7 @@
   </div>
 
   <div class="footer-bar">
-    <span>AgriSetu (कृषि सेतु) · Technical Architecture & Stack Matrix (Page 1 of 4)</span>
+    <span>AgriCrate (कृषि सेतु) · Technical Architecture & Stack Matrix (Page 1 of 4)</span>
     <span>Target Initiative: India Network on Digital Agriculture (IIT Delhi Coordinated)</span>
     <span>Zero-Cost Serverless Infrastructure</span>
   </div>
@@ -953,9 +974,9 @@
         <span class="layer-badge layer-ai">Cost Model</span>
       </h3>
       <div class="qa-item">
-        <div class="qa-question">Q: How can AgriSetu offer enterprise-grade AI and satellite monitoring for $0 infrastructure cost?</div>
+        <div class="qa-question">Q: How can AgriCrate offer enterprise-grade AI and satellite monitoring for $0 infrastructure cost?</div>
         <div class="qa-answer">
-          By strategically pairing <strong>Google AI Studio's Gemini Flash tier</strong> (~1,500 daily requests) with <strong>Google Earth Engine's non-commercial research tier</strong> and <strong>Supabase's generous 500MB free PostgreSQL tier</strong>. Instead of spinning up expensive GPU instances or paying $5/1k calls on commercial APIs, AgriSetu leverages open geospatial and academic tiers designed specifically for impactful cooperation initiatives.
+          By strategically pairing <strong>Google AI Studio's Gemini Flash tier</strong> (~1,500 daily requests) with <strong>Google Earth Engine's non-commercial research tier</strong> and <strong>Supabase's generous 500MB free PostgreSQL tier</strong>. Instead of spinning up expensive GPU instances or paying $5/1k calls on commercial APIs, AgriCrate leverages open geospatial and academic tiers designed specifically for impactful cooperation initiatives.
         </div>
         <div class="defense-tag">Key Defense: $0 barrier enables immediate deployment across developing agricultural cooperatives</div>
       </div>
@@ -997,7 +1018,7 @@
       <div class="qa-item">
         <div class="qa-question">Q: Why Google Earth Engine (GEE) over static satellite imagery dumps?</div>
         <div class="qa-answer">
-          Earth Engine enables on-the-fly planetary computations directly in Google's cloud. When a farmer pins a farm boundary, AgriSetu queries Sentinel-2's Red (B4) and Near-Infrared (B8) spectral bands to dynamically calculate <strong>NDVI = (B8 - B4) / (B8 + B4)</strong>, providing an up-to-date vegetative vigor map updated every 5 days rather than stale historical imagery.
+          Earth Engine enables on-the-fly planetary computations directly in Google's cloud. When a farmer pins a farm boundary, AgriCrate queries Sentinel-2's Red (B4) and Near-Infrared (B8) spectral bands to dynamically calculate <strong>NDVI = (B8 - B4) / (B8 + B4)</strong>, providing an up-to-date vegetative vigor map updated every 5 days rather than stale historical imagery.
         </div>
         <div class="defense-tag">Key Defense: NDVI formula must be quoted directly: (NIR - Red) / (NIR + Red)</div>
       </div>
@@ -1018,7 +1039,7 @@
       <div class="qa-item">
         <div class="qa-question">Q: Why a Progressive Web App (PWA) instead of a native Android APK on Google Play?</div>
         <div class="qa-answer">
-          Rural farmers often face limited smartphone storage and high data download costs. AgriSetu's PWA installs in under 2 seconds with zero APK download friction, caches crucial pest and weather advisories offline via Service Workers, and updates automatically without user intervention.
+          Rural farmers often face limited smartphone storage and high data download costs. AgriCrate's PWA installs in under 2 seconds with zero APK download friction, caches crucial pest and weather advisories offline via Service Workers, and updates automatically without user intervention.
         </div>
         <div class="defense-tag">Key Defense: Solves rural device constraint (low storage & intermittent 2G/3G connectivity)</div>
       </div>
@@ -1032,7 +1053,7 @@
   </div>
 
   <div class="footer-bar">
-    <span>AgriSetu (कृषि सेतु) · Architectural Decisions & Deep-Dive Rationale (Page 2 of 4)</span>
+    <span>AgriCrate (कृषि सेतु) · Architectural Decisions & Deep-Dive Rationale (Page 2 of 4)</span>
     <span>Target Initiative: India Network on Digital Agriculture (IIT Delhi Coordinated)</span>
     <span>Technical Evaluation Standard</span>
   </div>
@@ -1058,7 +1079,7 @@
       </h3>
 
       <div class="qa-item">
-        <div class="qa-question">Q1: What is the exact 4-layer architecture of AgriSetu?</div>
+        <div class="qa-question">Q1: What is the exact 4-layer architecture of AgriCrate?</div>
         <div class="qa-answer">
           <strong>1. Data Sources:</strong> Sentinel-2 via GEE (NDVI), SoilGrids (soil texture/pH), Open-Meteo (weather), FAOSTAT (crop baselines).<br>
           <strong>2. Ingestion & Adapters:</strong> Country-adapter pattern running on Supabase Edge Functions (Deno).<br>
@@ -1141,7 +1162,7 @@
   </div>
 
   <div class="footer-bar">
-    <span>AgriSetu (कृषि सेतु) · Viva Defense Question Bank: Architecture & AI (Page 3 of 4)</span>
+    <span>AgriCrate (कृषि सेतु) · Viva Defense Question Bank: Architecture & AI (Page 3 of 4)</span>
     <span>Target Initiative: India Network on Digital Agriculture (IIT Delhi Coordinated)</span>
     <span>Examiner Preparation Standard</span>
   </div>
@@ -1215,7 +1236,7 @@
       </div>
 
       <div class="qa-item">
-        <div class="qa-question">Q16: How does AgriSetu handle cloud cover over Sentinel-2 satellite imagery?</div>
+        <div class="qa-question">Q16: How does AgriCrate handle cloud cover over Sentinel-2 satellite imagery?</div>
         <div class="qa-answer">
           Sentinel-2 includes an internal cloud probability mask (SCL / QA60 band). The Earth Engine pipeline filters pixels with cloud confidence &gt; 20% and applies median composite reduction across the previous 15-day temporal window to produce a clean cloud-free surface reflectance image.
         </div>
@@ -1231,7 +1252,7 @@
       <div class="qa-item">
         <div class="qa-question">Q18: What is SoilGrids and how is it accessed reliably?</div>
         <div class="qa-answer">
-          SoilGrids is a global automated soil mapping system (ISRIC) providing pH, nitrogen, and organic carbon at 250m resolution. Instead of using the standalone SoilGrids REST API (which suffers frequent downtime), AgriSetu accesses SoilGrids directly through the <strong>Google Earth Engine Community Catalog</strong> for 99.9% uptime.
+          SoilGrids is a global automated soil mapping system (ISRIC) providing pH, nitrogen, and organic carbon at 250m resolution. Instead of using the standalone SoilGrids REST API (which suffers frequent downtime), AgriCrate accesses SoilGrids directly through the <strong>Google Earth Engine Community Catalog</strong> for 99.9% uptime.
         </div>
       </div>
     </div>
@@ -1251,9 +1272,9 @@
       </div>
 
       <div class="qa-item">
-        <div class="qa-question">Q20: Why custom SVG charts instead of heavy charting libraries like Chart.js or Recharts?</div>
+        <div class="qa-question">Q20: Why use Chart.js instead of custom SVG generators or heavy enterprise charting tools?</div>
         <div class="qa-answer">
-          Chart.js and Recharts add 150KB–300KB to the JavaScript bundle and require heavy canvas or DOM elements. AgriSetu's custom mathematical SVG generator produces resolution-independent sparklines and 7-day temperature trends with zero runtime dependencies and &lt;2KB total code overhead.
+          While custom SVGs are lightweight, they fall short for interactive, high-density datasets required by policymakers. <strong>Chart.js</strong> provides HTML5 Canvas-based rendering which easily handles thousands of localized data points with smooth interactive zooming (via <code>chartjs-plugin-zoom</code>), without the DOM bloat of Recharts or SVG-based libraries, maintaining our strict performance budgets.
         </div>
       </div>
 
@@ -1273,14 +1294,14 @@
       </h3>
 
       <div class="qa-item">
-        <div class="qa-question">Q22: What real-world initiative does AgriSetu map to?</div>
+        <div class="qa-question">Q22: What real-world initiative does AgriCrate map to?</div>
         <div class="qa-answer">
-          While inspired by the India AgriN track, AgriSetu directly maps to the <strong>India Network on Digital Agriculture</strong>, a premier initiative announced at the India Agriculture Ministers' meeting in Indore and coordinated by <strong>IIT Delhi</strong>, focusing on data-driven, geospatial, and AI agricultural solutions.
+          While inspired by the India AgriN track, AgriCrate directly maps to the <strong>India Network on Digital Agriculture</strong>, a premier initiative announced at the India Agriculture Ministers' meeting in Indore and coordinated by <strong>IIT Delhi</strong>, focusing on data-driven, geospatial, and AI agricultural solutions.
         </div>
       </div>
 
       <div class="qa-item">
-        <div class="qa-question">Q23: Which UN Sustainable Development Goals (SDGs) does AgriSetu target?</div>
+        <div class="qa-question">Q23: Which UN Sustainable Development Goals (SDGs) does AgriCrate target?</div>
         <div class="qa-answer">
           • <strong>SDG 2 (Zero Hunger):</strong> Enhancing smallholder crop yields and reducing pest-driven crop loss.<br>
           • <strong>SDG 13 (Climate Action):</strong> Providing early warning frost/flood alerts and optimizing nitrogen fertilizer application to reduce nitrous oxide greenhouse emissions.<br>
@@ -1289,16 +1310,16 @@
       </div>
 
       <div class="qa-item">
-        <div class="qa-question">Q24: What is the primary differentiator between AgriSetu and commercial apps like DeHaat or CropIn?</div>
+        <div class="qa-question">Q24: What is the primary differentiator between AgriCrate and commercial apps like DeHaat or CropIn?</div>
         <div class="qa-answer">
-          Commercial apps are closed-source, monetize via commission on agrochemical sales (introducing bias toward chemical over-use), and require high-bandwidth devices. AgriSetu is an open Digital Public Good architecture with 100% free infrastructure, unbiased organic-first AI advisories, and multimodal vernacular accessibility.
+          Commercial apps are closed-source, monetize via commission on agrochemical sales (introducing bias toward chemical over-use), and require high-bandwidth devices. AgriCrate is an open Digital Public Good architecture with 100% free infrastructure, unbiased organic-first AI advisories, and multimodal vernacular accessibility.
         </div>
       </div>
     </div>
   </div>
 
   <div class="footer-bar">
-    <span>AgriSetu (कृषि सेतु) · Viva Defense Question Bank: Database, Geospatial & Ethics (Page 4 of 4)</span>
+    <span>AgriCrate (कृषि सेतु) · Viva Defense Question Bank: Database, Geospatial & Ethics (Page 4 of 4)</span>
     <span>Target Initiative: India Network on Digital Agriculture (IIT Delhi Coordinated)</span>
     <span>Complete Examination & Project Specification</span>
   </div>

@@ -1,4 +1,4 @@
-# AgriSetu — Full Build Blueprint (Supabase + Free-Tier Google AI)
+# AgriCrate — Full Build Blueprint (Supabase + Free-Tier Google AI)
 **Build with AI: Digital India Agritech · Cooperation Track — Agriculture / AgriN**
 **Deadline: August 24, 2026 · Built in Antigravity IDE · $0 infrastructure cost**
 
@@ -22,7 +22,7 @@
 
 ## 1. The pitch, and why it's grounded in something real
 
-**AgriSetu** (*setu* = bridge) gives a farmer a personalized crop and health advisory — by voice, text, or photo, in their own language — built from real satellite, soil, and weather data instead of guesswork. The same pipeline runs for any India country because every data source underneath it is global.
+**AgriCrate** (*setu* = bridge) gives a farmer a personalized crop and health advisory — by voice, text, or photo, in their own language — built from real satellite, soil, and weather data instead of guesswork. The same pipeline runs for any India country because every data source underneath it is global.
 
 **The research hook for your deck:** the challenge says "inspired by India AgriN," but real AgriN (from India's actual India Agriculture Ministers' meeting in Indore, June 2026) is about cooperation on seeds and genetic resources — not satellite data or disease diagnosis. What this challenge actually describes is a different real initiative announced the same day: the **India Network on Digital Agriculture**, focused on AI, geospatial tech, and data-driven agricultural solutions, coordinated by **IIT Delhi**. Open your deck with this.
 
