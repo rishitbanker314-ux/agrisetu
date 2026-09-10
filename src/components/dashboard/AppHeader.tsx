@@ -72,11 +72,42 @@ export default function AppHeader({ user, crop, setCrop, savedFields = [], field
 
       {/* Right side */}
       <div className="flex items-center gap-4">
-        <div className="hidden sm:flex flex-col items-end mr-2">
-          <span className="text-xs font-bold text-ink">12.4 ha</span>
-          <span className="text-[10px] text-ink/50 uppercase tracking-widest">Updated 5m ago</span>
-        </div>
-        
+        {user && savedFields && savedFields.length > 0 && (
+          <div className="hidden sm:flex flex-col items-end mr-2">
+            {(() => {
+              const currentField = savedFields.find(f => f.id?.toString() === fieldId?.toString()) || savedFields[0];
+              const displayArea = currentField?.area || '0 ha';
+              let relativeTimeStr = 'Just now';
+              
+              if (currentField) {
+                const targetDate = new Date(currentField.updated_at || currentField.created_at);
+                if (!isNaN(targetDate.getTime())) {
+                  const diffMs = Date.now() - targetDate.getTime();
+                  const diffMins = Math.floor(diffMs / 60000);
+                  const diffHours = Math.floor(diffMins / 60);
+                  const diffDays = Math.floor(diffHours / 24);
+                  
+                  if (diffMins < 1) {
+                    relativeTimeStr = 'Just now';
+                  } else if (diffMins < 60) {
+                    relativeTimeStr = `Updated ${diffMins}m ago`;
+                  } else if (diffHours < 24) {
+                    relativeTimeStr = `Updated ${diffHours}h ago`;
+                  } else {
+                    relativeTimeStr = `Updated ${diffDays}d ago`;
+                  }
+                }
+              }
+              
+              return (
+                <>
+                  <span className="text-xs font-bold text-ink">{displayArea}</span>
+                  <span className="text-[10px] text-ink/50 uppercase tracking-widest">{relativeTimeStr}</span>
+                </>
+              );
+            })()}
+          </div>
+        )}
 
 
         {user ? (
