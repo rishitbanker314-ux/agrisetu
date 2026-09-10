@@ -224,7 +224,7 @@ export default function Map({ center, zoom = 13, markers = [], activeMarker, onL
         )}
       </MapContainer>
       {/* Field Health Forecast Legend Toggle */}
-      <div className="absolute bottom-8 left-4 z-[50] pointer-events-auto flex flex-col-reverse gap-2">
+      <div className="absolute bottom-8 right-4 z-[50] pointer-events-auto flex flex-col-reverse gap-2 items-end">
         <button 
           onClick={() => setIsLegendOpen(!isLegendOpen)}
           className="bg-white/90 backdrop-blur-sm border border-soft-line rounded-lg p-2 shadow-lg hover:bg-white transition-colors flex items-center gap-2 group w-fit"
