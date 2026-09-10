@@ -90,6 +90,68 @@ export default function MapWorkspace({
           >
             <Layers className="w-5 h-5" />
           </button>
+          
+          <div className="flex flex-col items-end gap-2">
+            <div className="flex gap-2">
+              {drawnBoundary.length > 0 && !isDrawing && (
+                <button 
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setDrawnBoundary([]);
+                  }}
+                  className="px-4 py-2 bg-white rounded-full shadow-md text-sm font-medium text-terracotta hover:bg-terracotta/10 transition-colors pointer-events-auto border border-soft-line"
+                >
+                  Clear Shape
+                </button>
+              )}
+              <button 
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (!isDrawing) {
+                    setDrawnBoundary(prev => [...prev, []]);
+                  }
+                  setIsDrawing(!isDrawing);
+                }}
+                className={`px-4 py-2 rounded-full shadow-md text-sm font-medium transition-colors pointer-events-auto ${isDrawing ? 'bg-moss text-white' : 'bg-white text-ink hover:bg-moss/10 border border-soft-line'}`}
+              >
+                {isDrawing ? 'Finish Drawing' : 'Draw Boundary'}
+              </button>
+            </div>
+
+            {/* Floating Save Button if location is new */}
+            {!savedFields.find(f => f.lat != null && f.lng != null && Math.abs(f.lat - center[0]) < 0.0001 && Math.abs(f.lng - center[1]) < 0.0001) && onSaveField && (
+              <button
+                disabled={drawnBoundary.flat().length <= 2}
+                onClick={() => {
+                  let newCenter: [number, number] | undefined = undefined;
+                  const allPts = drawnBoundary.flat();
+                  if (allPts.length > 2) {
+                    const sumLat = allPts.reduce((sum, p) => sum + p[0], 0);
+                    const sumLng = allPts.reduce((sum, p) => sum + p[1], 0);
+                    newCenter = [sumLat / allPts.length, sumLng / allPts.length];
+                    setCenter(newCenter);
+                  }
+                  onSaveField(allPts.length > 2 ? drawnBoundary : undefined, newCenter);
+                  setDrawnBoundary([]);
+                  setIsDrawing(false);
+                }}
+                className={`px-6 py-2.5 rounded-full shadow-lg font-medium text-sm transition-all flex items-center gap-2 border border-white/20 pointer-events-auto ${
+                  drawnBoundary.flat().length <= 2 
+                    ? 'bg-ink/60 text-white/70 cursor-not-allowed backdrop-blur-sm' 
+                    : 'bg-deep-forest text-white hover:bg-moss hover:scale-105'
+                }`}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                  <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                  <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
+                {drawnBoundary.flat().length <= 2 ? "Draw Boundary to Save" : "Save Field"}
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -143,71 +205,6 @@ export default function MapWorkspace({
         />
       </div>
 
-      {/* Floating Bottom Left Controls (Draw & Save) */}
-      <div className="absolute bottom-32 sm:bottom-24 left-4 z-[500] flex flex-col items-start gap-2 pointer-events-none">
-        
-        {/* Draw Controls */}
-        <div className="flex gap-2">
-          <button 
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              if (!isDrawing) {
-                setDrawnBoundary(prev => [...prev, []]);
-              }
-              setIsDrawing(!isDrawing);
-            }}
-            className={`px-4 py-2 rounded-full shadow-md text-sm font-medium transition-colors pointer-events-auto ${isDrawing ? 'bg-moss text-white' : 'bg-white text-ink hover:bg-moss/10 border border-soft-line'}`}
-          >
-            {isDrawing ? 'Finish Drawing' : 'Draw Boundary'}
-          </button>
-
-          {drawnBoundary.length > 0 && !isDrawing && (
-            <button 
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                setDrawnBoundary([]);
-              }}
-              className="px-4 py-2 bg-white rounded-full shadow-md text-sm font-medium text-terracotta hover:bg-terracotta/10 transition-colors pointer-events-auto border border-soft-line"
-            >
-              Clear Shape
-            </button>
-          )}
-        </div>
-
-        {/* Floating Save Button if location is new */}
-        {!savedFields.find(f => f.lat != null && f.lng != null && Math.abs(f.lat - center[0]) < 0.0001 && Math.abs(f.lng - center[1]) < 0.0001) && onSaveField && (
-          <button
-            disabled={drawnBoundary.flat().length <= 2}
-            onClick={() => {
-              let newCenter: [number, number] | undefined = undefined;
-              const allPts = drawnBoundary.flat();
-              if (allPts.length > 2) {
-                const sumLat = allPts.reduce((sum, p) => sum + p[0], 0);
-                const sumLng = allPts.reduce((sum, p) => sum + p[1], 0);
-                newCenter = [sumLat / allPts.length, sumLng / allPts.length];
-                setCenter(newCenter);
-              }
-              onSaveField(allPts.length > 2 ? drawnBoundary : undefined, newCenter);
-              setDrawnBoundary([]);
-              setIsDrawing(false);
-            }}
-            className={`px-6 py-2.5 rounded-full shadow-lg font-medium text-sm transition-all flex items-center gap-2 border border-white/20 pointer-events-auto ${
-              drawnBoundary.flat().length <= 2 
-                ? 'bg-ink/60 text-white/70 cursor-not-allowed backdrop-blur-sm' 
-                : 'bg-deep-forest text-white hover:bg-moss hover:scale-105'
-            }`}
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-              <polyline points="17 21 17 13 7 13 7 21"></polyline>
-              <polyline points="7 3 7 8 15 8"></polyline>
-            </svg>
-            {drawnBoundary.flat().length <= 2 ? "Draw Boundary to Save" : "Save Field Location"}
-          </button>
-        )}
-      </div>
 
       {/* Floating Bottom Controls (Above Drawer) */}
       <TemporalSlider dateOffset={dateOffset} setDateOffset={setDateOffset} maxDays={15} fieldData={fieldData} />
