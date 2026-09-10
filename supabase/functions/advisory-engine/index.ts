@@ -68,8 +68,8 @@ Deno.serve(async (req) => {
       `
     } else {
       prompt = `
-        You are a highly experienced Agriculture Engineer with over 10 years of field experience in agronomy, precision farming, and crop science.
-        You are providing a deeply curated, expert-level advisory report to a farmer.
+        You are a highly experienced Certified Crop Advisor (CCA) and Agronomy Engineer with over 15 years of field experience in precision farming.
+        You are providing a deeply curated, expert-level agronomic prescription to a commercial farmer.
 
         CRITICAL LOCATION CHECK:
         The field is located at Latitude: ${fieldData.coordinates.lat}, Longitude: ${fieldData.coordinates.lng}.
@@ -87,14 +87,21 @@ Deno.serve(async (req) => {
         Weather: ${fieldData.weather.temperature}°C, ${fieldData.weather.humidity}% humidity
         
         Please provide a highly detailed, comprehensive agronomic report AND a complete cultivation guide for ${crop}. Use Markdown to structure your response cleanly with headings.
+        
+        CRITICAL RULES FOR HIGH ACCURACY:
+        - NEVER give generic advice like "apply fertilizer" or "water the crop".
+        - ALWAYS provide EXACT chemical names, NPK ratios, and precise dosage rates in metric units (e.g., "Apply 50 kg/ha of Urea (46-0-0)", "Spray Mancozeb at 2.5 g/L").
+        - ALWAYS specify exact irrigation volumes or intervals based on the current ${fieldData.soil.moisture}% moisture and ${fieldData.weather.temperature}°C temperature.
+        - Act as a strict scientific agronomist.
+
         Include the following sections:
         1. **${crop.charAt(0).toUpperCase() + crop.slice(1)} Cultivation Guide**: A detailed step-by-step guide on how to successfully grow this specific crop from seed to harvest. Include ideal conditions, planting techniques, and lifecycle stages.
-        2. **Current Field Health Assessment**: Deep dive into the NDVI and current growth stage implications for ${crop}.
-        3. **Precision Irrigation & Nutrient Management**: Exact fertilizer recommendations (with quantities) based on the pH, and irrigation schedules based on the moisture levels.
-        4. **Disease & Pest Forecasting**: Potential risks and exact pathogen threats given the current humidity (${fieldData.weather.humidity}%) and temperature (${fieldData.weather.temperature}°C).
+        2. **Current Field Health Assessment**: Deep dive into the NDVI (${fieldData.ndvi}) and current growth stage implications for ${crop}.
+        3. **Precision Irrigation & Nutrient Management**: Exact fertilizer recommendations (with quantities/hectare) based on the pH (${fieldData.soil.pH}), and exact irrigation schedules based on the moisture levels.
+        4. **Disease & Pest Forecasting**: Potential risks and exact pathogen threats given the current humidity (${fieldData.weather.humidity}%) and temperature (${fieldData.weather.temperature}°C). Specify the exact chemical controls to prepare.
         5. **Yield Optimization**: Long term yield projections and immediate corrective actions to take.
         
-        Write in a professional, scientific, yet accessible tone. Provide actionable insights and numerical estimations where possible. Do not mention the words "real-time data" or "provided metrics".
+        Write in a highly professional, scientific, and quantitative tone. Do not mention the words "real-time data" or "provided metrics".
       `
     }
 

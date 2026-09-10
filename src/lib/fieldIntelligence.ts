@@ -135,7 +135,7 @@ export async function generateFieldIntelligence(lat: number, lng: number, bounda
   }
 
   // --- REAL TEMPORAL DATA (16 DAYS) ---
-  // Instead of a random 90 day simulation, use the actual 16-day forecast
+  // Biological Logistic Growth Curve for NDVI
   const simulatedMaxTemps = [...maxTemps];
   const simulatedPrecipitation = [...precipitation];
   const simulatedNdvi = [];
@@ -143,20 +143,46 @@ export async function generateFieldIntelligence(lat: number, lng: number, bounda
   let currentSimTemp = currentTemp;
   let currentSimNdvi = finalCalculatedNdvi;
 
+  // Determine crop stage based on current NDVI
+  let growthRate = 0; // 'r' in logistic growth
+  let carryingCapacity = 0.9; // max possible NDVI
+  let isSenescence = false;
+  
+  if (finalCalculatedNdvi < 0.4) {
+    // Early stage: slow but exponential growth
+    growthRate = 0.05;
+  } else if (finalCalculatedNdvi >= 0.4 && finalCalculatedNdvi <= 0.75) {
+    // Rapid growth stage
+    growthRate = 0.08;
+  } else {
+    // Late stage: senescence, NDVI starts dropping naturally
+    isSenescence = true;
+    growthRate = -0.03; // decaying
+  }
+
   for (let i = 0; i < maxTemps.length; i++) {
     const rainAmount = precipitation[i] || 0;
     const dayTemp = maxTemps[i] || currentSimTemp;
     
     if (i > 0) {
-      // Adjust NDVI slightly day by day based on actual forecast
-      if (rainAmount > 5) {
-        currentSimNdvi += 0.05;
-      } else if (dayTemp > 30) {
-        currentSimNdvi -= 0.02; // Drought stress
+      if (!isSenescence) {
+        // Logistic growth equation step: dN = r * N * (1 - N/K)
+        let deltaN = growthRate * currentSimNdvi * (1 - (currentSimNdvi / carryingCapacity));
+        // Add environmental stressors
+        if (rainAmount > 5) deltaN += 0.01; // Good moisture
+        if (dayTemp > 35) deltaN -= 0.02; // Severe heat stress
+        currentSimNdvi += deltaN;
+      } else {
+        // Senescence (natural decay towards harvest)
+        let decay = growthRate; 
+        if (rainAmount > 10) decay -= 0.01; // heavy rain during senescence causes rapid deterioration
+        if (dayTemp > 30) decay -= 0.01; // heat accelerates drying out
+        currentSimNdvi += decay;
       }
+      
       currentSimNdvi = Math.min(0.95, Math.max(0.1, currentSimNdvi));
     }
-    simulatedNdvi.push(Number(currentSimNdvi.toFixed(2)));
+    simulatedNdvi.push(Number(currentSimNdvi.toFixed(3)));
   }
   
   const fullSimulatedNdvi = simulatedNdvi;

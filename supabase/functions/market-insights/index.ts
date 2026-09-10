@@ -155,6 +155,31 @@ Deno.serve(async (req) => {
       };
     }
     
+    // Generate Geometric Brownian Motion Scenarios
+    function generateGBM(startPrice: number, drift: number, volatility: number, periods: number) {
+      let prices = [];
+      let currentP = startPrice;
+      for (let i = 1; i <= periods; i++) {
+        let u1 = Math.random() || 0.0001;
+        let u2 = Math.random() || 0.0001;
+        let z = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+        let dt = 1 / 12; 
+        let driftTerm = (drift - (volatility * volatility) / 2) * dt;
+        let shockTerm = volatility * Math.sqrt(dt) * z;
+        currentP = currentP * Math.exp(driftTerm + shockTerm);
+        prices.push(Math.round(currentP));
+      }
+      return prices;
+    }
+
+    const basePrice = parsedJson.current_market.currentPrice;
+    
+    parsedJson.scenarios = {
+      optimistic: generateGBM(basePrice, 0.15, 0.25, 6),
+      expected: generateGBM(basePrice, 0.03, 0.15, 6),
+      pessimistic: generateGBM(basePrice, -0.10, 0.20, 6)
+    };
+
     // Attach the real historical data
     parsedJson.historical_data = historicalData;
 

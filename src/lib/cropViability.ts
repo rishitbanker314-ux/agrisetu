@@ -11,7 +11,9 @@ export function evaluateCropSuitability(
   temperature: number,
   elevation?: number,
   countryCode?: string,
-  region?: string
+  region?: string,
+  precipitation?: number,
+  humidity?: number
 ): ViabilityReport {
   // 1. Ocean Check First (if we have geocoding data but no country, it's an ocean/water body)
   // We strictly require countryCode if it was fetched. If it's explicitly an empty string, it's water.
@@ -52,6 +54,17 @@ export function evaluateCropSuitability(
   } else if (temperature < profile.tempOptimalMin) {
     isWarning = true;
     reasons.push(`The temperature (${temperature}°C) is below the optimal range (${profile.tempOptimalMin}-${profile.tempOptimalMax}°C), which may slow growth.`);
+  }
+
+  // Humidity Checks
+  if (humidity !== undefined && profile.humidityMax && profile.humidityMin) {
+    if (humidity > profile.humidityMax) {
+      isWarning = true;
+      reasons.push(`High humidity (${humidity}%) increases the risk of fungal diseases for ${profile.name}.`);
+    } else if (humidity < profile.humidityMin) {
+      isWarning = true;
+      reasons.push(`Low humidity (${humidity}%) may cause severe transpiration stress for ${profile.name}.`);
+    }
   }
 
   // Elevation Checks
@@ -102,7 +115,7 @@ export function evaluateCropSuitability(
 
   return {
     isViable: true,
-    reason: `Optimal conditions. ${profile.description}`,
+    reason: `${profile.name} is highly suitable for this location's current conditions.`,
     type: 'success'
   };
 }

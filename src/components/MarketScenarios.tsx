@@ -17,6 +17,11 @@ interface MarketData {
     date: string;
     price: number;
   }[];
+  scenarios?: {
+    optimistic: number[];
+    expected: number[];
+    pessimistic: number[];
+  };
 }
 
 interface MarketScenariosProps {
@@ -54,8 +59,6 @@ export default function MarketScenarios({ crop, lat = 28.6139, lng = 77.2090 }: 
         });
         
         if (error) throw error;
-        // Edge function returns an object with scenarios array
-        // Edge function returns the direct object now
         if (data && data.historical_data) {
           setMarketData(data);
         }
@@ -70,8 +73,8 @@ export default function MarketScenarios({ crop, lat = 28.6139, lng = 77.2090 }: 
   }, [selectedCrop, lat, lng]);
 
   // Mini SVG Line Chart Component
-  const MiniChart = ({ data }: { data: number[] }) => {
-    if (!data || !Array.isArray(data) || data.length === 0) return <div className="h-24 bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-400">NO DATA</div>;
+  const MiniChart = ({ data, color = "#1f2937" }: { data: number[], color?: string }) => {
+    if (!data || !Array.isArray(data) || data.length === 0) return <div className="h-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-400">NO DATA</div>;
     const max = Math.max(...data);
     const min = Math.min(...data);
     const range = max - min || 1;
@@ -83,22 +86,16 @@ export default function MarketScenarios({ crop, lat = 28.6139, lng = 77.2090 }: 
     }).join(' ');
 
     return (
-      <div className="relative w-full h-24 bg-gray-100 border border-gray-300 rounded-sm mt-3 mb-3 overflow-hidden">
-        <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full">
+      <div className="relative w-full h-full">
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full absolute inset-0">
           <polyline 
             points={points}
             fill="none"
-            stroke="#1f2937"
+            stroke={color}
             strokeWidth="3"
             vectorEffect="non-scaling-stroke"
           />
         </svg>
-        {/* Grid lines */}
-        <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20">
-          <div className="w-full h-px bg-gray-900"></div>
-          <div className="w-full h-px bg-gray-900"></div>
-          <div className="w-full h-px bg-gray-900"></div>
-        </div>
       </div>
     );
   };
@@ -109,10 +106,10 @@ export default function MarketScenarios({ crop, lat = 28.6139, lng = 77.2090 }: 
         <div>
           <h2 className="text-lg font-sans font-medium text-deep-forest flex items-center gap-2">
             <TrendingUp className="w-5 h-5 text-moss"/>
-            Live Market Projections
+            Market Forecast (GBM Model)
           </h2>
           <p className="text-xs text-ink/50 font-medium tracking-wide mt-1 uppercase">
-            Data sourced from Yahoo Finance & AI Models
+            Stochastic Price Projections (6 Months)
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -138,16 +135,15 @@ export default function MarketScenarios({ crop, lat = 28.6139, lng = 77.2090 }: 
         {loading ? (
           <div className="flex flex-col items-center justify-center py-12">
             <Loader2 className="w-8 h-8 text-green-700 animate-spin mb-4" />
-            <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Fetching live market data & trends...</p>
+            <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Simulating Geometric Brownian Motion...</p>
           </div>
         ) : marketData && marketData.historical_data && marketData.historical_data.length > 0 ? (
           <div className="flex flex-col border border-soft-line rounded-lg overflow-hidden bg-white">
             {/* Header */}
             <div className="bg-paper-ivory p-4 flex justify-between items-center border-b border-soft-line">
-              <span className="text-deep-forest font-sans font-medium text-lg">Historical Price Trend (Last 12 Months)</span>
+              <span className="text-deep-forest font-sans font-medium text-lg">Current {marketData.current_market.unit}</span>
               <div className="flex items-center gap-2">
                 <span className="text-2xl font-serif text-deep-forest">{marketData.current_market.currency}{marketData.current_market.currentPrice.toFixed(2)}</span>
-                <span className="text-sm text-ink/60">{marketData.current_market.unit}</span>
                 {marketData.current_market.trend === 'down' ? <TrendingDown className="w-5 h-5 text-terracotta ml-2" /> : 
                  marketData.current_market.trend === 'up' ? <TrendingUp className="w-5 h-5 text-moss ml-2" /> : 
                  <span className="text-marigold ml-2 font-bold">-</span>}
@@ -159,13 +155,29 @@ export default function MarketScenarios({ crop, lat = 28.6139, lng = 77.2090 }: 
             
             {/* Body */}
             <div className="p-6 flex flex-col flex-grow">
-              <div className="w-full h-48 mb-6 relative">
-                <MiniChart data={marketData.historical_data.map(d => d.price)} />
-                <div className="flex justify-between text-xs text-ink/50 mt-2">
-                  <span>{marketData.historical_data[0]?.date}</span>
-                  <span>{marketData.historical_data[marketData.historical_data.length - 1]?.date}</span>
+              
+              {marketData.scenarios && (
+                <div className="mb-6">
+                  <h3 className="font-sans font-bold text-sm text-deep-forest uppercase tracking-widest mb-4">6-Month Forward Projections</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="border border-moss/30 rounded-lg p-4 bg-moss/5 relative overflow-hidden">
+                      <h4 className="text-moss font-bold text-xs uppercase tracking-widest mb-1">Optimistic (+15% Drift)</h4>
+                      <div className="text-2xl font-serif text-moss mb-2">₹{marketData.scenarios.optimistic[5]}</div>
+                      <div className="h-16"><MiniChart data={marketData.scenarios.optimistic} color="#10b981" /></div>
+                    </div>
+                    <div className="border border-gray-300 rounded-lg p-4 bg-gray-50 relative overflow-hidden">
+                      <h4 className="text-gray-600 font-bold text-xs uppercase tracking-widest mb-1">Expected (+3% Drift)</h4>
+                      <div className="text-2xl font-serif text-gray-800 mb-2">₹{marketData.scenarios.expected[5]}</div>
+                      <div className="h-16"><MiniChart data={marketData.scenarios.expected} color="#4b5563" /></div>
+                    </div>
+                    <div className="border border-terracotta/30 rounded-lg p-4 bg-terracotta/5 relative overflow-hidden">
+                      <h4 className="text-terracotta font-bold text-xs uppercase tracking-widest mb-1">Pessimistic (-10% Drift)</h4>
+                      <div className="text-2xl font-serif text-terracotta mb-2">₹{marketData.scenarios.pessimistic[5]}</div>
+                      <div className="h-16"><MiniChart data={marketData.scenarios.pessimistic} color="#ef4444" /></div>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
 
               <h3 className="font-sans font-bold text-sm text-deep-forest uppercase tracking-widest mb-2">AI Market Insight</h3>
               <div className="bg-paper-ivory/50 border border-soft-line p-4 rounded-md text-sm text-ink/80 font-sans leading-relaxed">

@@ -26,8 +26,8 @@ export function useCropValidation(crop: string, location: [number, number] | nul
         const lat = location[0];
         const lng = location[1];
         
-        // Fetch current temperature and elevation from Open-Meteo
-        const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true&hourly=temperature_2m&timezone=auto`;
+        // Fetch current temperature, humidity, precipitation and elevation from Open-Meteo
+        const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,relative_humidity_2m,precipitation&timezone=auto`;
         
         // Fetch reverse geocoding from BigDataCloud (free, no key needed)
         const geocodeUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`;
@@ -42,7 +42,9 @@ export function useCropValidation(crop: string, location: [number, number] | nul
         }
 
         const weatherData = await weatherRes.json();
-        const currentTemp = weatherData.current_weather?.temperature;
+        const currentTemp = weatherData.current?.temperature_2m;
+        const humidity = weatherData.current?.relative_humidity_2m;
+        const precipitation = weatherData.current?.precipitation;
         const elevation = weatherData.elevation;
 
         let countryCode: string | undefined = undefined;
@@ -58,7 +60,7 @@ export function useCropValidation(crop: string, location: [number, number] | nul
           throw new Error('Temperature data unavailable');
         }
 
-        const report = evaluateCropSuitability(crop, currentTemp, elevation, countryCode, region);
+        const report = evaluateCropSuitability(crop, currentTemp, elevation, countryCode, region, precipitation, humidity);
 
         setValidation({
           status: report.type,
