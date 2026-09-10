@@ -353,7 +353,7 @@ export default function ReportViewPage() {
                 <div className="text-3xl font-serif text-deep-forest font-medium">
                   {report.metadata.estimatedValue ? `₹${report.metadata.estimatedValue.toLocaleString('en-IN')}` : 'Calculating...'}
                 </div>
-                <div className="text-sm text-ink/60 mt-1">Based on live Mandi rates and {report.metadata.areaHectares || 1} ha area</div>
+                <div className="text-sm text-ink/60 mt-1">Per Hectare (Based on live Mandi rates)</div>
               </div>
 
               {/* Disease Risk */}

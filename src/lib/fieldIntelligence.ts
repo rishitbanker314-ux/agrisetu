@@ -192,6 +192,22 @@ export async function generateFieldIntelligence(lat: number, lng: number, bounda
   const estimatedValue = [];
   
   const cropStats = CROP_BASELINES[crop] || { baseYield: 3.0, price: 20000 };
+  let currentMarketPrice = cropStats.price;
+  
+  // Fetch Highly Accurate Live Indian Mandi Price for the crop
+  try {
+    const encodedCrop = encodeURIComponent(crop.charAt(0).toUpperCase() + crop.slice(1).toLowerCase());
+    const mandiUrl = `https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070?api-key=579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b&format=json&limit=10&filters[commodity]=${encodedCrop}`;
+    const mandiRes = await fetch(mandiUrl);
+    if (mandiRes.ok) {
+      const mandiData = await mandiRes.json();
+      if (mandiData && mandiData.records && mandiData.records.length > 0) {
+        currentMarketPrice = mandiData.records[0].modal_price || currentMarketPrice;
+      }
+    }
+  } catch (err) {
+    console.warn("Failed to fetch live mandi price for report", err);
+  }
   const safeArea = areaHectares > 0 ? areaHectares : 1; // Default to 1 ha if unknown
   
   for (let i = 0; i < maxTemps.length; i++) {
@@ -215,8 +231,9 @@ export async function generateFieldIntelligence(lat: number, lng: number, bounda
     // 2. Economic Yield Optimizer
     // NDVI is crop health (0.1 to ~0.9). Let's say 0.8 is 100% of base yield.
     const ndviEfficiency = Math.min(1.2, simulatedNdvi[i] / 0.8);
-    const dailyYield = cropStats.baseYield * safeArea * ndviEfficiency;
-    const dailyValue = Math.round(dailyYield * cropStats.price);
+    // Calculated strictly PER HECTARE (removed safeArea multiplier)
+    const dailyYield = cropStats.baseYield * ndviEfficiency;
+    const dailyValue = Math.round(dailyYield * currentMarketPrice);
     estimatedValue.push(dailyValue);
   }
   // -----------------------------------------------
