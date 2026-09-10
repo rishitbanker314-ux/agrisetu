@@ -33,16 +33,15 @@ Deno.serve(async (req) => {
     try {
       // 1. Try to fetch REAL Indian Mandi Spot Prices from data.gov.in
       try {
-        const mandiUrl = 'https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070?api-key=579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b&format=json&limit=50';
+        const targetCrop = crop.toLowerCase();
+        const encodedCrop = encodeURIComponent(crop.charAt(0).toUpperCase() + crop.slice(1).toLowerCase());
+        const mandiUrl = `https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070?api-key=579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b&format=json&limit=10&filters[commodity]=${encodedCrop}`;
         const mandiRes = await fetch(mandiUrl);
         const mandiData = await mandiRes.json();
         
-        if (mandiData && mandiData.records) {
-          // Find our crop in the latest mandi arrivals
-          const targetCrop = crop.toLowerCase();
-          const matchedRecord = mandiData.records.find((r: any) => 
-            r.commodity && r.commodity.toLowerCase().includes(targetCrop)
-          );
+        if (mandiData && mandiData.records && mandiData.records.length > 0) {
+          // Take the most recent entry from the filtered list
+          const matchedRecord = mandiData.records[0];
           
           if (matchedRecord && matchedRecord.modal_price) {
             mandiPriceINR = matchedRecord.modal_price;

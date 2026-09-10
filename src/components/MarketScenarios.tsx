@@ -3,6 +3,7 @@
 import { TrendingDown, TrendingUp, AlertTriangle, ShieldCheck, Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
+import { CROP_DATABASE } from '@/lib/cropKnowledgeBase';
 
 interface MarketData {
   current_market: {
@@ -31,16 +32,10 @@ interface MarketScenariosProps {
 }
 
 export default function MarketScenarios({ crop, lat = 28.6139, lng = 77.2090 }: MarketScenariosProps) {
-  const SUPPORTED_CROPS = [
-    { value: 'wheat', label: 'Wheat' },
-    { value: 'rice', label: 'Rice' },
-    { value: 'corn', label: 'Corn' },
-    { value: 'soy', label: 'Soybean' },
-    { value: 'cotton', label: 'Cotton' },
-    { value: 'sugar', label: 'Sugar' },
-    { value: 'coffee', label: 'Coffee' },
-    { value: 'oats', label: 'Oats' }
-  ];
+  const SUPPORTED_CROPS = CROP_DATABASE.map(crop => ({
+    value: crop.id.toLowerCase(),
+    label: crop.name
+  }));
 
   const [selectedCrop, setSelectedCrop] = useState(crop);
   const [marketData, setMarketData] = useState<MarketData | null>(null);
