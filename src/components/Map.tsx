@@ -72,6 +72,7 @@ interface MapProps {
   mapStyle?: 'street' | 'satellite';
   isDrawingMode?: boolean;
   drawnBoundary?: [number, number][];
+  onBoundaryPointMove?: (polyIdx: number, ptIdx: number, lat: number, lng: number) => void;
 }
 
 // Helper to get color based on NDVI value
@@ -133,7 +134,35 @@ const DraggableMarker = ({ marker, temporalNdvi, onLocationSelect }: { marker: {
   );
 };
 
-export default function Map({ center, zoom = 13, markers = [], activeMarker, onLocationSelect, temporalNdvi = 0.5, mapStyle = 'street', isDrawingMode = false, drawnBoundary = [] }: MapProps) {
+const DraggableDrawPoint = ({ position, polyIdx, ptIdx, onMove }: { position: [number, number], polyIdx: number, ptIdx: number, onMove?: (polyIdx: number, ptIdx: number, lat: number, lng: number) => void }) => {
+  const markerRef = useRef<any>(null);
+  const eventHandlers = useMemo(
+    () => ({
+      dragend() {
+        const marker = markerRef.current;
+        if (marker != null) {
+          const newPos = marker.getLatLng();
+          if (onMove) {
+            onMove(polyIdx, ptIdx, newPos.lat, newPos.lng);
+          }
+        }
+      },
+    }),
+    [polyIdx, ptIdx, onMove]
+  );
+
+  return (
+    <Marker 
+      position={position} 
+      icon={drawPointIcon} 
+      draggable={true} 
+      eventHandlers={eventHandlers} 
+      ref={markerRef} 
+    />
+  );
+};
+
+export default function Map({ center, zoom = 13, markers = [], activeMarker, onLocationSelect, temporalNdvi = 0.5, mapStyle = 'street', isDrawingMode = false, drawnBoundary = [], onBoundaryPointMove }: MapProps) {
   const [isLegendOpen, setIsLegendOpen] = useState(false);
 
   return (
@@ -215,7 +244,13 @@ export default function Map({ center, zoom = 13, markers = [], activeMarker, onL
                     <Polygon positions={poly} pathOptions={{ color: '#10b981', weight: 3, dashArray: '6, 6', fillColor: '#10b981', fillOpacity: 0.3, lineCap: 'round', lineJoin: 'round' }} />
                   )}
                   {poly.map((pt: any, ptIdx: number) => (
-                    <Marker key={`draw-pt-${idx}-${ptIdx}`} position={pt} icon={drawPointIcon} />
+                    <DraggableDrawPoint 
+                      key={`draw-pt-${idx}-${ptIdx}`} 
+                      position={pt} 
+                      polyIdx={idx}
+                      ptIdx={ptIdx}
+                      onMove={onBoundaryPointMove}
+                    />
                   ))}
                 </Fragment>
               );

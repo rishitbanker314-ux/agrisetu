@@ -405,6 +405,17 @@ export default function FieldsPage() {
                   activeMarker={selectedLocation ? { lat: selectedLocation[0], lng: selectedLocation[1], boundary: drawnBoundary.flat().length > 2 ? drawnBoundary : undefined } : undefined}
                   isDrawingMode={isDrawing}
                   drawnBoundary={drawnBoundary}
+                  onBoundaryPointMove={(polyIdx, ptIdx, lat, lng) => {
+                    setDrawnBoundary(prev => {
+                      const newArr = [...prev];
+                      if (newArr[polyIdx]) {
+                        const poly = [...newArr[polyIdx]];
+                        poly[ptIdx] = [lat, lng];
+                        newArr[polyIdx] = poly;
+                      }
+                      return newArr;
+                    });
+                  }}
                 />
               </div>
             </div>
@@ -566,6 +577,17 @@ export default function FieldsPage() {
                   activeMarker={selectedLocation ? { lat: selectedLocation[0], lng: selectedLocation[1], boundary: drawnBoundary.flat().length > 2 ? drawnBoundary : undefined } : undefined}
                   isDrawingMode={isDrawing}
                   drawnBoundary={drawnBoundary}
+                  onBoundaryPointMove={(polyIdx, ptIdx, lat, lng) => {
+                    setDrawnBoundary(prev => {
+                      const newArr = [...prev];
+                      if (newArr[polyIdx]) {
+                        const poly = [...newArr[polyIdx]];
+                        poly[ptIdx] = [lat, lng];
+                        newArr[polyIdx] = poly;
+                      }
+                      return newArr;
+                    });
+                  }}
                 />
               </div>
             </div>
