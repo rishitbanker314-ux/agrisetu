@@ -124,10 +124,14 @@ export default function NDVIChartClient({ fieldData }: NDVIChartProps) {
           </h3>
           <p className="text-sm text-ink/60 mt-1">15-Day Real-Time Extrapolation (Scroll to Zoom, Drag to Pan)</p>
         </div>
-        <div className="bg-moss/10 px-3 py-1.5 rounded-md flex items-center gap-2">
+        <div className="bg-moss/10 px-3 py-1.5 rounded-md flex items-center gap-2 shrink-0">
           <Activity className="w-4 h-4 text-moss" />
           <span className="text-sm font-bold text-moss">Current: {currentNdvi.toFixed(2)}</span>
         </div>
+      </div>
+      
+      <div className="bg-paper-ivory/50 border border-soft-line p-3 rounded-md mb-2 text-sm text-ink/80 font-sans">
+        <strong>What is NDVI?</strong> The Normalized Difference Vegetation Index (NDVI) is a satellite-based measure of crop health. It detects the amount of near-infrared light reflected by plant leaves. Values closer to <strong>1.0</strong> indicate lush, healthy crops, while values below <strong>0.3</strong> indicate severe stress, drought, or bare soil.
       </div>
       
       <div className="flex-grow relative mt-4 h-64 w-full bg-paper-ivory/50 rounded-xl border border-soft-line p-4 cursor-crosshair">
