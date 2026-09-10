@@ -26,15 +26,31 @@ interface MarketScenariosProps {
 }
 
 export default function MarketScenarios({ crop, lat = 28.6139, lng = 77.2090 }: MarketScenariosProps) {
+  const SUPPORTED_CROPS = [
+    { value: 'wheat', label: 'Wheat' },
+    { value: 'rice', label: 'Rice' },
+    { value: 'corn', label: 'Corn' },
+    { value: 'soy', label: 'Soybean' },
+    { value: 'cotton', label: 'Cotton' },
+    { value: 'sugar', label: 'Sugar' },
+    { value: 'coffee', label: 'Coffee' },
+    { value: 'oats', label: 'Oats' }
+  ];
+
+  const [selectedCrop, setSelectedCrop] = useState(crop);
   const [marketData, setMarketData] = useState<MarketData | null>(null);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setSelectedCrop(crop);
+  }, [crop]);
 
   useEffect(() => {
     async function fetchScenarios() {
       setLoading(true);
       try {
         const { data, error } = await supabase.functions.invoke('market-insights', {
-          body: { crop, lat, lng }
+          body: { crop: selectedCrop, lat, lng }
         });
         
         if (error) throw error;
@@ -51,7 +67,7 @@ export default function MarketScenarios({ crop, lat = 28.6139, lng = 77.2090 }: 
     }
 
     fetchScenarios();
-  }, [crop, lat, lng]);
+  }, [selectedCrop, lat, lng]);
 
   // Mini SVG Line Chart Component
   const MiniChart = ({ data }: { data: number[] }) => {
@@ -89,7 +105,7 @@ export default function MarketScenarios({ crop, lat = 28.6139, lng = 77.2090 }: 
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 border-b border-soft-line pb-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 border-b border-soft-line pb-4 gap-4 md:gap-0">
         <div>
           <h2 className="text-lg font-sans font-medium text-deep-forest flex items-center gap-2">
             <TrendingUp className="w-5 h-5 text-moss"/>
@@ -99,8 +115,22 @@ export default function MarketScenarios({ crop, lat = 28.6139, lng = 77.2090 }: 
             Data sourced from Yahoo Finance & AI Models
           </p>
         </div>
-        <div className="bg-moss/10 text-moss text-[10px] font-bold tracking-widest px-3 py-1 rounded-sm uppercase mt-4 md:mt-0 flex items-center gap-2">
-          <ShieldCheck className="w-3 h-3" /> AI CONFIDENCE: HIGH
+        <div className="flex items-center gap-3">
+          <select 
+            value={selectedCrop.toLowerCase()}
+            onChange={(e) => setSelectedCrop(e.target.value)}
+            className="bg-white border border-soft-line text-xs rounded-md px-2 py-1.5 text-deep-forest font-bold tracking-wide focus:outline-none focus:border-moss"
+          >
+            {SUPPORTED_CROPS.map(c => (
+              <option key={c.value} value={c.value}>{c.label}</option>
+            ))}
+            {!SUPPORTED_CROPS.some(c => c.value === selectedCrop.toLowerCase()) && (
+              <option value={selectedCrop.toLowerCase()}>{selectedCrop.charAt(0).toUpperCase() + selectedCrop.slice(1)}</option>
+            )}
+          </select>
+          <div className="bg-moss/10 text-moss text-[10px] font-bold tracking-widest px-3 py-1.5 rounded-sm uppercase flex items-center gap-2">
+            <ShieldCheck className="w-3 h-3" /> AI CONFIDENCE: HIGH
+          </div>
         </div>
       </div>
 
