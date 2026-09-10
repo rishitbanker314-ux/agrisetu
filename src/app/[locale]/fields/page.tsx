@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import dynamic from 'next/dynamic';
 import NavigationSidebar from '@/components/NavigationSidebar';
 import { useCropValidation } from '@/hooks/useCropValidation';
+import { CROP_DATABASE } from '@/lib/cropKnowledgeBase';
 
 const Map = dynamic(() => import('@/components/Map'), { ssr: false });
 import LocationSearch from '@/components/LocationSearch';
@@ -275,7 +276,10 @@ export default function FieldsPage() {
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2">Crop Type</label>
-                  <input name="crop" required placeholder="e.g., Soybeans" onChange={(e) => setCurrentCropInput(e.target.value)} value={currentCropInput} className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" />
+                  <select name="crop" required onChange={(e) => setCurrentCropInput(e.target.value)} value={currentCropInput} className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss">
+                    <option value="" disabled>Select a crop...</option>
+                    {CROP_DATABASE.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2">Area (in Hectares)</label>
@@ -415,7 +419,10 @@ export default function FieldsPage() {
                 
                 <div>
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2">Crop Type</label>
-                  <input name="crop" onChange={(e) => setCurrentCropInput(e.target.value)} value={currentCropInput} required className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" />
+                  <select name="crop" required onChange={(e) => setCurrentCropInput(e.target.value)} value={currentCropInput} className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss">
+                    <option value="" disabled>Select a crop...</option>
+                    {CROP_DATABASE.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                  </select>
                 </div>
                 
                 <div>
