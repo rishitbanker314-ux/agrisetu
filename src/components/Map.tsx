@@ -266,18 +266,19 @@ export default function Map({ center, zoom = 13, markers = [], activeMarker, onL
           <>
             {drawnBoundary.map((poly: any, idx: number) => {
               if (!Array.isArray(poly) || poly.length === 0 || !Array.isArray(poly[0])) return null;
+              const polyKeyHash = poly.map((p:any) => p.join(',')).join('|');
               return (
                 <Fragment key={idx}>
                   {poly.length === 2 && (
                     <Polyline 
-                      key={`line-${idx}`} 
+                      key={`line-${idx}-${polyKeyHash}`} 
                       positions={poly} 
                       pathOptions={{ color: '#10b981', weight: 3, dashArray: '6, 6', lineCap: 'round', lineJoin: 'round' }} 
                     />
                   )}
                   {poly.length > 2 && (
                     <Polygon 
-                      key={`poly-${idx}`} 
+                      key={`poly-${idx}-${polyKeyHash}`} 
                       positions={poly} 
                       pathOptions={{ color: '#10b981', weight: 3, dashArray: '6, 6', fillColor: '#10b981', fillOpacity: 0.3, lineCap: 'round', lineJoin: 'round' }} 
                     />
