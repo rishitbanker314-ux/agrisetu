@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { User } from '@supabase/supabase-js';
 import { Sprout, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -34,7 +35,7 @@ export default function NavigationSidebar({ isOpen, setIsOpen, user }: Navigatio
             className="fixed top-0 left-0 bottom-0 w-64 bg-paper-ivory border-r border-soft-line z-[9999] shadow-2xl flex flex-col"
           >
             <div className="p-4 border-b border-soft-line flex items-center gap-2">
-              <Sprout className="w-6 h-6 text-moss" />
+              <Image src="/logo.jpeg" alt="AgriCrate Logo" width={28} height={28} className="object-contain" />
               <span className="font-serif text-xl tracking-tight text-deep-forest font-medium">AgriCrate</span>
             </div>
             <div className="p-4 flex-grow flex flex-col gap-2">

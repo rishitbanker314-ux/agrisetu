@@ -7,3 +7,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+# AgriCrate Feature Exclusions
+The Voice interface (voice input/output) and multi-language/vernacular support features have been REMOVED from the project scope. 
+When answering questions about the architecture, proposing new features, or writing code, DO NOT assume or rely on voice synthesis, speech-to-text, or multilingual translations. Assume the app relies on visual indicators and a single primary language.

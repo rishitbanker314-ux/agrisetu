@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { User } from '@supabase/supabase-js';
 import { Sprout, LogOut, User as UserIcon, Bell, Menu, X, Settings } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -56,7 +57,7 @@ export default function AppHeader({ user, crop, setCrop, savedFields = [], field
         </button>
         <Link href="/en" className="flex items-center gap-2">
           <div className="text-deep-forest">
-            <Sprout className="w-6 h-6" />
+            <Image src="/logo.jpeg" alt="AgriCrate Logo" width={32} height={32} className="object-contain" />
           </div>
           <span className="font-serif text-xl tracking-tight text-ink font-medium hidden sm:block">
             AgriCrate
