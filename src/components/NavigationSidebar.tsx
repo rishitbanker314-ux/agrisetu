@@ -35,7 +35,9 @@ export default function NavigationSidebar({ isOpen, setIsOpen, user }: Navigatio
             className="fixed top-0 left-0 bottom-0 w-64 bg-paper-ivory border-r border-soft-line z-[9999] shadow-2xl flex flex-col"
           >
             <div className="p-4 border-b border-soft-line flex items-center gap-2">
-              <Image src="/logo.jpeg" alt="AgriCrate Logo" width={28} height={28} className="object-contain" />
+              <div className="relative w-8 h-8 rounded-full overflow-hidden flex items-center justify-center shadow-sm">
+                <Image src="/logo.jpeg" alt="AgriCrate Logo" width={40} height={40} className="object-cover max-w-none" />
+              </div>
               <span className="font-serif text-xl tracking-tight text-deep-forest font-medium">AgriCrate</span>
             </div>
             <div className="p-4 flex-grow flex flex-col gap-2">

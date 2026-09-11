@@ -56,8 +56,8 @@ export default function AppHeader({ user, crop, setCrop, savedFields = [], field
           <Menu className="w-5 h-5" />
         </button>
         <Link href="/en" className="flex items-center gap-2">
-          <div className="text-deep-forest">
-            <Image src="/logo.jpeg" alt="AgriCrate Logo" width={32} height={32} className="object-contain" />
+          <div className="relative w-8 h-8 rounded-full overflow-hidden flex items-center justify-center shadow-sm">
+            <Image src="/logo.jpeg" alt="AgriCrate Logo" width={40} height={40} className="object-cover max-w-none" />
           </div>
           <span className="font-serif text-xl tracking-tight text-ink font-medium hidden sm:block">
             AgriCrate
