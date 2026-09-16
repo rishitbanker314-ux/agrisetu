@@ -69,7 +69,7 @@ export default function NDVIChartClient({ fieldData }: NDVIChartProps) {
     }
 
     fetchGeeData();
-  }, [fieldData?.coordinates]);
+  }, [fieldData?.coordinates?.lat, fieldData?.coordinates?.lng]);
 
   if (loading) {
     return (

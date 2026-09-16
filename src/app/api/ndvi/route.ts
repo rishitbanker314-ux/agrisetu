@@ -78,19 +78,22 @@ export async function GET(request: Request) {
       maxPixels: 1e9
     });
 
-    // Evaluate is asynchronous and must be wrapped in a Promise
-    const val = await new Promise<any>((resolve, reject) => {
-      sampled.evaluate((result: any, error: any) => {
-        if (error) {
-          console.error('Earth Engine evaluation error:', error);
-          reject(error);
-        } else {
-          resolve(result);
-        }
+    let val: any = null;
+    try {
+      // Evaluate is asynchronous and must be wrapped in a Promise
+      val = await new Promise<any>((resolve, reject) => {
+        sampled.evaluate((result: any, error: any) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(result);
+          }
+        });
       });
-    });
-
-    console.log('Evaluated NDVI Result:', val);
+      console.log('Evaluated NDVI Result:', val);
+    } catch (evalError: any) {
+      console.warn('Earth Engine evaluation failed (e.g., cloudy), falling back to baseline:', evalError.message);
+    }
 
     // If the satellite data was totally cloudy for 30 days, we might get null.
     // In that case, we fall back to a reasonable baseline for demonstration.
