@@ -2,9 +2,11 @@ import { NextResponse } from 'next/server';
 // @ts-ignore
 import ee from '@google/earthengine';
 
-// Ensure the private key is properly formatted with actual newlines
-const PRIVATE_KEY = process.env.GEE_PRIVATE_KEY?.replace(/\\n/g, '\n');
-const CLIENT_EMAIL = process.env.GEE_CLIENT_EMAIL;
+let PRIVATE_KEY = process.env.GEE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+if (PRIVATE_KEY && PRIVATE_KEY.startsWith('"') && PRIVATE_KEY.endsWith('"')) {
+  PRIVATE_KEY = PRIVATE_KEY.slice(1, -1);
+}
+const CLIENT_EMAIL = process.env.GEE_CLIENT_EMAIL?.replace(/"/g, '');
 
 let isEeInitialized = false;
 
