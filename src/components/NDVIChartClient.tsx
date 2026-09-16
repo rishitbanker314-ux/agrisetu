@@ -1,6 +1,7 @@
 'use client';
 
-import { Activity } from 'lucide-react';
+import { Activity, Loader2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import type { LiveFieldData } from '@/hooks/useFieldData';
 import {
   Chart as ChartJS,
@@ -33,10 +34,64 @@ interface NDVIChartProps {
 }
 
 export default function NDVIChartClient({ fieldData }: NDVIChartProps) {
-  // @ts-ignore - temporal data
-  const ndviProgression = fieldData?.temporal?.ndviProgression as number[] || [];
+  const [ndviProgression, setNdviProgression] = useState<number[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchGeeData() {
+      if (!fieldData?.coordinates) return;
+      
+      setLoading(true);
+      setError(null);
+      
+      try {
+        const { lat, lng } = fieldData.coordinates;
+        const res = await fetch(`/api/ndvi?lat=${lat}&lng=${lng}`);
+        
+        if (!res.ok) {
+          throw new Error('Failed to connect to Google Earth Engine');
+        }
+        
+        const data = await res.json();
+        
+        if (data.error) {
+          throw new Error(data.error);
+        }
+        
+        setNdviProgression(data.ndviProgression || []);
+      } catch (err: any) {
+        console.error('GEE Fetch Error:', err);
+        setError(err.message || 'Unknown error');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchGeeData();
+  }, [fieldData?.coordinates]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col h-full items-center justify-center p-8 text-ink/60">
+        <Loader2 className="w-8 h-8 animate-spin text-moss mb-4" />
+        <p className="text-sm">Connecting to Google Earth Engine...</p>
+        <p className="text-xs mt-2 text-ink/40">Querying Sentinel-2 Satellite surface reflectance.</p>
+      </div>
+    );
+  }
   
-  if (!ndviProgression.length) return <div className="p-4 text-center text-ink/50 text-sm">No NDVI data available</div>;
+  if (error) {
+    return (
+      <div className="p-4 text-center text-red-500 text-sm">
+        Failed to load Earth Engine Data: {error}
+      </div>
+    );
+  }
+  
+  if (!ndviProgression.length) {
+    return <div className="p-4 text-center text-ink/50 text-sm">No NDVI data available</div>;
+  }
 
   const currentNdvi = ndviProgression[0];
   
@@ -120,9 +175,9 @@ export default function NDVIChartClient({ fieldData }: NDVIChartProps) {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h3 className="text-lg font-sans font-medium text-deep-forest flex items-center gap-2">
-            Live NDVI & Forecast Trends
+            Live Earth Engine NDVI
           </h3>
-          <p className="text-sm text-ink/60 mt-1">15-Day Real-Time Extrapolation (Scroll to Zoom, Drag to Pan)</p>
+          <p className="text-sm text-ink/60 mt-1">Real-time Sentinel-2 Extrapolation (Scroll to Zoom, Drag to Pan)</p>
         </div>
         <div className="bg-moss/10 px-3 py-1.5 rounded-md flex items-center gap-2 shrink-0">
           <Activity className="w-4 h-4 text-moss" />
@@ -140,7 +195,7 @@ export default function NDVIChartClient({ fieldData }: NDVIChartProps) {
       
       <div className="mt-4 text-xs text-ink/60 bg-white border border-soft-line p-3 rounded-md flex items-start gap-2">
         <Activity className="w-4 h-4 shrink-0 text-moss mt-0.5" />
-        <p>This model reflects a live 15-day NDVI extrapolation by analyzing actual hyper-local weather forecasts and satellite baseline data. Use your mouse or touch to zoom seamlessly into fractional micro-variations.</p>
+        <p>This model reflects a live 15-day NDVI extrapolation by analyzing actual hyper-local weather forecasts and satellite baseline data. Data powered by Google Earth Engine.</p>
       </div>
     </div>
   );

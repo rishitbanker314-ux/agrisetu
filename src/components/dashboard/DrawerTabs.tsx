@@ -4,9 +4,7 @@ import { useState } from 'react';
 import AdvisoryPanel from './AdvisoryPanel';
 import ForecastChart from '../ForecastChart';
 
-import MarketScenarios from '../MarketScenarios';
 import DiagnosisUpload from '../DiagnosisUpload';
-import AcousticBiosphere from '../AcousticBiosphere';
 import NDVIChart from '../NDVIChart';
 import { Sprout, CloudRain, LineChart, Stethoscope, AudioWaveform, Globe, Activity, AlertOctagon } from 'lucide-react';
 import { checkCropViability } from '@/lib/cropViability';
@@ -27,10 +25,8 @@ export default function DrawerTabs({ fieldData, crop, advisory, advisoryLoading,
     { id: 'advisory', label: 'Advisory', icon: Sprout },
     { id: 'forecast', label: 'Forecast', icon: CloudRain },
 
-    { id: 'market', label: 'Market futures', icon: LineChart },
     { id: 'ndvi', label: 'NDVI Trends', icon: Activity },
     { id: 'diagnostics', label: 'Diagnostics', icon: Stethoscope },
-    { id: 'biosphere', label: 'Acoustic biosphere', icon: AudioWaveform },
   ];
 
   const viability = checkCropViability(crop, fieldData);
@@ -94,15 +90,6 @@ export default function DrawerTabs({ fieldData, crop, advisory, advisoryLoading,
               </div>
             </div>
           )}
-
-          {activeTab === 'market' && (
-            <div className="h-full">
-              <h3 className="font-serif text-sm text-ink/50 uppercase tracking-widest mb-4">Real-time Market Data</h3>
-              <div className="bg-white rounded-lg border border-soft-line p-4">
-                <MarketScenarios crop={crop} lat={center[0]} lng={center[1]} />
-              </div>
-            </div>
-          )}
           {activeTab === 'ndvi' && (
             <div className="h-full">
               <NDVIChart fieldData={fieldData} />
@@ -113,14 +100,6 @@ export default function DrawerTabs({ fieldData, crop, advisory, advisoryLoading,
               <h3 className="font-serif text-sm text-ink/50 uppercase tracking-widest mb-4">Crop Disease Diagnostic</h3>
               <div className="bg-white rounded-lg border border-soft-line p-4">
                 <DiagnosisUpload fieldId={fieldId} />
-              </div>
-            </div>
-          )}
-          {activeTab === 'biosphere' && (
-            <div className="h-full">
-              <h3 className="font-serif text-sm text-ink/50 uppercase tracking-widest mb-4">Acoustic Biosphere</h3>
-              <div className="bg-white rounded-lg border border-soft-line p-4">
-                <AcousticBiosphere moisture={fieldData?.soil?.moisture || 50} />
               </div>
             </div>
           )}
