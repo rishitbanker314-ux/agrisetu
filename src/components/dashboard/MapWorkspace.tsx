@@ -5,7 +5,6 @@ import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import LocationSearch from '../LocationSearch';
 import WeatherWidget from '../WeatherWidget';
-import TemporalSlider from '../TemporalSlider';
 import BottomDrawer from './BottomDrawer';
 import { Layers } from 'lucide-react';
 
@@ -207,7 +206,6 @@ export default function MapWorkspace({
 
 
       {/* Floating Bottom Controls (Above Drawer) */}
-      <TemporalSlider dateOffset={dateOffset} setDateOffset={setDateOffset} maxDays={15} fieldData={fieldData} />
 
       {/* Bottom Drawer Intelligence */}
       <BottomDrawer 

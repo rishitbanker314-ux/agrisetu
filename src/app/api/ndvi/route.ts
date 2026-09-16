@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+// @ts-ignore
 import ee from '@google/earthengine';
 
 // Ensure the private key is properly formatted with actual newlines
