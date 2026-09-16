@@ -1,11 +1,28 @@
+export const maxDuration = 60; // 60 seconds (Vercel maximum for hobby)
+export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 // @ts-ignore
 import ee from '@google/earthengine';
 
-let PRIVATE_KEY = process.env.GEE_PRIVATE_KEY?.replace(/\\n/g, '\n');
-if (PRIVATE_KEY && PRIVATE_KEY.startsWith('"') && PRIVATE_KEY.endsWith('"')) {
-  PRIVATE_KEY = PRIVATE_KEY.slice(1, -1);
+function formatPrivateKey(key: string | undefined): string {
+  if (!key) return '';
+  let k = key.trim();
+  if (k.startsWith('"') && k.endsWith('"')) k = k.slice(1, -1);
+  k = k.replace(/\\n/g, '\n');
+  
+  // If Vercel stripped the newlines entirely, reconstruct the PEM format
+  if (!k.includes('\n') && k.includes('BEGIN PRIVATE KEY')) {
+    const header = '-----BEGIN PRIVATE KEY-----';
+    const footer = '-----END PRIVATE KEY-----';
+    // Remove headers and all whitespace to get raw base64 body
+    let body = k.replace(header, '').replace(footer, '').replace(/\s+/g, '');
+    const chunks = body.match(/.{1,64}/g) || [];
+    k = `${header}\n${chunks.join('\n')}\n${footer}\n`;
+  }
+  return k;
 }
+
+const PRIVATE_KEY = formatPrivateKey(process.env.GEE_PRIVATE_KEY);
 const CLIENT_EMAIL = process.env.GEE_CLIENT_EMAIL?.replace(/"/g, '');
 
 let isEeInitialized = false;

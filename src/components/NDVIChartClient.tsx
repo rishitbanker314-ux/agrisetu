@@ -48,12 +48,16 @@ export default function NDVIChartClient({ fieldData }: NDVIChartProps) {
       try {
         const { lat, lng } = fieldData.coordinates;
         const res = await fetch(`/api/ndvi?lat=${lat}&lng=${lng}`);
-        
         if (!res.ok) {
-          let errorMsg = 'Failed to connect to Google Earth Engine';
+          let errorMsg = `Failed to connect to Google Earth Engine (Status ${res.status})`;
           try {
-            const errorData = await res.json();
-            if (errorData.error) errorMsg += `: ${errorData.error}`;
+            const text = await res.text();
+            try {
+               const errorData = JSON.parse(text);
+               if (errorData.error) errorMsg += `: ${errorData.error}`;
+            } catch {
+               errorMsg += `: ${text.substring(0, 100)}`;
+            }
           } catch (e) {}
           throw new Error(errorMsg);
         }
