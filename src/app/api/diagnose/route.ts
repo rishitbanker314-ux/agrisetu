@@ -34,6 +34,12 @@ export async function POST(req: Request) {
     const diseaseName = topPrediction.label;
     const confidence = topPrediction.confidences[0].confidence;
 
+    // Format all top predictions for the UI
+    const alternatives = topPrediction.confidences.map((c: any) => ({
+      label: c.label.split('_').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+      confidence: c.confidence
+    }));
+
     // 4. Return the ML prediction
     const formattedLabel = diseaseName
       .split('_')
@@ -43,6 +49,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       disease_label: formattedLabel,
       confidence: confidence,
+      alternatives: alternatives,
       treatment_advice: `**Agronomic Note:** The deep-learning model has identified symptoms consistent with ${formattedLabel}. Please refer to standard agricultural guidelines for the appropriate fungicide or pesticide treatment for this specific issue.`
     });
 

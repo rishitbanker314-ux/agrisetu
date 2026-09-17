@@ -100,7 +100,7 @@ export default function DiagnosisUpload({ fieldId }: DiagnosisUploadProps) {
       )}
 
       {diagnosis && (
-        <div className="flex-grow flex flex-col bg-white border border-soft-line rounded-lg p-5">
+        <div className="flex-grow flex flex-col bg-white border border-soft-line rounded-lg p-5 overflow-y-auto">
           <div className="flex items-center justify-between mb-4 border-b border-soft-line pb-3">
             <div className="flex items-center gap-2">
               <CheckCircle className="w-5 h-5 text-moss" />
@@ -111,15 +111,29 @@ export default function DiagnosisUpload({ fieldId }: DiagnosisUploadProps) {
             </span>
           </div>
 
-          <div className="text-sm text-ink/80 bg-paper-ivory/50 p-4 rounded-md border border-soft-line prose prose-sm max-w-none prose-headings:font-serif prose-headings:text-deep-forest">
+          <div className="text-sm text-ink/80 bg-paper-ivory/50 p-4 rounded-md border border-soft-line prose prose-sm max-w-none prose-headings:font-serif prose-headings:text-deep-forest mb-4">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {diagnosis.treatment_advice}
             </ReactMarkdown>
           </div>
+
+          {diagnosis.alternatives && diagnosis.alternatives.length > 1 && (
+            <div className="mb-4">
+              <h5 className="text-xs font-sans font-bold text-deep-forest/70 uppercase tracking-wider mb-2">Other Possibilities</h5>
+              <div className="space-y-2">
+                {diagnosis.alternatives.slice(1, 4).map((alt: any, idx: number) => (
+                  <div key={idx} className="flex items-center justify-between text-sm bg-white border border-soft-line rounded px-3 py-2">
+                    <span className="text-ink font-medium">{alt.label}</span>
+                    <span className="text-moss font-medium">{(alt.confidence * 100).toFixed(1)}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           
           <button 
             onClick={() => setDiagnosis(null)}
-            className="mt-4 w-full text-center text-sm font-sans font-medium text-deep-forest bg-white border border-soft-line py-2 rounded-md hover:bg-moss/5 transition-colors"
+            className="mt-auto w-full text-center text-sm font-sans font-medium text-deep-forest bg-white border border-soft-line py-2 rounded-md hover:bg-moss/5 transition-colors"
           >
             Analyze Another Image
           </button>
