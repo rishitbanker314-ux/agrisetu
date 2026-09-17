@@ -16,12 +16,17 @@ export async function POST(req: Request) {
     const buffer = Buffer.from(base64Data, 'base64');
     const blob = new Blob([new Uint8Array(buffer)]);
 
-    // 2. Connect to the User's Dedicated Hugging Face Space!
-    // Since the free shared API dropped support for custom large models, 
-    // we route the traffic to the user's dedicated free Gradio container.
-    const client = await Client.connect("rishit0311/agricrate-api");
+    // 2. Get API Key to bypass ZeroGPU rate limits
+    const hfToken = process.env.HF_API_KEY;
+    
+    if (!hfToken) {
+      return NextResponse.json({ error: "HF_API_KEY is missing in environment variables." }, { status: 500 });
+    }
 
-    // 3. Run inference via the Gradio API
+    // 3. Connect to the User's Dedicated Hugging Face Space!
+    const client = await Client.connect("rishit0311/agricrate-api", { hf_token: hfToken as any });
+
+    // 4. Run inference via the Gradio API
     const result = await client.predict("/predict_disease", {
         image: blob,
     });
