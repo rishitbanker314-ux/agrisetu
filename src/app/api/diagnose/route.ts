@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { HfInference } from '@huggingface/inference';
 
 export const maxDuration = 60; // 60 seconds for hobby tier
 
@@ -10,9 +11,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No image provided." }, { status: 400 });
     }
 
-    // 1. Clean the base64 string (remove data:image/jpeg;base64, prefix)
+    // 1. Clean the base64 string
     const base64Data = image_base64.replace(/^data:image\/\w+;base64,/, '');
     const buffer = Buffer.from(base64Data, 'base64');
+    const blob = new Blob([new Uint8Array(buffer)]);
 
     // 2. Get API Key
     const hfToken = process.env.HF_API_KEY;
@@ -21,44 +23,22 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "HF_API_KEY is missing in environment variables." }, { status: 500 });
     }
 
-    // 3. Call Hugging Face Serverless Inference API directly on your model
-    const response = await fetch(
-      "https://api-inference.huggingface.co/models/rishit0311/agricrate_disease_model",
-      {
-        headers: {
-          "Authorization": `Bearer ${hfToken}`,
-          "Content-Type": "application/octet-stream"
-        },
-        method: "POST",
-        body: new Uint8Array(buffer),
-      }
-    ).catch(err => {
-      console.error("Fetch threw an error:", err);
-      throw new Error(`Network error to HuggingFace: ${err.message}`);
+    // 3. Initialize Hugging Face SDK
+    const hf = new HfInference(hfToken);
+
+    // Call the model using the SDK (handles URL routing automatically)
+    const result = await hf.imageClassification({
+      model: 'rishit0311/agricrate_disease_model',
+      data: blob
     });
 
-    const result = await response.json();
-
-    if (!response.ok) {
-      console.error("HF API Error:", result);
-      // Handle model loading state specifically
-      if (result.error && result.error.includes("is currently loading")) {
-         return NextResponse.json({ 
-           error: "Model is waking up. Please try again in 20 seconds." 
-         }, { status: 503 });
-      }
-      throw new Error(result.error || "Failed to analyze image with Hugging Face");
-    }
-
-    // result is an array of predictions, e.g., [{"label": "tomato_early_blight", "score": 0.99}, ...]
     if (!Array.isArray(result) || result.length === 0) {
       throw new Error("Invalid response from Hugging Face model.");
     }
 
     const topPrediction = result[0];
 
-    // 4. Return just the ML prediction (NO Gemini)
-    // We format the label slightly to make it readable (e.g., tomato_early_blight -> Tomato Early Blight)
+    // 4. Return the ML prediction
     const formattedLabel = topPrediction.label
       .split('_')
       .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -72,6 +52,14 @@ export async function POST(req: Request) {
 
   } catch (error: any) {
     console.error("Diagnose API Error:", error);
+    
+    // Check if it's a model loading error
+    if (error.message && error.message.includes("is currently loading")) {
+      return NextResponse.json({ 
+        error: "Model is waking up. Please try again in 20 seconds." 
+      }, { status: 503 });
+    }
+    
     return NextResponse.json({ error: error.message || "Failed to process image" }, { status: 500 });
   }
 }
