@@ -30,9 +30,12 @@ export async function POST(req: Request) {
           "Content-Type": "application/octet-stream"
         },
         method: "POST",
-        body: buffer,
+        body: new Uint8Array(buffer),
       }
-    );
+    ).catch(err => {
+      console.error("Fetch threw an error:", err);
+      throw new Error(`Network error to HuggingFace: ${err.message}`);
+    });
 
     const result = await response.json();
 
