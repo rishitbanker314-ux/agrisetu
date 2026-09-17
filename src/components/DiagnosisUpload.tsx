@@ -33,19 +33,23 @@ export default function DiagnosisUpload({ fieldId }: DiagnosisUploadProps) {
       reader.readAsDataURL(file);
       const base64Data = await base64Promise;
 
-      // 2. Call Edge Function with base64 image directly (Bypassing Storage Bucket)
-      const { data, error: functionError } = await supabase.functions.invoke('diagnostic-module', {
-        body: { 
+      // 2. Call our Next.js API route (which talks to Hugging Face)
+      const response = await fetch('/api/diagnose', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           field_id: fieldId, 
           image_base64: base64Data,
           mime_type: file.type || 'image/jpeg'
-        },
+        }),
       });
 
-      if (functionError) throw functionError;
-      
-      if (data && data.error) {
-        throw new Error(data.error);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to analyze image.');
       }
       
       setDiagnosis(data);
