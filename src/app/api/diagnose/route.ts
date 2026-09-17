@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { HfInference } from '@huggingface/inference';
+import { Client } from '@gradio/client';
 
 export const maxDuration = 60; // 60 seconds for hobby tier
 
@@ -16,37 +16,33 @@ export async function POST(req: Request) {
     const buffer = Buffer.from(base64Data, 'base64');
     const blob = new Blob([new Uint8Array(buffer)]);
 
-    // 2. Get API Key
-    const hfToken = process.env.HF_API_KEY;
-    
-    if (!hfToken) {
-      return NextResponse.json({ error: "HF_API_KEY is missing in environment variables." }, { status: 500 });
-    }
+    // 2. Connect to the User's Dedicated Hugging Face Space!
+    // Since the free shared API dropped support for custom large models, 
+    // we route the traffic to the user's dedicated free Gradio container.
+    const client = await Client.connect("rishit0311/agricrate-api");
 
-    // 3. Initialize Hugging Face SDK
-    const hf = new HfInference(hfToken);
-
-    // Call the model using the SDK (handles URL routing automatically)
-    const result = await hf.imageClassification({
-      model: 'rishit0311/agricrate_disease_model',
-      data: blob
+    // 3. Run inference via the Gradio API
+    const result = await client.predict("/predict_disease", {
+        image: blob,
     });
 
-    if (!Array.isArray(result) || result.length === 0) {
-      throw new Error("Invalid response from Hugging Face model.");
+    if (!result || !result.data || !result.data[0]) {
+      throw new Error("Invalid response from Hugging Face Space.");
     }
 
-    const topPrediction = result[0];
+    const topPrediction = result.data[0];
+    const diseaseName = topPrediction.label;
+    const confidence = topPrediction.confidences[0].confidence;
 
     // 4. Return the ML prediction
-    const formattedLabel = topPrediction.label
+    const formattedLabel = diseaseName
       .split('_')
       .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
 
     return NextResponse.json({
       disease_label: formattedLabel,
-      confidence: topPrediction.score,
+      confidence: confidence,
       treatment_advice: `**Agronomic Note:** The deep-learning model has identified symptoms consistent with ${formattedLabel}. Please refer to standard agricultural guidelines for the appropriate fungicide or pesticide treatment for this specific issue.`
     });
 
