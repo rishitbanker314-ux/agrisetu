@@ -102,7 +102,7 @@ export default function MarketForecastChart({ data, cropName }: MarketForecastCh
       },
       title: {
         display: true,
-        text: `${cropName} APMC Price Forecast (30 Days)`,
+        text: `${cropName} APMC Price Forecast (10 Days)`,
         font: { size: 16 }
       },
       tooltip: {

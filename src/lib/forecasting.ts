@@ -22,9 +22,9 @@ const baseData: Record<CropName, number[]> = {
 };
 
 /**
- * Generates an Exponential Moving Average forecast
+ * Generates an Exponential Moving Average forecast with Momentum
  */
-function calculateEMA(data: number[], daysToForecast: number = 4, alpha: number = 0.3): PricePoint[] {
+function calculateEMA(data: number[], daysToForecast: number = 10, alpha: number = 0.3): PricePoint[] {
   let ema = data[0];
   const results: PricePoint[] = [];
 
@@ -40,11 +40,11 @@ function calculateEMA(data: number[], daysToForecast: number = 4, alpha: number 
   // Generate future dates (weekly) starting from today
   const today = new Date();
   
-  // Create historical points (just the last 12 weeks for the chart)
-  const historicalDisplay = data.slice(-12);
+  // Create historical points (last 15 days for a tighter, daily view)
+  const historicalDisplay = data.slice(-15);
   historicalDisplay.forEach((price, i) => {
     const d = new Date(today);
-    d.setDate(today.getDate() - ((historicalDisplay.length - 1 - i) * 7));
+    d.setDate(today.getDate() - (historicalDisplay.length - 1 - i));
     results.push({
       date: d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }),
       price: Math.round(price),
@@ -52,20 +52,25 @@ function calculateEMA(data: number[], daysToForecast: number = 4, alpha: number 
     });
   });
 
+  // Calculate recent momentum (trend over the last 5 days)
+  const recentData = data.slice(-5);
+  const momentum = (recentData[recentData.length - 1] - recentData[0]) / 5;
+
   // Generate future forecast points
-  let lastPrice = historicalDisplay[historicalDisplay.length - 1];
   let currentEma = ema;
   
   for (let i = 1; i <= daysToForecast; i++) {
-    // Add slight random walk to EMA for realism in the pitch
-    const volatility = (Math.random() - 0.5) * (stdDev * 0.2);
-    currentEma = currentEma + volatility;
+    // Add momentum and deterministic volatility for realism
+    const volatility = (Math.sin(i * 1.5) * (stdDev * 0.15));
+    // Dampen momentum slightly over time so it doesn't shoot to infinity
+    const dampedMomentum = momentum * Math.exp(-0.1 * i);
+    currentEma = currentEma + dampedMomentum + volatility;
     
     const d = new Date(today);
-    d.setDate(today.getDate() + (i * 7));
+    d.setDate(today.getDate() + i);
     
-    // Confidence interval widens over time (uncertainty)
-    const margin = stdDev * (0.5 + (i * 0.1));
+    // Confidence interval widens logarithmically over time
+    const margin = stdDev * (0.3 + Math.log10(1 + (i * 0.5)));
     
     results.push({
       date: d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }),

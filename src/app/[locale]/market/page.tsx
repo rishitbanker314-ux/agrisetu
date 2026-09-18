@@ -68,7 +68,7 @@ export default function MarketPage() {
 
         <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-medium text-zinc-500">30-Day Forecast</h3>
+            <h3 className="text-sm font-medium text-zinc-500">10-Day Forecast</h3>
             {isPositive ? <TrendingUp className="h-4 w-4 text-green-500" /> : <TrendingDown className="h-4 w-4 text-red-500" />}
           </div>
           <div className="mt-2 text-2xl font-bold">₹{futurePrice.toLocaleString()}</div>

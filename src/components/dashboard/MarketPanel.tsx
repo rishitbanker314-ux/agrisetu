@@ -57,7 +57,7 @@ export default function MarketPanel() {
 
         <div className="rounded-lg border border-soft-line bg-white p-4 shadow-sm">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-ink/50">30-Day Forecast</h3>
+            <h3 className="text-xs font-bold uppercase tracking-widest text-ink/50">10-Day Forecast</h3>
             {isPositive ? <TrendingUp className="h-4 w-4 text-moss" /> : <TrendingDown className="h-4 w-4 text-terracotta" />}
           </div>
           <div className="text-xl font-bold text-deep-forest">₹{futurePrice.toLocaleString()}</div>
