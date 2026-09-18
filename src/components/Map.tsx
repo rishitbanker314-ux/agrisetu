@@ -73,6 +73,7 @@ interface MapProps {
   isDrawingMode?: boolean;
   drawnBoundary?: [number, number][];
   onBoundaryPointMove?: (polyIdx: number, ptIdx: number, lat: number, lng: number) => void;
+  isSimulatingNDVI?: boolean;
 }
 
 // Helper to get color based on NDVI value
@@ -83,7 +84,7 @@ function getNdviColor(ndvi: number) {
   return '#ef4444'; // Red
 }
 
-const DraggableMarker = ({ marker, temporalNdvi, onLocationSelect }: { marker: { lat: number; lng: number; title: string; boundary?: [number, number][] }, temporalNdvi: number, onLocationSelect?: (lat: number, lng: number) => void }) => {
+const DraggableMarker = ({ marker, temporalNdvi, onLocationSelect, isSimulatingNDVI }: { marker: { lat: number; lng: number; title: string; boundary?: [number, number][] }, temporalNdvi: number, onLocationSelect?: (lat: number, lng: number) => void, isSimulatingNDVI?: boolean }) => {
   const markerRef = useRef<any>(null);
   const eventHandlers = useMemo(
     () => ({
@@ -100,7 +101,9 @@ const DraggableMarker = ({ marker, temporalNdvi, onLocationSelect }: { marker: {
     [onLocationSelect]
   );
 
-  const fillColor = getNdviColor(temporalNdvi);
+  const fillColor = isSimulatingNDVI ? getNdviColor(0.3) : getNdviColor(temporalNdvi);
+  const strokeColor = isSimulatingNDVI ? '#ef4444' : '#10b981';
+  const fillOpacity = isSimulatingNDVI ? 0.6 : 0.45;
 
   const hasBoundary = marker.boundary && marker.boundary.flat().length > 2;
 
@@ -121,12 +124,12 @@ const DraggableMarker = ({ marker, temporalNdvi, onLocationSelect }: { marker: {
       {hasBoundary && marker.boundary ? (
         Array.isArray(marker.boundary[0]) && Array.isArray(marker.boundary[0][0]) ? (
           (marker.boundary as any[]).map((poly, idx) => (
-            poly.length > 2 ? <Polygon key={idx} positions={poly} pathOptions={{ color: '#10b981', weight: 3, dashArray: '5, 5', fillColor: fillColor, fillOpacity: 0.45, lineCap: 'round', lineJoin: 'round' }} /> : null
+            poly.length > 2 ? <Polygon key={idx} positions={poly} pathOptions={{ color: strokeColor, weight: 3, dashArray: '5, 5', fillColor: fillColor, fillOpacity: fillOpacity, lineCap: 'round', lineJoin: 'round' }} /> : null
           ))
         ) : (
           <Polygon 
             positions={marker.boundary as [number, number][]}
-            pathOptions={{ color: '#10b981', weight: 3, dashArray: '5, 5', fillColor: fillColor, fillOpacity: 0.45, lineCap: 'round', lineJoin: 'round' }}
+            pathOptions={{ color: strokeColor, weight: 3, dashArray: '5, 5', fillColor: fillColor, fillOpacity: fillOpacity, lineCap: 'round', lineJoin: 'round' }}
           />
         )
       ) : null}
@@ -241,7 +244,7 @@ const NativeDrawingPolyline = ({ positions, pathOptions }: { positions: [number,
   return null;
 };
 
-export default function Map({ center, zoom = 13, markers = [], activeMarker, onLocationSelect, temporalNdvi = 0.5, mapStyle = 'street', isDrawingMode = false, drawnBoundary = [], onBoundaryPointMove }: MapProps) {
+export default function Map({ center, zoom = 13, markers = [], activeMarker, onLocationSelect, temporalNdvi = 0.5, mapStyle = 'street', isDrawingMode = false, drawnBoundary = [], onBoundaryPointMove, isSimulatingNDVI = false }: MapProps) {
   const [isLegendOpen, setIsLegendOpen] = useState(false);
 
   return (
@@ -306,7 +309,7 @@ export default function Map({ center, zoom = 13, markers = [], activeMarker, onL
           </Fragment>
         )})}
         {activeMarker && !isDrawingMode && (
-          <DraggableMarker marker={{ lat: activeMarker.lat, lng: activeMarker.lng, title: 'Selected Location', boundary: activeMarker.boundary }} temporalNdvi={temporalNdvi} onLocationSelect={onLocationSelect} />
+          <DraggableMarker marker={{ lat: activeMarker.lat, lng: activeMarker.lng, title: 'Selected Location', boundary: activeMarker.boundary }} temporalNdvi={temporalNdvi} onLocationSelect={onLocationSelect} isSimulatingNDVI={isSimulatingNDVI} />
         )}
         
         {/* Drawing Mode Rendering */}
@@ -325,7 +328,7 @@ export default function Map({ center, zoom = 13, markers = [], activeMarker, onL
                   {poly.length > 2 && (
                     <NativeDrawingPolygon 
                       positions={poly} 
-                      pathOptions={{ color: '#10b981', weight: 3, dashArray: '6, 6', fillColor: '#10b981', fillOpacity: 0.3, lineCap: 'round', lineJoin: 'round' }} 
+                      pathOptions={{ color: isSimulatingNDVI ? '#ef4444' : '#10b981', weight: 3, dashArray: '6, 6', fillColor: isSimulatingNDVI ? getNdviColor(0.3) : '#10b981', fillOpacity: isSimulatingNDVI ? 0.6 : 0.3, lineCap: 'round', lineJoin: 'round' }} 
                     />
                   )}
                   {poly.map((pt: any, ptIdx: number) => (

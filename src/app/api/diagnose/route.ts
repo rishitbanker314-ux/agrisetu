@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { Client } from '@gradio/client';
+import { getTreatmentReport, cureRecommendations } from '@/lib/encyclopedia';
 
 export const maxDuration = 60; // 60 seconds for hobby tier
 
@@ -31,11 +32,11 @@ export async function POST(req: Request) {
         image: blob,
     });
 
-    if (!result || !result.data || !result.data[0]) {
+    if (!result || !result.data || !(result.data as any)[0]) {
       throw new Error("Invalid response from Hugging Face Space.");
     }
 
-    const topPrediction = result.data[0];
+    const topPrediction = (result.data as any)[0];
     const diseaseName = topPrediction.label;
     const confidence = topPrediction.confidences[0].confidence;
 
@@ -51,11 +52,16 @@ export async function POST(req: Request) {
       .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
 
+    const detailedAdvice = getTreatmentReport(diseaseName);
+    const normalizedLabel = diseaseName.toLowerCase().trim();
+    const cures = cureRecommendations[normalizedLabel] || [];
+
     return NextResponse.json({
       disease_label: formattedLabel,
       confidence: confidence,
       alternatives: alternatives,
-      treatment_advice: `**Agronomic Note:** The deep-learning model has identified symptoms consistent with ${formattedLabel}. Please refer to standard agricultural guidelines for the appropriate fungicide or pesticide treatment for this specific issue.`
+      treatment_advice: detailedAdvice,
+      cures: cures
     });
 
   } catch (error: any) {

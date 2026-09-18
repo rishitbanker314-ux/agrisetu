@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { UploadCloud, CheckCircle, AlertTriangle, Loader2, ImagePlus } from 'lucide-react';
+import { UploadCloud, CheckCircle, AlertTriangle, Loader2, ImagePlus, ExternalLink } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -116,6 +116,26 @@ export default function DiagnosisUpload({ fieldId }: DiagnosisUploadProps) {
               {diagnosis.treatment_advice}
             </ReactMarkdown>
           </div>
+
+          {diagnosis.cures && diagnosis.cures.length > 0 && (
+            <div className="mb-4">
+              <h5 className="text-xs font-sans font-bold text-deep-forest/70 uppercase tracking-wider mb-2">Recommended Cures</h5>
+              <div className="space-y-2">
+                {diagnosis.cures.map((cure: string, idx: number) => (
+                  <a 
+                    key={idx} 
+                    href={`https://www.google.com/search?q=${encodeURIComponent(cure)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between text-sm bg-moss/5 border border-moss/20 rounded px-3 py-2 hover:bg-moss/10 transition-colors group"
+                  >
+                    <span className="text-deep-forest font-medium">{cure}</span>
+                    <ExternalLink className="w-4 h-4 text-moss opacity-70 group-hover:opacity-100" />
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
 
           {diagnosis.alternatives && diagnosis.alternatives.length > 1 && (
             <div className="mb-4">

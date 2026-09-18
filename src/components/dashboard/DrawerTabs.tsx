@@ -6,7 +6,8 @@ import ForecastChart from '../ForecastChart';
 
 import DiagnosisUpload from '../DiagnosisUpload';
 import NDVIChart from '../NDVIChart';
-import { Sprout, CloudRain, LineChart, Stethoscope, AudioWaveform, Globe, Activity, AlertOctagon } from 'lucide-react';
+import MarketPanel from './MarketPanel';
+import { Sprout, CloudRain, LineChart, Stethoscope, AudioWaveform, Globe, Activity, AlertOctagon, TrendingUp } from 'lucide-react';
 import { checkCropViability } from '@/lib/cropViability';
 
 interface DrawerTabsProps {
@@ -23,8 +24,8 @@ export default function DrawerTabs({ fieldData, crop, advisory, advisoryLoading,
 
   const tabs = [
     { id: 'advisory', label: 'Advisory', icon: Sprout },
-    { id: 'forecast', label: 'Forecast', icon: CloudRain },
-
+    { id: 'forecast', label: 'Weather', icon: CloudRain },
+    { id: 'market', label: 'Market Futures', icon: TrendingUp },
     { id: 'ndvi', label: 'NDVI Trends', icon: Activity },
     { id: 'diagnostics', label: 'Diagnostics', icon: Stethoscope },
   ];
@@ -84,10 +85,15 @@ export default function DrawerTabs({ fieldData, crop, advisory, advisoryLoading,
           )}
           {activeTab === 'forecast' && (
             <div className="h-full">
-              <h3 className="font-serif text-sm text-ink/50 uppercase tracking-widest mb-4">7-Day Outlook</h3>
+              <h3 className="font-serif text-sm text-ink/50 uppercase tracking-widest mb-4">7-Day Weather Outlook</h3>
               <div className="bg-white rounded-lg border border-soft-line p-4">
                 <ForecastChart fieldData={fieldData} />
               </div>
+            </div>
+          )}
+          {activeTab === 'market' && (
+            <div className="h-full max-w-2xl mx-auto">
+              <MarketPanel />
             </div>
           )}
           {activeTab === 'ndvi' && (

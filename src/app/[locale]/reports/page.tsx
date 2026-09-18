@@ -147,11 +147,16 @@ export default function ReportsPage() {
         .select()
         .single();
         
-      if (!error && data) {
+      if (error) {
+        console.error("Supabase error:", error);
+        toast.error("Database error: " + error.message);
+      } else if (data) {
         setReports([data, ...reports]);
+        toast.success("Report generated successfully");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to generate report:", err);
+      toast.error(err.message || "Failed to generate report");
     } finally {
       setIsGenerating(false);
     }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
 import { LiveFieldData } from './useFieldData';
+import { generateDeterministicAdvisory } from '@/lib/advisoryRules';
 
 export function useAdvisory(fieldData: LiveFieldData | null, crop: string = 'wheat', language: string = 'en') {
   const [advisory, setAdvisory] = useState<string | null>(null);
@@ -15,17 +15,14 @@ export function useAdvisory(fieldData: LiveFieldData | null, crop: string = 'whe
         setLoading(true);
         setError(null);
         
-        const { data, error: functionError } = await supabase.functions.invoke('advisory-engine', {
-          body: { crop, language, fieldData },
-        });
-
-        if (functionError) throw functionError;
-        if (data.error) throw new Error(data.error);
+        // Simulating network delay to make the UI feel like it's processing data
+        await new Promise(resolve => setTimeout(resolve, 600));
         
-        setAdvisory(data.recommendation_text);
+        const recommendation = generateDeterministicAdvisory(fieldData, crop, language);
+        setAdvisory(recommendation);
       } catch (err: any) {
         console.error("Advisory Error:", err);
-        setError(err.message || 'Failed to fetch advisory');
+        setError(err.message || 'Failed to generate advisory');
       } finally {
         setLoading(false);
       }

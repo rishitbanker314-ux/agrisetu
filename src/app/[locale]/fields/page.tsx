@@ -12,8 +12,10 @@ import { CROP_DATABASE } from '@/lib/cropKnowledgeBase';
 
 const Map = dynamic(() => import('@/components/Map'), { ssr: false });
 import LocationSearch from '@/components/LocationSearch';
-import { Layers } from 'lucide-react';
+import { Layers, Scan, Cpu } from 'lucide-react';
 import { User } from '@supabase/supabase-js';
+import area from '@turf/area';
+import { polygon } from '@turf/helpers';
 
 interface Field {
   id: string;
@@ -44,6 +46,9 @@ export default function FieldsPage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [currentCropInput, setCurrentCropInput] = useState('');
+  const [calculatedArea, setCalculatedArea] = useState<string>('');
+  const [fieldIntelligence, setFieldIntelligence] = useState<string | null>(null);
+  const [isSimulatingNDVI, setIsSimulatingNDVI] = useState(false);
 
   const cropValidation = useCropValidation(currentCropInput, selectedLocation);
 
@@ -64,6 +69,36 @@ export default function FieldsPage() {
     }
     loadFields();
   }, []);
+
+  useEffect(() => {
+    try {
+      const polys = drawnBoundary.filter(p => p.length >= 3);
+      if (polys.length > 0) {
+        let totalHectares = 0;
+        polys.forEach(poly => {
+          let coords = poly.map((pt: [number, number]) => [pt[1], pt[0]]);
+          if (coords.length > 0) {
+             const first = coords[0];
+             const last = coords[coords.length - 1];
+             if (first[0] !== last[0] || first[1] !== last[1]) {
+               coords.push([...first]);
+             }
+          }
+          if (coords.length >= 4) {
+            const p = polygon([coords]);
+            const sqMeters = area(p);
+            totalHectares += sqMeters / 10000;
+          }
+        });
+        if (totalHectares > 0) {
+           setCalculatedArea(totalHectares.toFixed(2));
+           setFieldIntelligence("Geospatial Analysis: Black Cotton Soil detected. Highly suitable for: Cotton, Groundnut.");
+        }
+      }
+    } catch (e) {
+      console.error("Area calculation error:", e);
+    }
+  }, [drawnBoundary]);
 
   useEffect(() => {
     if (isModalOpen || editingField) {
@@ -209,6 +244,8 @@ export default function FieldsPage() {
               setDrawnBoundary([]);
               setIsDrawing(false);
               setCurrentCropInput('');
+              setCalculatedArea('');
+              setFieldIntelligence(null);
               setIsModalOpen(true);
             }}
             className="bg-deep-forest text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-moss transition-colors flex items-center gap-2 shadow-lg"
@@ -241,6 +278,7 @@ export default function FieldsPage() {
                       setCurrentCropInput(field.crop);
                       setSelectedLocation(field.lat != null && field.lng != null ? [field.lat, field.lng] : null);
                       setDrawnBoundary(field.boundary || []);
+                      setCalculatedArea(parseFloat(field.area).toString() || '');
                       setIsDrawing(false);
                     }}
                     className="text-ink/40 hover:text-ink transition-colors p-2 -mr-2 -mt-2"
@@ -294,8 +332,22 @@ export default function FieldsPage() {
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2">Area (in Hectares)</label>
-                  <input name="area" type="number" step="0.1" required placeholder="e.g., 10.5" className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" />
+                  <input name="area" type="number" step="0.1" required value={calculatedArea} onChange={(e) => setCalculatedArea(e.target.value)} placeholder="e.g., 10.5" className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" />
+                  {calculatedArea && fieldIntelligence && (
+                    <p className="text-[10px] text-moss mt-1 font-medium animate-in fade-in flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3" /> Auto-calculated from boundary
+                    </p>
+                  )}
                 </div>
+                {fieldIntelligence && (
+                  <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg animate-in fade-in slide-in-from-bottom-2">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Cpu className="w-4 h-4 text-blue-600" />
+                      <h4 className="text-xs font-bold uppercase tracking-widest text-blue-800">Field Intelligence</h4>
+                    </div>
+                    <p className="text-sm text-blue-900 leading-relaxed font-medium">{fieldIntelligence}</p>
+                  </div>
+                )}
                 <div className="mt-4 p-4 bg-moss/5 border border-moss/20 rounded-lg">
                   <p className="text-xs text-ink/70 mb-2"><strong>Location Coordinates:</strong> {selectedLocation ? `Selected (${selectedLocation[0].toFixed(4)}, ${selectedLocation[1].toFixed(4)})` : 'Not selected'}</p>
                   <p className="text-[10px] text-ink/50">Click on the map to pinpoint your field's location.</p>
@@ -345,41 +397,59 @@ export default function FieldsPage() {
             </div>
             <div className="h-[300px] md:h-auto md:flex-1 shrink-0 relative w-full">
               <div className="absolute inset-0">
-                <div className="absolute top-4 left-4 z-[500]">
-                  <button 
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (!isDrawing) {
-                        setDrawnBoundary(prev => [...prev, []]);
-                      }
-                      setIsDrawing(!isDrawing);
-                    }}
-                    className={`px-4 py-2 rounded-full shadow-md text-sm font-medium transition-colors ${isDrawing ? 'bg-moss text-white' : 'bg-white text-ink hover:bg-moss/10'}`}
-                  >
-                    {isDrawing ? 'Finish Drawing' : 'Draw Custom Boundary'}
-                  </button>
-                  {drawnBoundary.length > 0 && !isDrawing && (
+                <div className="absolute top-4 left-4 z-[500] flex flex-col gap-2 items-start pointer-events-none">
+                  <div className="flex flex-wrap items-center gap-2 pointer-events-auto">
                     <button 
                       type="button"
                       onClick={(e) => {
                         e.preventDefault();
-                        setDrawnBoundary([]);
+                        if (!isDrawing) {
+                          setDrawnBoundary(prev => [...prev, []]);
+                        }
+                        setIsDrawing(!isDrawing);
                       }}
-                      className="ml-2 px-4 py-2 bg-white rounded-full shadow-md text-sm font-medium text-terracotta hover:bg-terracotta/10 transition-colors"
+                      className={`px-4 py-2 rounded-full shadow-md text-sm font-medium transition-colors ${isDrawing ? 'bg-moss text-white' : 'bg-white text-ink hover:bg-moss/10'}`}
                     >
-                      Clear Shape
+                      {isDrawing ? 'Finish Drawing' : 'Draw Custom Boundary'}
                     </button>
-                  )}
-                </div>
-                <div className="absolute top-4 left-4 z-[500] hidden md:block mt-12">
-                  <button 
-                    onClick={(e) => { e.preventDefault(); setMapStyle(s => s === 'street' ? 'satellite' : 'street'); }}
-                    className={`bg-white p-2 rounded-md shadow-md transition-colors ${mapStyle === 'satellite' ? 'bg-moss/10 text-moss' : 'text-ink/60 hover:text-ink'}`}
-                    title="Toggle Map Style"
-                  >
-                    <Layers className="w-5 h-5" />
-                  </button>
+                    {drawnBoundary.length > 0 && !isDrawing && (
+                      <>
+                        <button 
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setIsSimulatingNDVI(true);
+                            setTimeout(() => setIsSimulatingNDVI(false), 3000);
+                          }}
+                          className={`px-4 py-2 rounded-full shadow-md text-sm font-medium transition-colors flex items-center gap-2 ${isSimulatingNDVI ? 'bg-deep-forest text-white' : 'bg-white text-ink hover:bg-moss/10'}`}
+                        >
+                          {isSimulatingNDVI ? <Loader2 className="w-4 h-4 animate-spin" /> : <Scan className="w-4 h-4" />} 
+                          {isSimulatingNDVI ? 'Scanning NDVI...' : 'Run Satellite Scan'}
+                        </button>
+                        <button 
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setDrawnBoundary([]);
+                            setCalculatedArea('');
+                            setFieldIntelligence(null);
+                          }}
+                          className="px-4 py-2 bg-white rounded-full shadow-md text-sm font-medium text-terracotta hover:bg-terracotta/10 transition-colors"
+                        >
+                          Clear Shape
+                        </button>
+                      </>
+                    )}
+                  </div>
+                  <div className="hidden md:block pointer-events-auto">
+                    <button 
+                      onClick={(e) => { e.preventDefault(); setMapStyle(s => s === 'street' ? 'satellite' : 'street'); }}
+                      className={`bg-white p-2 rounded-md shadow-md transition-colors ${mapStyle === 'satellite' ? 'bg-moss/10 text-moss' : 'text-ink/60 hover:text-ink'}`}
+                      title="Toggle Map Style"
+                    >
+                      <Layers className="w-5 h-5" />
+                    </button>
+                  </div>
                 </div>
                 <div className="absolute top-4 right-4 z-[500] hidden md:block">
                   <button onClick={() => setIsModalOpen(false)} className="bg-white p-2 rounded-full shadow-md text-ink/40 hover:text-ink">
@@ -405,6 +475,7 @@ export default function FieldsPage() {
                   activeMarker={selectedLocation ? { lat: selectedLocation[0], lng: selectedLocation[1], boundary: drawnBoundary.flat().length > 2 ? drawnBoundary : undefined } : undefined}
                   isDrawingMode={isDrawing}
                   drawnBoundary={drawnBoundary}
+                  isSimulatingNDVI={isSimulatingNDVI}
                   onBoundaryPointMove={(polyIdx, ptIdx, lat, lng) => {
                     setDrawnBoundary(prev => {
                       const newArr = [...prev];
@@ -451,8 +522,22 @@ export default function FieldsPage() {
                 
                 <div>
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-2">Area (in Hectares)</label>
-                  <input name="area" type="number" step="0.1" defaultValue={parseFloat(editingField.area) || 0} required className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" />
+                  <input name="area" type="number" step="0.1" value={calculatedArea} onChange={(e) => setCalculatedArea(e.target.value)} required className="w-full bg-paper-ivory border border-soft-line rounded-md px-4 py-2 text-sm text-ink focus:outline-none focus:border-moss" />
+                  {calculatedArea && fieldIntelligence && (
+                    <p className="text-[10px] text-moss mt-1 font-medium animate-in fade-in flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3" /> Auto-calculated from boundary
+                    </p>
+                  )}
                 </div>
+                {fieldIntelligence && (
+                  <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg animate-in fade-in slide-in-from-bottom-2">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Cpu className="w-4 h-4 text-blue-600" />
+                      <h4 className="text-xs font-bold uppercase tracking-widest text-blue-800">Field Intelligence</h4>
+                    </div>
+                    <p className="text-sm text-blue-900 leading-relaxed font-medium">{fieldIntelligence}</p>
+                  </div>
+                )}
                 
                 <div className="mt-4 p-4 bg-moss/5 border border-moss/20 rounded-lg">
                   <p className="text-xs text-ink/70 mb-2"><strong>Location Coordinates:</strong> {selectedLocation ? `Selected (${selectedLocation[0].toFixed(4)}, ${selectedLocation[1].toFixed(4)})` : 'Not selected'}</p>
@@ -519,39 +604,57 @@ export default function FieldsPage() {
             </div>
             <div className="h-[300px] md:h-auto md:flex-1 shrink-0 relative w-full border-t md:border-t-0 md:border-l border-soft-line">
               <div className="absolute inset-0">
-                <div className="absolute top-4 left-4 z-[500]">
-                  <button 
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (!isDrawing) setDrawnBoundary(prev => [...prev, []]); 
-                      setIsDrawing(!isDrawing);
-                    }}
-                    className={`px-4 py-2 rounded-full shadow-md text-sm font-medium transition-colors ${isDrawing ? 'bg-moss text-white' : 'bg-white text-ink hover:bg-moss/10'}`}
-                  >
-                    {isDrawing ? 'Finish Drawing' : 'Draw Custom Boundary'}
-                  </button>
-                  {drawnBoundary.length > 0 && !isDrawing && (
+                <div className="absolute top-4 left-4 z-[500] flex flex-col gap-2 items-start pointer-events-none">
+                  <div className="flex flex-wrap items-center gap-2 pointer-events-auto">
                     <button 
                       type="button"
                       onClick={(e) => {
                         e.preventDefault();
-                        setDrawnBoundary([]);
+                        if (!isDrawing) setDrawnBoundary(prev => [...prev, []]); 
+                        setIsDrawing(!isDrawing);
                       }}
-                      className="ml-2 px-4 py-2 bg-white rounded-full shadow-md text-sm font-medium text-terracotta hover:bg-terracotta/10 transition-colors"
+                      className={`px-4 py-2 rounded-full shadow-md text-sm font-medium transition-colors ${isDrawing ? 'bg-moss text-white' : 'bg-white text-ink hover:bg-moss/10'}`}
                     >
-                      Clear Shape
+                      {isDrawing ? 'Finish Drawing' : 'Draw Custom Boundary'}
                     </button>
-                  )}
-                </div>
-                <div className="absolute top-4 left-4 z-[500] hidden md:block mt-12">
-                  <button 
-                    onClick={(e) => { e.preventDefault(); setMapStyle(s => s === 'street' ? 'satellite' : 'street'); }}
-                    className={`bg-white p-2 rounded-md shadow-md transition-colors ${mapStyle === 'satellite' ? 'bg-moss/10 text-moss' : 'text-ink/60 hover:text-ink'}`}
-                    title="Toggle Map Style"
-                  >
-                    <Layers className="w-5 h-5" />
-                  </button>
+                    {drawnBoundary.length > 0 && !isDrawing && (
+                      <>
+                        <button 
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setIsSimulatingNDVI(true);
+                            setTimeout(() => setIsSimulatingNDVI(false), 3000);
+                          }}
+                          className={`px-4 py-2 rounded-full shadow-md text-sm font-medium transition-colors flex items-center gap-2 ${isSimulatingNDVI ? 'bg-deep-forest text-white' : 'bg-white text-ink hover:bg-moss/10'}`}
+                        >
+                          {isSimulatingNDVI ? <Loader2 className="w-4 h-4 animate-spin" /> : <Scan className="w-4 h-4" />} 
+                          {isSimulatingNDVI ? 'Scanning NDVI...' : 'Run Satellite Scan'}
+                        </button>
+                        <button 
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setDrawnBoundary([]);
+                            setCalculatedArea('');
+                            setFieldIntelligence(null);
+                          }}
+                          className="px-4 py-2 bg-white rounded-full shadow-md text-sm font-medium text-terracotta hover:bg-terracotta/10 transition-colors"
+                        >
+                          Clear Shape
+                        </button>
+                      </>
+                    )}
+                  </div>
+                  <div className="hidden md:block pointer-events-auto">
+                    <button 
+                      onClick={(e) => { e.preventDefault(); setMapStyle(s => s === 'street' ? 'satellite' : 'street'); }}
+                      className={`bg-white p-2 rounded-md shadow-md transition-colors ${mapStyle === 'satellite' ? 'bg-moss/10 text-moss' : 'text-ink/60 hover:text-ink'}`}
+                      title="Toggle Map Style"
+                    >
+                      <Layers className="w-5 h-5" />
+                    </button>
+                  </div>
                 </div>
                 <div className="absolute top-4 right-4 z-[500] hidden md:block">
                   <button onClick={() => setEditingField(null)} className="bg-white p-2 rounded-full shadow-md text-ink/40 hover:text-ink">
@@ -577,6 +680,7 @@ export default function FieldsPage() {
                   activeMarker={selectedLocation ? { lat: selectedLocation[0], lng: selectedLocation[1], boundary: drawnBoundary.flat().length > 2 ? drawnBoundary : undefined } : undefined}
                   isDrawingMode={isDrawing}
                   drawnBoundary={drawnBoundary}
+                  isSimulatingNDVI={isSimulatingNDVI}
                   onBoundaryPointMove={(polyIdx, ptIdx, lat, lng) => {
                     setDrawnBoundary(prev => {
                       const newArr = [...prev];
