@@ -163,17 +163,15 @@ export default function NDVIChartClient({ fieldData }: NDVIChartProps) {
       },
       zoom: {
         pan: {
-          enabled: true,
-          mode: 'x' as const,
+          enabled: false,
         },
         zoom: {
           wheel: {
-            enabled: true,
+            enabled: false,
           },
           pinch: {
-            enabled: true
-          },
-          mode: 'x' as const,
+            enabled: false
+          }
         },
         limits: {
           y: { min: 0, max: 1 }
@@ -189,7 +187,7 @@ export default function NDVIChartClient({ fieldData }: NDVIChartProps) {
           <h3 className="text-lg font-sans font-medium text-deep-forest flex items-center gap-2">
             Live Earth Engine NDVI
           </h3>
-          <p className="text-sm text-ink/60 mt-1">Real-time Sentinel-2 Extrapolation (Scroll to Zoom, Drag to Pan)</p>
+          <p className="text-sm text-ink/60 mt-1">Real-time Sentinel-2 Extrapolation</p>
         </div>
         <div className="bg-moss/10 px-3 py-1.5 rounded-md flex items-center gap-2 shrink-0 self-start md:self-auto">
           <Activity className="w-4 h-4 text-moss" />
