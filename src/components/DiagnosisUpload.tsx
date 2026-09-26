@@ -12,8 +12,19 @@ interface DiagnosisUploadProps {
 
 export default function DiagnosisUpload({ fieldId }: DiagnosisUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
+  const [loadingStep, setLoadingStep] = useState(0);
   const [diagnosis, setDiagnosis] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  // Mock loading steps for the demo
+  const loadingSteps = [
+    "Extracting biological features...",
+    "Scanning for known pathogens...",
+    "Cross-referencing global database...",
+    "Correlating with local climate data...",
+    "Generating treatment plan..."
+  ];
 
   const handleFileChange = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -32,6 +43,16 @@ export default function DiagnosisUpload({ fieldId }: DiagnosisUploadProps) {
       });
       reader.readAsDataURL(file);
       const base64Data = await base64Promise;
+      setImagePreview(base64Data);
+
+      // Start the mock loading sequence (purely visual for demo)
+      let currentStep = 0;
+      const stepInterval = setInterval(() => {
+        currentStep++;
+        if (currentStep < loadingSteps.length) {
+          setLoadingStep(currentStep);
+        }
+      }, 1500); // Change step every 1.5 seconds
 
       // 2. Call our Next.js API route (which talks to Hugging Face)
       const response = await fetch('/api/diagnose', {
@@ -45,6 +66,9 @@ export default function DiagnosisUpload({ fieldId }: DiagnosisUploadProps) {
           mime_type: file.type || 'image/jpeg'
         }),
       });
+
+      clearInterval(stepInterval);
+      setLoadingStep(0);
 
       const data = await response.json();
 
@@ -86,9 +110,18 @@ export default function DiagnosisUpload({ fieldId }: DiagnosisUploadProps) {
       )}
 
       {isUploading && (
-        <div className="flex-grow flex flex-col items-center justify-center w-full min-h-[16rem] bg-paper-ivory/50 border border-soft-line rounded-lg">
-          <Loader2 className="w-8 h-8 text-moss animate-spin mb-4" />
-          <p className="text-sm font-sans font-medium text-ink/70">Vision AI is analyzing...</p>
+        <div className="flex-grow flex flex-col items-center justify-center w-full min-h-[16rem] bg-paper-ivory/50 border border-soft-line rounded-lg p-6 text-center">
+          <Loader2 className="w-10 h-10 text-moss animate-spin mb-6" />
+          <p className="text-sm font-sans font-medium text-moss tracking-widest uppercase mb-2">System Processing</p>
+          <div className="w-full max-w-xs h-1.5 bg-gray-200 rounded-full overflow-hidden mb-3">
+            <div 
+              className="h-full bg-moss transition-all duration-300 ease-out" 
+              style={{ width: `${Math.max(10, (loadingStep / (loadingSteps.length - 1)) * 100)}%` }}
+            />
+          </div>
+          <p className="text-sm font-sans font-medium text-ink/80 transition-opacity duration-300">
+            {loadingSteps[loadingStep] || loadingSteps[loadingSteps.length - 1]}
+          </p>
         </div>
       )}
 
@@ -101,12 +134,36 @@ export default function DiagnosisUpload({ fieldId }: DiagnosisUploadProps) {
 
       {diagnosis && (
         <div className="flex-grow flex flex-col bg-white border border-soft-line rounded-lg p-5 overflow-y-auto">
+          {/* Mock Target Bounding Boxes Over Image */}
+          {imagePreview && (
+            <div className="relative w-full h-48 mb-6 rounded-lg overflow-hidden border border-soft-line bg-gray-100 flex items-center justify-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={imagePreview} alt="Analyzed Crop" className="object-cover w-full h-full opacity-90" />
+              
+              {/* Fake UI Overlays for Video Demo */}
+              <div className="absolute top-2 left-2 bg-black/60 text-white text-[10px] font-mono px-2 py-1 rounded backdrop-blur-sm flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                LIVE SCAN
+              </div>
+
+              {/* Bounding Box 1 */}
+              <div className="absolute top-[20%] left-[30%] w-[15%] h-[20%] border-2 border-red-500 rounded-sm bg-red-500/10 shadow-[0_0_10px_rgba(239,68,68,0.5)]">
+                 <span className="absolute -top-5 left-0 bg-red-500 text-white text-[9px] font-bold px-1 whitespace-nowrap">ANOMALY 1</span>
+              </div>
+              
+              {/* Bounding Box 2 */}
+              <div className="absolute bottom-[25%] right-[20%] w-[12%] h-[15%] border-2 border-yellow-400 rounded-sm bg-yellow-400/10 shadow-[0_0_10px_rgba(250,204,21,0.5)]">
+                 <span className="absolute -top-5 left-0 bg-yellow-400 text-black text-[9px] font-bold px-1 whitespace-nowrap">ANOMALY 2</span>
+              </div>
+            </div>
+          )}
+
           <div className="flex items-center justify-between mb-4 border-b border-soft-line pb-3">
             <div className="flex items-center gap-2">
               <CheckCircle className="w-5 h-5 text-moss" />
               <h4 className="font-serif text-lg text-deep-forest">{diagnosis.disease_label}</h4>
             </div>
-            <span className="inline-flex items-center px-2 py-1 rounded text-[10px] font-sans font-medium bg-moss/10 text-moss uppercase tracking-widest">
+            <span className="inline-flex items-center px-2 py-1 rounded text-[10px] font-sans font-medium bg-red-500/10 text-red-700 uppercase tracking-widest border border-red-200">
               Confidence: {(diagnosis.confidence * 100).toFixed(1)}%
             </span>
           </div>
