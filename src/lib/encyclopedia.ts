@@ -7,10 +7,18 @@ export const diseaseEncyclopedia: Record<DiseaseName, string> = {
 **What is happening?**
 The system has detected that your crop has physical damage, severe bruising, or is rotting. This often happens because of rough handling during harvest, or because fungi have started attacking the fruit in storage. In the field, it can be caused by extreme weather or pests physically damaging the crop.
 
-**What you should do:**
-*   **Separate Immediately:** Remove the damaged crops right away. If you leave rotting crops next to healthy ones, the rot will spread very quickly.
-*   **Check Storage:** If these are stored crops, make sure your storage room is not too hot or too humid. High moisture causes fast rotting.
-*   **Prevent Future Rot:** If the crop is still in the field, you can spray a basic copper fungicide to stop the rot from spreading to healthy fruits.
+**Detected Symptoms:**
+*   Visible bruising or cuts on the crop surface.
+*   Soft, mushy areas indicating active rot.
+*   Possible secondary fungal growth (mold) on damaged areas.
+
+**Environmental Factors:**
+High humidity and warm temperatures rapidly accelerate rotting in damaged crops. Poor ventilation in storage areas is a primary contributor.
+
+**Comprehensive Action Plan:**
+*   **Immediate Action:** Sort and remove the damaged crops immediately to prevent the spread of rot to healthy produce.
+*   **Storage Management:** Ensure your storage room is well-ventilated, cool, and dry.
+*   **Preventative Measures:** Handle crops with care during the next harvest to avoid physical damage. Use clean, sanitized crates and storage bins.
   `,
   "healthy": `
 ### ✅ Healthy Crop!
@@ -18,32 +26,56 @@ The system has detected that your crop has physical damage, severe bruising, or 
 **What is happening?**
 Great news! The image shows a completely healthy crop. There are no signs of diseases, fungal spots, or pest damage on the surface. Your plant is growing well.
 
-**What you should do:**
-*   **Keep it up:** Continue your regular watering and fertilizer schedule. Whatever you are doing is working!
-*   **Give them space:** Make sure your plants have enough space between them so the wind can dry the leaves. Wet leaves invite fungus.
-*   **Keep Checking:** Continue to take photos of random plants every week so you can catch any future diseases early.
+**Detected Symptoms:**
+*   None. Leaves are green, intact, and showing vigorous growth.
+
+**Environmental Factors:**
+Your current watering and environmental conditions appear to be optimal for this crop.
+
+**Comprehensive Action Plan:**
+*   **Keep it up:** Continue your regular watering and fertilizer schedule.
+*   **Airflow:** Maintain adequate spacing between plants to ensure good airflow, which keeps leaves dry and prevents future fungal issues.
+*   **Monitoring:** Continue to inspect your crops weekly to catch any early signs of pests or diseases.
   `,
   "bean_rust": `
-### 🍂 Bean Rust
+### 🍂 Bean Rust (Uromyces appendiculatus)
 
 **What is happening?**
 Your plant has Bean Rust. This is a very common fungal disease. You will see small, rust-colored or brown powdery spots on the leaves. These spots are actually millions of tiny fungal spores that can blow in the wind and infect your whole field very quickly, especially in humid weather.
 
-**What you should do:**
-*   **Spray Immediately:** You need to apply a fungicide spray right away to stop the fungus from growing. 
-*   **Watering:** Stop using overhead sprinklers (like rain guns) if you can. Water the roots directly instead. The fungus needs wet leaves to grow.
-*   **Next Season:** Do not plant beans in this exact same spot next year. The fungus can survive in the soil over winter.
+**Detected Symptoms:**
+*   Small, reddish-brown pustules on the upper and lower leaf surfaces.
+*   Yellowing (chlorosis) around the pustules.
+*   In severe cases, leaves may dry up and drop prematurely.
+
+**Environmental Factors:**
+This disease thrives in highly humid conditions (above 95%) and moderate temperatures (20-25°C). Extended periods of leaf wetness from dew or rain are critical for infection.
+
+**Comprehensive Action Plan:**
+*   **Immediate Action:** Apply a recommended fungicide spray immediately to halt the spread.
+*   **Cultural Controls:** Avoid using overhead sprinklers; water at the base of the plant instead. Do not work in the field when plants are wet.
+*   **Chemical/Biological Controls:** Use fungicides containing Chlorothalonil or Propiconazole. For organic options, consider sulfur or copper-based sprays (check local regulations).
+*   **Preventative Measures:** Practice crop rotation (do not plant beans in the same spot next year). Use rust-resistant bean varieties for future plantings.
   `,
   "angular_leaf_spot": `
-### 🦠 Angular Leaf Spot
+### 🦠 Angular Leaf Spot (Pseudomonas syringae)
 
 **What is happening?**
 Your plant is suffering from Angular Leaf Spot. This is caused by bacteria, not a fungus. You will notice small, square-shaped brown spots on the leaves. Because it is a bacteria, regular fungal sprays will not work.
 
-**What you should do:**
-*   **Spray Copper:** You must spray a copper-based bactericide immediately. Copper kills bacteria effectively.
-*   **Stay Out of the Field:** Do not walk through the field or touch the plants when they are wet (like after rain or morning dew). You will easily spread the bacteria from plant to plant on your clothes and hands.
-*   **Clean Seeds:** For your next planting, make sure you only buy certified, disease-free seeds.
+**Detected Symptoms:**
+*   Small, water-soaked spots on leaves that turn brown or grayish.
+*   The spots are restricted by leaf veins, giving them an angular, square-like appearance.
+*   Spots may be surrounded by a yellow halo.
+
+**Environmental Factors:**
+The bacteria spread rapidly during periods of heavy rainfall, high humidity, and warm temperatures. Wind-driven rain is the primary method of spread.
+
+**Comprehensive Action Plan:**
+*   **Immediate Action:** Spray a copper-based bactericide immediately.
+*   **Cultural Controls:** Do not walk through the field or touch the plants when they are wet to avoid spreading the bacteria manually.
+*   **Chemical/Biological Controls:** Copper Hydroxide or agricultural antibiotics (where permitted).
+*   **Preventative Measures:** Ensure you buy certified, disease-free seeds. Plow under crop debris after harvest, as the bacteria can survive on dead plant material.
   `
 };
 
