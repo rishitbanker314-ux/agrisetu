@@ -26,9 +26,9 @@ export default function MarketPanel() {
 
   return (
     <div className="h-full flex flex-col space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col space-y-3">
         <h3 className="font-serif text-sm text-ink/50 uppercase tracking-widest">Market Futures</h3>
-        <div className="flex space-x-2">
+        <div className="flex flex-wrap gap-2">
           {CROPS.map((crop) => (
             <button
               key={crop}
