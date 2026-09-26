@@ -39,7 +39,7 @@ export default function MarketPage() {
       </p>
 
       {/* Crop Selector */}
-      <div className="flex space-x-4 mb-6">
+      <div className="flex flex-wrap gap-2 mb-6">
         {CROPS.map((crop) => (
           <button
             key={crop}

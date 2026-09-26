@@ -5,11 +5,11 @@ export interface PricePoint {
   confidenceInterval?: [number, number]; // [lower, upper]
 }
 
-export type CropName = 'Apple' | 'Wheat' | 'Rice' | 'Sugarcane' | 'Cotton' | 'Maize' | 'Soybean' | 'Tea' | 'Coffee' | 'Potato' | 'Mango' | 'Mustard' | 'Pearl Millet' | 'Jute' | 'Groundnut';
+export type CropName = 'Apple' | 'Wheat' | 'Rice' | 'Sugarcane' | 'Cotton' | 'Maize' | 'Soybean' | 'Tea' | 'Coffee' | 'Potato' | 'Mango' | 'Mustard' | 'Pearl Millet' | 'Jute' | 'Groundnut' | 'Onion';
 
 export const CROPS: CropName[] = [
   'Apple', 'Wheat', 'Rice', 'Sugarcane', 'Cotton', 'Maize', 'Soybean', 
-  'Tea', 'Coffee', 'Potato', 'Mango', 'Mustard', 'Pearl Millet', 'Jute', 'Groundnut'
+  'Tea', 'Coffee', 'Potato', 'Mango', 'Mustard', 'Pearl Millet', 'Jute', 'Groundnut', 'Onion'
 ];
 
 // Mock historical APMC data for the last 6 months (weekly data points)
@@ -29,6 +29,7 @@ const baseData: Record<CropName, number[]> = {
   'Pearl Millet': [2000, 2050, 2100, 2080, 2150, 2200, 2180, 2250, 2300, 2280, 2350, 2400, 2380, 2450, 2500, 2480, 2550, 2600, 2580, 2650, 2700, 2680, 2750, 2800],
   'Jute': [4000, 4050, 4100, 4080, 4150, 4200, 4180, 4250, 4300, 4280, 4350, 4400, 4380, 4450, 4500, 4480, 4550, 4600, 4580, 4650, 4700, 4680, 4750, 4800],
   'Groundnut': [5500, 5450, 5400, 5350, 5320, 5300, 5280, 5300, 5350, 5420, 5500, 5580, 5650, 5700, 5750, 5820, 5900, 5950, 6000, 5980, 5950, 5900, 5850, 5800], // Seasonal
+  'Onion': [1200, 1250, 1300, 1280, 1350, 1400, 1380, 1450, 1500, 1480, 1550, 1600, 1580, 1650, 1700, 1680, 1750, 1800, 1850, 1900, 1950, 2000, 2050, 2100],
 };
 
 /**

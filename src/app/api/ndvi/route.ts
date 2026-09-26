@@ -142,7 +142,7 @@ export async function GET(request: Request) {
       
       // Add a tiny bit of deterministic environmental noise (+/- 0.015)
       const noise = (Math.sin(i * lat * lng) * 0.03) - 0.015;
-      return Number(Math.max(0.1, Math.min(0.95, sim + noise)).toFixed(3));
+      return Number(Math.max(0.0, Math.min(1.0, sim + noise)).toFixed(3));
     });
 
     return NextResponse.json({ 

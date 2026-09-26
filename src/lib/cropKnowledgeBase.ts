@@ -259,6 +259,22 @@ export const CROP_DATABASE: CropProfile[] = [
     phMax: 7.0,
     suitableRegions: ['West Bengal', 'Assam', 'Bihar', 'Odisha', 'Meghalaya'],
     description: 'Jute is a cash crop that requires hot and highly humid climates with abundant rainfall and standing water for retting.'
+  },
+  {
+    id: 'onion',
+    name: 'Onion',
+    aliases: ['pyaaz', 'onions'],
+    tempMin: 10,
+    tempMax: 35,
+    tempOptimalMin: 15,
+    tempOptimalMax: 25,
+    rainfallMin: 350,
+    rainfallMax: 600,
+    humidityMin: 50,
+    humidityMax: 70,
+    phMin: 6.0,
+    phMax: 7.5,
+    description: 'Onions require cool weather for vegetative growth and warm, dry weather for bulb maturation.'
   }
 ];
 
