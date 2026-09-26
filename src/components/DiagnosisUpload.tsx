@@ -138,7 +138,7 @@ export default function DiagnosisUpload({ fieldId }: DiagnosisUploadProps) {
           {imagePreview && (
             <div className="relative w-full h-48 mb-6 rounded-lg overflow-hidden border border-soft-line bg-gray-100 flex items-center justify-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={imagePreview} alt="Analyzed Crop" className="object-cover w-full h-full opacity-90" />
+              <img src={imagePreview} alt="Analyzed Crop" className="object-contain w-full h-full opacity-90" />
               
               {/* Fake UI Overlays for Video Demo */}
               <div className="absolute top-2 left-2 bg-black/60 text-white text-[10px] font-mono px-2 py-1 rounded backdrop-blur-sm flex items-center gap-2">
@@ -146,14 +146,14 @@ export default function DiagnosisUpload({ fieldId }: DiagnosisUploadProps) {
                 LIVE SCAN
               </div>
 
-              {/* Bounding Box 1 */}
-              <div className="absolute top-[20%] left-[30%] w-[15%] h-[20%] border-2 border-red-500 rounded-sm bg-red-500/10 shadow-[0_0_10px_rgba(239,68,68,0.5)]">
-                 <span className="absolute -top-5 left-0 bg-red-500 text-white text-[9px] font-bold px-1 whitespace-nowrap">ANOMALY 1</span>
+              {/* Bounding Box 1 - Main Rot Area */}
+              <div className="absolute top-[35%] left-[50%] w-[25%] h-[45%] border-2 border-red-500 rounded-sm bg-red-500/10 shadow-[0_0_10px_rgba(239,68,68,0.5)]">
+                 <span className="absolute -top-5 left-0 bg-red-500 text-white text-[9px] font-bold px-1 whitespace-nowrap">ANOMALY 1: NECROSIS</span>
               </div>
               
-              {/* Bounding Box 2 */}
-              <div className="absolute bottom-[25%] right-[20%] w-[12%] h-[15%] border-2 border-yellow-400 rounded-sm bg-yellow-400/10 shadow-[0_0_10px_rgba(250,204,21,0.5)]">
-                 <span className="absolute -top-5 left-0 bg-yellow-400 text-black text-[9px] font-bold px-1 whitespace-nowrap">ANOMALY 2</span>
+              {/* Bounding Box 2 - Lower Rot Edge */}
+              <div className="absolute top-[70%] left-[38%] w-[20%] h-[18%] border-2 border-yellow-400 rounded-sm bg-yellow-400/10 shadow-[0_0_10px_rgba(250,204,21,0.5)]">
+                 <span className="absolute -top-5 left-0 bg-yellow-400 text-black text-[9px] font-bold px-1 whitespace-nowrap">ANOMALY 2: SHRIVELING</span>
               </div>
             </div>
           )}
