@@ -164,7 +164,7 @@ export default function NDVIChartClient({ fieldData }: NDVIChartProps) {
       zoom: {
         pan: {
           enabled: true,
-          mode: 'xy' as const,
+          mode: 'x' as const,
         },
         zoom: {
           wheel: {
@@ -173,7 +173,10 @@ export default function NDVIChartClient({ fieldData }: NDVIChartProps) {
           pinch: {
             enabled: true
           },
-          mode: 'xy' as const,
+          mode: 'x' as const,
+        },
+        limits: {
+          y: { min: 0, max: 1 }
         }
       }
     },
