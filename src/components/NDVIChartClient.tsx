@@ -184,14 +184,14 @@ export default function NDVIChartClient({ fieldData }: NDVIChartProps) {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col md:flex-row md:justify-between items-start md:items-center gap-4 mb-6">
         <div>
           <h3 className="text-lg font-sans font-medium text-deep-forest flex items-center gap-2">
             Live Earth Engine NDVI
           </h3>
           <p className="text-sm text-ink/60 mt-1">Real-time Sentinel-2 Extrapolation (Scroll to Zoom, Drag to Pan)</p>
         </div>
-        <div className="bg-moss/10 px-3 py-1.5 rounded-md flex items-center gap-2 shrink-0">
+        <div className="bg-moss/10 px-3 py-1.5 rounded-md flex items-center gap-2 shrink-0 self-start md:self-auto">
           <Activity className="w-4 h-4 text-moss" />
           <span className="text-sm font-bold text-moss">Current: {currentNdvi.toFixed(2)}</span>
         </div>
@@ -201,7 +201,7 @@ export default function NDVIChartClient({ fieldData }: NDVIChartProps) {
         <strong>What is NDVI?</strong> The Normalized Difference Vegetation Index (NDVI) is a satellite-based measure of crop health. It detects the amount of near-infrared light reflected by plant leaves. Values closer to <strong>1.0</strong> indicate lush, healthy crops, while values below <strong>0.3</strong> indicate severe stress, drought, or bare soil.
       </div>
       
-      <div className="flex-grow relative mt-4 h-64 w-full bg-paper-ivory/50 rounded-xl border border-soft-line p-4 cursor-crosshair">
+      <div className="flex-grow relative mt-4 min-h-[300px] w-full bg-paper-ivory/50 rounded-xl border border-soft-line p-2 md:p-4 cursor-crosshair">
         <Line options={options} data={data} />
       </div>
       
