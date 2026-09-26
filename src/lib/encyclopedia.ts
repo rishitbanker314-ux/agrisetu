@@ -76,6 +76,48 @@ The bacteria spread rapidly during periods of heavy rainfall, high humidity, and
 *   **Cultural Controls:** Do not walk through the field or touch the plants when they are wet to avoid spreading the bacteria manually.
 *   **Chemical/Biological Controls:** Copper Hydroxide or agricultural antibiotics (where permitted).
 *   **Preventative Measures:** Ensure you buy certified, disease-free seeds. Plow under crop debris after harvest, as the bacteria can survive on dead plant material.
+  `,
+  "apple___black_rot": `
+### 🍎 Apple Black Rot (Botryosphaeria obtusa)
+
+**What is happening?**
+The AI has detected severe necrosis indicative of **Apple Black Rot**. The analyzed image shows a prominent, sunken, dark brown-to-black lesion. The affected epidermal tissue is severely wrinkled and shriveled—a process known as 'mummification'—caused by the fungal breakdown of the fruit's cellular structure and extreme moisture loss.
+
+**Detected Symptoms:**
+*   Large, rapidly expanding necrotic lesion covering >40% of the visible fruit surface.
+*   Concentric rings of varying shades of brown and black radiating from the infection center.
+*   Severe epidermal shriveling and loss of structural integrity (mummification).
+*   High probability of pycnidia (microscopic black fungal fruiting bodies) developing within the decayed tissue.
+
+**Environmental Factors:**
+This pathogen (*Botryosphaeria obtusa*) thrives in warm, highly humid conditions. The optimal temperature for rapid infection and cellular decay is between 20°C and 26°C (68°F - 79°F), particularly when the fruit surface remains wet for extended periods (9+ hours).
+
+**Comprehensive Action Plan:**
+*   **Immediate Action:** Cull and incinerate this fruit and any adjacent infected apples immediately. **Do not compost**, as the fungus easily overwinters in mummified fruit.
+*   **Storage Management:** If detected post-harvest, immediately sanitize all storage crates with a 10% bleach solution and reduce cold storage temperature to 0-4°C with active airflow.
+*   **Chemical/Biological Controls:** For active field outbreaks, apply targeted fungicides containing Captan, Mancozeb, or Thiophanate-methyl.
+*   **Preventative Measures:** Implement strict orchard sanitation. Prune out all dead or diseased wood (cankers) during the dormant season, as this is the primary overwintering site for the fungus.
+  `,
+  "apple_black_rot": `
+### 🍎 Apple Black Rot (Botryosphaeria obtusa)
+
+**What is happening?**
+The AI has detected severe necrosis indicative of **Apple Black Rot**. The analyzed image shows a prominent, sunken, dark brown-to-black lesion. The affected epidermal tissue is severely wrinkled and shriveled—a process known as 'mummification'—caused by the fungal breakdown of the fruit's cellular structure and extreme moisture loss.
+
+**Detected Symptoms:**
+*   Large, rapidly expanding necrotic lesion covering >40% of the visible fruit surface.
+*   Concentric rings of varying shades of brown and black radiating from the infection center.
+*   Severe epidermal shriveling and loss of structural integrity (mummification).
+*   High probability of pycnidia (microscopic black fungal fruiting bodies) developing within the decayed tissue.
+
+**Environmental Factors:**
+This pathogen (*Botryosphaeria obtusa*) thrives in warm, highly humid conditions. The optimal temperature for rapid infection and cellular decay is between 20°C and 26°C (68°F - 79°F), particularly when the fruit surface remains wet for extended periods (9+ hours).
+
+**Comprehensive Action Plan:**
+*   **Immediate Action:** Cull and incinerate this fruit and any adjacent infected apples immediately. **Do not compost**, as the fungus easily overwinters in mummified fruit.
+*   **Storage Management:** If detected post-harvest, immediately sanitize all storage crates with a 10% bleach solution and reduce cold storage temperature to 0-4°C with active airflow.
+*   **Chemical/Biological Controls:** For active field outbreaks, apply targeted fungicides containing Captan, Mancozeb, or Thiophanate-methyl.
+*   **Preventative Measures:** Implement strict orchard sanitation. Prune out all dead or diseased wood (cankers) during the dormant season, as this is the primary overwintering site for the fungus.
   `
 };
 
@@ -83,7 +125,9 @@ export const cureRecommendations: Record<DiseaseName, string[]> = {
   "defective": ["Copper Oxychloride WP", "Mancozeb Fungicide"],
   "healthy": ["Seaweed Extract Bio-Stimulant", "NPK 19-19-19 Water Soluble Fertilizer"],
   "bean_rust": ["Chlorothalonil Fungicide", "Propiconazole EC", "Tebuconazole Fungicide"],
-  "angular_leaf_spot": ["Copper Hydroxide Bactericide", "Streptomycin Sulfate Agricultural Antibiotic"]
+  "angular_leaf_spot": ["Copper Hydroxide Bactericide", "Streptomycin Sulfate Agricultural Antibiotic"],
+  "apple___black_rot": ["Captan 50 WP", "Mancozeb 75% WP", "Thiophanate-methyl Fungicide"],
+  "apple_black_rot": ["Captan 50 WP", "Mancozeb 75% WP", "Thiophanate-methyl Fungicide"]
 };
 
 /**
